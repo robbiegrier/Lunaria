@@ -1,0 +1,80 @@
+// Robbie Grier
+
+#include "Obstacle.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
+#include "AttributesComponent.h"
+#include "HealthComponent.h"
+#include "SpaceObjectMovementComponent.h"
+#include "BobbleMovementComponent.h"
+#include "DebugWidget.h"
+#include "DrawDebugHelpers.h"
+#include "LunariaGameModeBase.h"
+#include "Printer.h"
+
+AObstacle::AObstacle()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes Component"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	HealthComponent->GetHealthDepletedEvent().AddUObject(this, &AObstacle::HandleObstacleDestroyed);
+
+	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Bar Widget Component"));
+	HealthBarComponent->SetupAttachment(GetSphereComponent());
+
+	HealthBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	HealthBarComponent->SetDrawAtDesiredSize(true);
+
+	GetMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AObstacle::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HealthBarComponent->GetWidgetClass() == nullptr)
+	{
+		if (auto Gamemode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
+		{
+			HealthBarComponent->SetWidgetClass(Gamemode->GetHealthBarClass());
+		}
+	}
+
+	if (auto HealthBar = Cast<UCpuHealthBar>(HealthBarComponent->GetUserWidgetObject()))
+	{
+		HealthComponent->BindHealthBar(HealthBar);
+	}
+}
+
+void AObstacle::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	if (OtherActor && OtherActor->GetClass() == GetClass()) return;
+
+	if (OtherActor)
+	{
+		if (auto Hittable = Cast<IHittable>(OtherActor))
+		{
+			Hittable->TakeHit(CollisionDamage, this);
+		}
+	}
+
+	TakeHit(SelfDamageOnCollision, this);
+}
+
+void AObstacle::HandleObstacleDestroyed(UHealthComponent* HealthComp, int KillingBlow)
+{
+	Destroy();
+}
+
+void AObstacle::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	HealthBarComponent->GetUserWidgetObject()->SetRenderScale(FVector2D(GetActorScale3D().X / 2.f));
+
+	HealthBarComponent->SetWorldLocation(GetActorLocation() + FVector(GetSphereComponent()->GetScaledSphereRadius(), 0, GetSphereComponent()->GetScaledSphereRadius()));
+}
+
+void AObstacle::HandleCollisionRecognized(AActor* OtherActor)
+{
+}
