@@ -5,6 +5,7 @@
 #include "Helpers.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundBase.h"
+#include "AttributesComponent.h"
 
 AAbility::AAbility()
 {
@@ -26,6 +27,9 @@ void AAbility::BeginPlay()
 {
 	Super::BeginPlay();
 	UpdateStrategy(ExecutionType);
+
+	CurrentCharges = CooldownCharges;
+	LastUsed = -Cooldown;
 }
 
 void AAbility::UpdateStrategy(TEnumAsByte<EAbilityExecution> Type)
@@ -72,9 +76,15 @@ void AAbility::Attach(AActor* InOwner)
 	MyOwner = InOwner;
 }
 
+UAttributesComponent* AAbility::GetAttributes() const
+{
+	return MyOwner->FindComponentByClass<UAttributesComponent>();
+}
+
 void AAbility::ExecuteContext()
 {
 	OnExecute();
+	UpdateCooldownOnExecute();
 	PlaySound(AbilityUsedSounds, AudioPlayer);
 }
 
@@ -120,18 +130,35 @@ void AAbility::StopSound(UAudioComponent* Player)
 	Player->Stop();
 }
 
+bool AAbility::IsOffCooldown()
+{
+	auto Now = GetWorld()->GetTimeSeconds();
+
+	if (Now - LastUsed > Cooldown)
+	{
+		CurrentCharges = CooldownCharges;
+	}
+
+	return CurrentCharges > 0;
+}
+
+void AAbility::UpdateCooldownOnExecute()
+{
+	--CurrentCharges;
+	LastUsed = GetWorld()->GetTimeSeconds();
+}
+
 void AAbility::Press()
 {
-	AbilityStrategy->OnKeyPressed();
+	if (IsOffCooldown())
+	{
+		AbilityStrategy->OnKeyPressed();
+	}
 }
 
 void AAbility::Release()
 {
 	AbilityStrategy->OnKeyReleased();
-}
-
-void AAbility::Cancel()
-{
 }
 
 void FAbilityStrategyQueue::OnKeyPressed()
@@ -141,8 +168,11 @@ void FAbilityStrategyQueue::OnKeyPressed()
 
 void FAbilityStrategyQueue::OnKeyReleased()
 {
-	Ability->EndQueue();
-	Ability->ExecuteContext();
+	if (Ability->IsToggled())
+	{
+		Ability->EndQueue();
+		Ability->ExecuteContext();
+	}
 }
 
 void FAbilityStrategyInstant::OnKeyPressed()

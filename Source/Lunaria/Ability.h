@@ -12,7 +12,8 @@ enum class EAbilityExecution : uint8
 	Instant = 0,
 	Queue = 1,
 	Toggle = 2,
-	Hold = 3
+	Hold = 3,
+	Passive = 4
 };
 
 UCLASS()
@@ -28,7 +29,6 @@ public:
 
 	virtual void Press();
 	virtual void Release();
-	virtual void Cancel();
 
 	virtual void Queue();
 	virtual void EndQueue();
@@ -38,8 +38,14 @@ public:
 
 	virtual void ExecuteContext();
 
+	virtual bool IsOffCooldown();
+	virtual void UpdateCooldownOnExecute();
+
 	UFUNCTION(BlueprintCallable)
 		bool IsToggled() const { return Toggled; }
+
+	UFUNCTION(BlueprintCallable)
+		class UAttributesComponent* GetAttributes() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -75,6 +81,18 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Audio, meta = (AllowPrivateAccess = "true"))
 		TArray<class USoundBase*> ContextSounds;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
+		float Cooldown = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
+		int CooldownCharges = 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
+		float LastUsed = -Cooldown;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
+		int CurrentCharges = CooldownCharges;
+
 	TSharedPtr<class FAbilityStrategy> AbilityStrategy;
 
 public:
@@ -103,7 +121,7 @@ public:
 class FAbilityStrategy
 {
 public:
-	~FAbilityStrategy() = default;
+	virtual ~FAbilityStrategy() = default;
 	void SetAbility(class AAbility* InAbility) { Ability = InAbility; }
 
 	virtual void OnKeyPressed() = 0;
@@ -139,4 +157,11 @@ class FAbilityStrategyHold : public FAbilityStrategy
 public:
 	virtual void OnKeyPressed() override;
 	virtual void OnKeyReleased() override;
+};
+
+class FAbilityStrategyPassive : public FAbilityStrategy
+{
+public:
+	virtual void OnKeyPressed() override {}
+	virtual void OnKeyReleased() override {}
 };
