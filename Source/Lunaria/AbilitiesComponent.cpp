@@ -1,6 +1,7 @@
 // Robbie Grier
 
 #include "AbilitiesComponent.h"
+#include "Engine/World.h"
 #include "Ability.h"
 #include "Helpers.h"
 #include "Printer.h"
@@ -13,61 +14,57 @@ UAbilitiesComponent::UAbilitiesComponent()
 void UAbilitiesComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (auto Pair : AbilityDefaults)
+	{
+		SetAbility(Pair.Key, GetOwner()->GetWorld()->SpawnActor<AAbility>(Pair.Value));
+	}
 }
 
 void UAbilitiesComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	for (auto Ability : Abilities)
+	for (auto Pair : Abilities)
 	{
-		if (Ability)
+		if (auto Ability = Pair.Value)
 		{
 			Ability->SetActorTransform(GetOwner()->GetActorTransform());
 		}
 	}
 }
 
-void UAbilitiesComponent::PressAbility(int32 AbilitySlot)
+AAbility* UAbilitiesComponent::GetAbility(EAbilityKey Key) const
 {
-	if (Helpers::IsValidIndex(Abilities, AbilitySlot) && Abilities[AbilitySlot])
+	if (auto Find = Abilities.Find(Key))
 	{
-		Abilities[AbilitySlot]->Press();
+		return *Find;
+	}
+
+	return nullptr;
+}
+
+void UAbilitiesComponent::PressAbility(EAbilityKey Key)
+{
+	if (auto Ability = GetAbility(Key))
+	{
+		Ability->Press();
 	}
 }
 
-void UAbilitiesComponent::ReleaseAbility(int32 AbilitySlot)
+void UAbilitiesComponent::ReleaseAbility(EAbilityKey Key)
 {
-	if (Helpers::IsValidIndex(Abilities, AbilitySlot) && Abilities[AbilitySlot])
+	if (auto Ability = GetAbility(Key))
 	{
-		Abilities[AbilitySlot]->Release();
+		Ability->Release();
 	}
 }
 
-void UAbilitiesComponent::CancelAbility(int32 AbilitySlot)
+void UAbilitiesComponent::SetAbility(EAbilityKey Key, AAbility* Ability)
 {
-	if (Helpers::IsValidIndex(Abilities, AbilitySlot) && Abilities[AbilitySlot])
+	if (Ability)
 	{
-		Abilities[AbilitySlot]->Cancel();
+		Abilities.Add(Key, Ability);
+		Ability->Attach(GetOwner());
 	}
-}
-
-void UAbilitiesComponent::SetAbility(int32 AbilitySlot, AAbility* Ability)
-{
-	if (!Ability) return;
-	if (AbilitySlot < 0) return;
-
-	Ability->Attach(GetOwner());
-
-	if (!Helpers::IsValidIndex(Abilities, AbilitySlot))
-	{
-		auto LastIndex = Abilities.Num() - 1;
-		while (LastIndex < AbilitySlot)
-		{
-			++LastIndex;
-			Abilities.Add(nullptr);
-		}
-	}
-
-	Abilities[AbilitySlot] = Ability;
 }

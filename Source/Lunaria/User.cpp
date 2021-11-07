@@ -32,27 +32,17 @@ void AUser::SetupInputComponent()
 	InputComponent->BindAxis("Move Up Down", this, &AUser::HandleMovedUpDown);
 	InputComponent->BindAxis("Move Right Left", this, &AUser::HandleMovedRightLeft);
 
-	InputComponent->BindAction("Debug Action", IE_Pressed, this, &AUser::HandleDebugAction);
-	InputComponent->BindAction("Attack Ability", IE_Released, this, &AUser::HandleAttackAbilityAction);
-	InputComponent->BindAction("Special Ability", IE_Released, this, &AUser::HandleSpecialAbilityAction);
-	InputComponent->BindAction("Targeting Ability", IE_Pressed, this, &AUser::HandleTargetingAbilityActionPressed);
-	InputComponent->BindAction("Targeting Ability", IE_Released, this, &AUser::HandleTargetingAbilityActionReleased);
-	InputComponent->BindAction("Blink Ability", IE_Pressed, this, &AUser::HandleBlinkAbilityActionPressed);
-	InputComponent->BindAction("Blink Ability", IE_Released, this, &AUser::HandleBlinkAbilityActionReleased);
-	InputComponent->BindAction("Interact", IE_Pressed, this, &AUser::HandleInteractActionPressed);
-
 	InputComponent->BindAction("Ability X", IE_Pressed, this, &AUser::HandleXPressed);
 	InputComponent->BindAction("Ability X", IE_Released, this, &AUser::HandleXReleased);
-
 	InputComponent->BindAction("Ability B", IE_Pressed, this, &AUser::HandleBPressed);
 	InputComponent->BindAction("Ability B", IE_Released, this, &AUser::HandleBReleased);
-
 	InputComponent->BindAction("Ability A", IE_Pressed, this, &AUser::HandleAPressed);
 	InputComponent->BindAction("Ability A", IE_Released, this, &AUser::HandleAReleased);
-
 	InputComponent->BindAction("Ability Y", IE_Pressed, this, &AUser::HandleYPressed);
 	InputComponent->BindAction("Ability Y", IE_Released, this, &AUser::HandleYReleased);
 
+	InputComponent->BindAction("Debug Action", IE_Pressed, this, &AUser::HandleDebugAction);
+	InputComponent->BindAction("Interact", IE_Pressed, this, &AUser::HandleInteractActionPressed);
 	InputComponent->BindAction("Toggle Detail", IE_Pressed, this, &AUser::HandleToggleDetail);
 }
 
@@ -143,42 +133,42 @@ void AUser::HandleToggleDetail()
 
 void AUser::HandleXPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(0);
+	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::X);
 }
 
 void AUser::HandleXReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(0);
+	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::X);
 }
 
 void AUser::HandleBPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(1);
+	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::B);
 }
 
 void AUser::HandleBReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(1);
+	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::B);
 }
 
 void AUser::HandleAPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(2);
+	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::A);
 }
 
 void AUser::HandleAReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(2);
+	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::A);
 }
 
 void AUser::HandleYPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(3);
+	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::Y);
 }
 
 void AUser::HandleYReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(3);
+	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::Y);
 }
 
 void AUser::HandleDebugAction()
@@ -203,26 +193,6 @@ void AUser::HandleDebugAction()
 	}
 }
 
-void AUser::HandleAttackAbilityAction()
-{
-	//Spaceship->Attack();
-}
-
-void AUser::HandleSpecialAbilityAction()
-{
-	//Spaceship->Special();
-}
-
-void AUser::HandleBlinkAbilityActionPressed()
-{
-	//Spaceship->QueueDash();
-}
-
-void AUser::HandleBlinkAbilityActionReleased()
-{
-	//Spaceship->ExecuteDash();
-}
-
 void AUser::HandleInteractActionPressed()
 {
 	if (InteractableActors.Num() > 0)
@@ -232,14 +202,4 @@ void AUser::HandleInteractActionPressed()
 
 		ClosestInteractable->Interact();
 	}
-}
-
-void AUser::HandleTargetingAbilityActionPressed()
-{
-	//Spaceship->StartAim();
-}
-
-void AUser::HandleTargetingAbilityActionReleased()
-{
-	//Spaceship->EndAim();
 }

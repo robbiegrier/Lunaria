@@ -22,7 +22,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "AbilitiesComponent.h"
 
-// Sets default values
 ASpaceship::ASpaceship()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -60,23 +59,6 @@ ASpaceship::ASpaceship()
 	GenericAwarenessVolume->ShapeColor = FColor::Cyan;
 
 	SpaceshipMovementComponent = CreateDefaultSubobject<USpaceshipMovementComponent>("Spaceship Movement Component");
-	MainWeaponComponent = CreateDefaultSubobject<USpaceshipWeaponComponent>(TEXT("Main Weapon Component"));
-	MainWeaponComponent->SetupAttachment(GetMesh());
-	MainWeaponComponent->AddLocalOffset(FVector(50.f, 0.f, 0.f));
-	MainWeaponComponent->SetTargetingVolume(GenericAwarenessVolume);
-
-	SpecialWeaponComponent = CreateDefaultSubobject<USpaceshipWeaponComponent>(TEXT("Special Weapon Component"));
-	SpecialWeaponComponent->SetupAttachment(GetMesh());
-	SpecialWeaponComponent->AddLocalOffset(FVector(-50.f, 0.f, 0.f));
-	SpecialWeaponComponent->AddLocalRotation(FRotator(0.f, 180.f, 0.f));
-	SpecialWeaponComponent->SetTargetingVolume(GenericAwarenessVolume);
-
-	TargetingVolume = CreateDefaultSubobject<USphereComponent>(TEXT("Targeting Volume Component"));
-	TargetingVolume->SetupAttachment(MainWeaponComponent);
-	TargetingVolume->AddLocalOffset(FVector(400.f, 0.f, 0.f));
-	TargetingVolume->SetSphereRadius(400.f);
-	SpaceshipMovementComponent->SetTargetingVolume(TargetingVolume);
-	TargetingVolume->ShapeColor = FColor::Blue;
 
 	InteractionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("Interaction Volume Component"));
 	InteractionVolume->SetupAttachment(RootComponent);
@@ -84,18 +66,7 @@ ASpaceship::ASpaceship()
 	InteractionVolume->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
 	InteractionVolume->ShapeColor = FColor::Emerald;
 
-	TargetingVisualization = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Targeting Visualization Component"));
-	TargetingVisualization->SetupAttachment(GetCapsuleComponent());
-	TargetingVisualization->SetVisibility(false);
-	SpaceshipMovementComponent->SetTargetingVisualization(TargetingVisualization);
-
-	BlinkVisualization = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Blink Visualization Component"));
-	BlinkVisualization->SetupAttachment(GetCapsuleComponent());
-	BlinkVisualization->SetVisibility(false);
-	SpaceshipMovementComponent->SetBlinkVisualization(BlinkVisualization);
-
 	DebugViz = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DebugViz Component"));
-	BlinkVisualization->SetupAttachment(GetCapsuleComponent());
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes Component"));
@@ -108,22 +79,15 @@ void ASpaceship::BeginPlay()
 	Super::BeginPlay();
 	Attributes->BindToActor(this);
 
-	AbilitiesComponent->SetAbility(0, GetWorld()->SpawnActor<AAbility>(AttackAbility));
-	AbilitiesComponent->SetAbility(1, GetWorld()->SpawnActor<AAbility>(AbilityB));
-	AbilitiesComponent->SetAbility(2, GetWorld()->SpawnActor<AAbility>(AbilityA));
-	AbilitiesComponent->SetAbility(3, GetWorld()->SpawnActor<AAbility>(AbilityY));
-}
-
-void ASpaceship::InterpolateCamera()
-{
-	auto CameraTrackInterpolation = FMath::Lerp(TopDownCamera->GetRelativeLocation(), FVector(), Helpers::Dilate(CameraTrackSpeed, GetWorld()));
-	TopDownCamera->SetRelativeLocation(CameraTrackInterpolation);
+	//AbilitiesComponent->SetAbility(0, GetWorld()->SpawnActor<AAbility>(AbilityX));
+	//AbilitiesComponent->SetAbility(1, GetWorld()->SpawnActor<AAbility>(AbilityB));
+	//AbilitiesComponent->SetAbility(2, GetWorld()->SpawnActor<AAbility>(AbilityA));
+	//AbilitiesComponent->SetAbility(3, GetWorld()->SpawnActor<AAbility>(AbilityY));
 }
 
 void ASpaceship::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	InterpolateCamera();
 
 	if (IsPlayerControlled())
 	{
@@ -172,46 +136,4 @@ void ASpaceship::TurnToFaceDirection(const FVector& Direction, float MinDeltaAng
 		auto DotFromRight = FVector::DotProduct(GetActorRightVector(), Direction);
 		HandleRutterInput(DotFromRight > 0.0f ? 1.f : DotFromRight < -0.0f ? -1.f : 0.0f);
 	}
-}
-
-void ASpaceship::Attack()
-{
-	//GetMainWeapon()->FireWeapon();
-	//OnAttack();
-	AbilitiesComponent->PressAbility(0);
-}
-
-void ASpaceship::Special()
-{
-	GetSpecialWeapon()->FireWeapon();
-	OnSpecial();
-}
-
-void ASpaceship::Shield()
-{
-	// unimplemented
-}
-
-void ASpaceship::QueueDash()
-{
-	GetSpaceshipMovement()->QueueBlink();
-	OnQueueDash();
-}
-
-void ASpaceship::ExecuteDash()
-{
-	GetSpaceshipMovement()->ExecuteBlink();
-	OnExecuteDash();
-}
-
-void ASpaceship::StartAim()
-{
-	GetSpaceshipMovement()->ActivateTargeting();
-	OnStartAim();
-}
-
-void ASpaceship::EndAim()
-{
-	GetSpaceshipMovement()->DeactivateTargeting();
-	OnEndAim();
 }

@@ -4,7 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Ability.h"
 #include "AbilitiesComponent.generated.h"
+
+UENUM()
+enum class EAbilityKey : uint8
+{
+	A, B, X, Y
+};
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class LUNARIA_API UAbilitiesComponent : public UActorComponent
@@ -15,16 +22,18 @@ public:
 	UAbilitiesComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void PressAbility(int32 AbilitySlot);
-	void ReleaseAbility(int32 AbilitySlot);
-	void CancelAbility(int32 AbilitySlot);
-
-	void SetAbility(int32 AbilitySlot, class AAbility* Ability);
+	AAbility* GetAbility(EAbilityKey Key) const;
+	void PressAbility(EAbilityKey Key);
+	void ReleaseAbility(EAbilityKey Key);
+	void SetAbility(EAbilityKey Key, AAbility* Ability);
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+		TMap<EAbilityKey, AAbility*> Abilities;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
-		TArray<class AAbility*> Abilities;
+		TMap<EAbilityKey, TSubclassOf<AAbility>> AbilityDefaults;
 };

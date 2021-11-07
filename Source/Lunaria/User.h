@@ -16,8 +16,7 @@ class LUNARIA_API AUser : public APlayerController
 
 public:
 	AUser();
-
-	bool IsDetailOn() { return GlobalDetailFlag; }
+	bool IsDetailOn() const { return GlobalDetailFlag; }
 
 protected:
 	void PlayerTick(float DeltaTime) override;
@@ -28,39 +27,14 @@ protected:
 
 	void TickInteractions();
 
-	UFUNCTION()
-		void HandleDebugAction();
+	// Misc inputs
+	void HandleDebugAction();
+	void HandleInteractActionPressed();
+	void HandleMovedUpDown(float Scale);
+	void HandleMovedRightLeft(float Scale);
+	void HandleToggleDetail();
 
-	UFUNCTION()
-		void HandleAttackAbilityAction();
-
-	UFUNCTION()
-		void HandleSpecialAbilityAction();
-
-	UFUNCTION()
-		void HandleTargetingAbilityActionPressed();
-
-	UFUNCTION()
-		void HandleTargetingAbilityActionReleased();
-
-	UFUNCTION()
-		void HandleBlinkAbilityActionPressed();
-
-	UFUNCTION()
-		void HandleBlinkAbilityActionReleased();
-
-	UFUNCTION()
-		void HandleInteractActionPressed();
-
-	UFUNCTION()
-		void HandleMovedUpDown(float Scale);
-
-	UFUNCTION()
-		void HandleMovedRightLeft(float Scale);
-
-	UFUNCTION()
-		void HandleToggleDetail();
-
+	// Xbox button names are used to describe controls in code
 	void HandleXPressed();
 	void HandleXReleased();
 	void HandleBPressed();
@@ -91,6 +65,5 @@ private:
 
 	float UpDownImpulse{ 0.f };
 	float RightLeftImpulse{ 0.f };
-
 	class ASpaceship* Spaceship;
 };

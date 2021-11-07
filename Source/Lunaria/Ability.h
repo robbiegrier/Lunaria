@@ -7,7 +7,7 @@
 #include "Ability.generated.h"
 
 UENUM()
-enum class EAbilityExecution
+enum class EAbilityExecution : uint8
 {
 	Instant = 0,
 	Queue = 1,

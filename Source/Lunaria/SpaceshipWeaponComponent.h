@@ -6,6 +6,9 @@
 #include "Components/SceneComponent.h"
 #include "SpaceshipWeaponComponent.generated.h"
 
+/*
+This class is deprecated. Use AAbility.h instead.
+*/
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class LUNARIA_API USpaceshipWeaponComponent : public USceneComponent
 {

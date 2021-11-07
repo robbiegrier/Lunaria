@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "CpuHealthBar.h"
+#include "DebugWidget.h"
+#include "MapManager.h"
 #include "LunariaGameModeBase.generated.h"
 
 /**
