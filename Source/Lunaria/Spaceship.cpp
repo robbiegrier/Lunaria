@@ -77,12 +77,6 @@ ASpaceship::ASpaceship()
 void ASpaceship::BeginPlay()
 {
 	Super::BeginPlay();
-	Attributes->BindToActor(this);
-
-	//AbilitiesComponent->SetAbility(0, GetWorld()->SpawnActor<AAbility>(AbilityX));
-	//AbilitiesComponent->SetAbility(1, GetWorld()->SpawnActor<AAbility>(AbilityB));
-	//AbilitiesComponent->SetAbility(2, GetWorld()->SpawnActor<AAbility>(AbilityA));
-	//AbilitiesComponent->SetAbility(3, GetWorld()->SpawnActor<AAbility>(AbilityY));
 }
 
 void ASpaceship::Tick(float DeltaTime)

@@ -10,8 +10,6 @@
 * This component contains the "stats" of an actor that influence how strong it is. Other components will draw on these
 * stats to update health, damage, and speed behaviors of the actor.
 */
-DECLARE_EVENT_OneParam(UAttributesComponent, FAttributesUpdated, UAttributesComponent*);
-DECLARE_EVENT_TwoParams(UAttributesComponent, FAttributeUpdated, int32, int32);
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class LUNARIA_API UAttributesComponent : public UActorComponent
 {
@@ -20,40 +18,12 @@ class LUNARIA_API UAttributesComponent : public UActorComponent
 public:
 	UAttributesComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void BindToActor(class AActor* Pawn);
-	void UnBind();
 
 	UFUNCTION(BlueprintCallable)
 		float Get(const FString& Attribute, float Seed);
 
 	UFUNCTION(BlueprintCallable)
-		int32 GetMaxHealth() const { return MaxHealth; }
-
-	UFUNCTION(BlueprintCallable)
-		void SetMaxHealth(int32 InMaxHealth);
-
-	UFUNCTION(BlueprintCallable)
-		float GetMoveSpeed() const { return MoveSpeed; }
-
-	UFUNCTION(BlueprintCallable)
-		void SetMoveSpeed(float InMoveSpeed);
-
-	UFUNCTION(BlueprintCallable)
-		float GetTurnSpeed() const { return TurnSpeed; }
-
-	UFUNCTION(BlueprintCallable)
-		void SetTurnSpeed(float InTurnSpeed);
-
-	UFUNCTION(BlueprintCallable)
-		float GetTargetingTurnSpeed() const { return TargetingTurnSpeed; }
-
-	UFUNCTION(BlueprintCallable)
-		void SetTargetingTurnSpeed(float InTargetingTurnSpeed);
-
-	UFUNCTION(BlueprintCallable)
 		void AddBoon(class ABoon* NewBoon);
-
-	FAttributeUpdated& GetMaxHealthUpdatedEvent() { return OnMaxHealthUpdated; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -61,21 +31,6 @@ protected:
 
 private:
 	void ClearBoons();
-
-	FAttributesUpdated OnAttributesUpdated;
-	FAttributeUpdated OnMaxHealthUpdated;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		int32 MaxHealth = 100;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		float MoveSpeed = 400.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		float TurnSpeed = 400.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		float TargetingTurnSpeed = 500.f;
 
 	UPROPERTY()
 		TArray<class ABoon*> Boons;

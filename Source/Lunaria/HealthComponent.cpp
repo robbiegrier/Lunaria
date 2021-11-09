@@ -19,20 +19,13 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Attributes = Helpers::GetSister<UAttributesComponent>(this);
-	SetHealth(Attributes->GetMaxHealth());
-
-	Attributes->GetMaxHealthUpdatedEvent().AddUObject(this, &UHealthComponent::HandleMaxHealthUpdated);
-}
-
-void UHealthComponent::HandleMaxHealthUpdated(int32 NewMax, int32 Previous)
-{
-	auto HealthMissing = Previous - CurrentHealth;
-	SetHealth(NewMax - HealthMissing);
+	SetHealth(GetMaxHealth());
 }
 
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	SendDataToWidgets();
 }
 
 void UHealthComponent::ApplyDamage(int32 Scale)
@@ -53,15 +46,13 @@ void UHealthComponent::SetHealth(int32 Value, int32 Min)
 	{
 		auto PreviousHealth = CurrentHealth;
 		auto TrueChange = PreviousHealth - Value;
-		CurrentHealth = FMath::Clamp(Value, 0, Attributes->GetMaxHealth());
+		CurrentHealth = FMath::Clamp(Value, 0, GetMaxHealth());
 		HandleHealthChanged(TrueChange);
 	}
 }
 
 void UHealthComponent::HandleHealthChanged(int32 TrueChange)
 {
-	SendDataToWidgets();
-
 	if (CurrentHealth == 0)
 	{
 		HealthDepletedEvent.Broadcast(this, TrueChange);
@@ -72,7 +63,7 @@ void UHealthComponent::SendDataToWidgets()
 {
 	if (HealthBarWidget)
 	{
-		HealthBarWidget->SetHealthValues(CurrentHealth, Attributes->GetMaxHealth());
+		HealthBarWidget->SetHealthValues(CurrentHealth, GetMaxHealth());
 	}
 }
 
@@ -84,5 +75,5 @@ void UHealthComponent::BindHealthBar(UCpuHealthBar* Widget)
 
 int32 UHealthComponent::GetMaxHealth() const
 {
-	return Attributes->GetMaxHealth();
+	return Attributes->Get("Max Health", MaxHealthSeed);
 }

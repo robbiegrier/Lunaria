@@ -35,8 +35,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void BindHealthBar(class UCpuHealthBar* Widget);
 
-	void HandleMaxHealthUpdated(int32 NewMax, int32 Previous);
-
 	FHealthEvent& GetHealthDepletedEvent() { return HealthDepletedEvent; }
 
 protected:
@@ -49,8 +47,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		class UCpuHealthBar* HealthBarWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		int32 MaxHealthSeed = 100;
+
 	UPROPERTY()
-		int32 CurrentHealth = 100;
+		int32 CurrentHealth = MaxHealthSeed;
 
 	FHealthEvent HealthDepletedEvent;
 	FHealthEvent DamageTakenEvent;

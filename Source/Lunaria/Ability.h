@@ -47,6 +47,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		class UAttributesComponent* GetAttributes() const;
 
+	UFUNCTION(BlueprintCallable)
+		float GetCooldown();
+
+	UFUNCTION(BlueprintCallable)
+		int32 GetCooldownCharges();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,6 +61,9 @@ protected:
 
 private:
 	void UpdateStrategy(TEnumAsByte<EAbilityExecution> Type);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
+		FString AbilityType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
 		TEnumAsByte<EAbilityExecution> ExecutionType;
@@ -82,16 +91,16 @@ private:
 		TArray<class USoundBase*> ContextSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
-		float Cooldown = 0.f;
+		float CooldownSeed = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
-		int CooldownCharges = 1;
+		int32 CooldownChargesSeed = 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
-		float LastUsed = -Cooldown;
+		float LastUsed = -CooldownSeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
-		int CurrentCharges = CooldownCharges;
+		int32 CurrentCharges = CooldownChargesSeed;
 
 	TSharedPtr<class FAbilityStrategy> AbilityStrategy;
 

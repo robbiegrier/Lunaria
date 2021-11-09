@@ -27,6 +27,7 @@ class LUNARIA_API ABoon : public AActor
 
 public:
 	ABoon();
+	void NativeOnAdded(class UAttributesComponent* Attributes);
 
 	UFUNCTION(BlueprintCallable)
 		const FString& GetBoonName() const { return BoonName; }
@@ -50,7 +51,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Testing, meta = (AllowPrivateAccess = "true"))
 		TMap<FString, FAttributeModifier> AttributeModifiers;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
+		AActor* MyOwner;
+
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void BeforeAttributeQueried(const FString& Attribute);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnAdded();
 };

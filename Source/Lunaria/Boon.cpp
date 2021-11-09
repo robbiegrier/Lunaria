@@ -2,10 +2,17 @@
 
 #include "Boon.h"
 #include "Printer.h"
+#include "AttributesComponent.h"
 
 ABoon::ABoon()
 {
 	BoonName = "Spaceship Upgrade";
+}
+
+void ABoon::NativeOnAdded(UAttributesComponent* Attributes)
+{
+	MyOwner = Attributes->GetOwner();
+	OnAdded();
 }
 
 FAttributeModifier ABoon::GetAttributeModifier(const FString& Attribute) const

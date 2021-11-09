@@ -44,6 +44,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		float BankAmount{ 400.f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		float TurnSpeedSeed{ 400.f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		float MoveSpeedSeed{ 400.f };
+
 	class UAttributesComponent* Attributes;
 	float CurrentBankValue{ 0.f };
 };

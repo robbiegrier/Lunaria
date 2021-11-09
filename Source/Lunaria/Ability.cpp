@@ -21,6 +21,8 @@ AAbility::AAbility()
 	ContextAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("Context Audio Component"));
 	ContextAudioPlayer->SetupAttachment(RootComponent);
 	ContextAudioPlayer->SetAutoActivate(false);
+
+	AbilityType = "Generic";
 }
 
 void AAbility::BeginPlay()
@@ -28,8 +30,8 @@ void AAbility::BeginPlay()
 	Super::BeginPlay();
 	UpdateStrategy(ExecutionType);
 
-	CurrentCharges = CooldownCharges;
-	LastUsed = -Cooldown;
+	CurrentCharges = GetCooldownCharges();
+	LastUsed = -GetCooldown();
 }
 
 void AAbility::UpdateStrategy(TEnumAsByte<EAbilityExecution> Type)
@@ -79,6 +81,26 @@ void AAbility::Attach(AActor* InOwner)
 UAttributesComponent* AAbility::GetAttributes() const
 {
 	return MyOwner->FindComponentByClass<UAttributesComponent>();
+}
+
+float AAbility::GetCooldown()
+{
+	if (MyOwner)
+	{
+		return GetAttributes()->Get(AbilityType + " Ability Cooldown", CooldownSeed);
+	}
+
+	return CooldownSeed;
+}
+
+int32 AAbility::GetCooldownCharges()
+{
+	if (MyOwner)
+	{
+		return GetAttributes()->Get(AbilityType + " Ability Charges", CooldownChargesSeed);
+	}
+
+	return CooldownChargesSeed;
 }
 
 void AAbility::ExecuteContext()
@@ -134,9 +156,9 @@ bool AAbility::IsOffCooldown()
 {
 	auto Now = GetWorld()->GetTimeSeconds();
 
-	if (Now - LastUsed > Cooldown)
+	if (Now - LastUsed > GetCooldown())
 	{
-		CurrentCharges = CooldownCharges;
+		CurrentCharges = GetCooldownCharges();
 	}
 
 	return CurrentCharges > 0;
