@@ -24,16 +24,13 @@ public:
 	void UnBind();
 
 	UFUNCTION(BlueprintCallable)
+		float Get(const FString& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
 		int32 GetMaxHealth() const { return MaxHealth; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetMaxHealth(int32 InMaxHealth);
-
-	UFUNCTION(BlueprintCallable)
-		int32 GetAttackDamage() const { return AttackDamage; }
-
-	UFUNCTION(BlueprintCallable)
-		void SetAttackDamage(int32 InAttackDamage);
 
 	UFUNCTION(BlueprintCallable)
 		float GetMoveSpeed() const { return MoveSpeed; }
@@ -54,22 +51,22 @@ public:
 		void SetTargetingTurnSpeed(float InTargetingTurnSpeed);
 
 	UFUNCTION(BlueprintCallable)
-		void AddBoon(class UBoon* NewBoon);
+		void AddBoon(class ABoon* NewBoon);
 
 	FAttributeUpdated& GetMaxHealthUpdatedEvent() { return OnMaxHealthUpdated; }
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
 private:
+	void ClearBoons();
+
 	FAttributesUpdated OnAttributesUpdated;
 	FAttributeUpdated OnMaxHealthUpdated;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		int32 MaxHealth = 100;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		int32 AttackDamage = 50;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		float MoveSpeed = 400.f;
@@ -81,5 +78,5 @@ private:
 		float TargetingTurnSpeed = 500.f;
 
 	UPROPERTY()
-		TArray<class UBoon*> Boons;
+		TArray<class ABoon*> Boons;
 };

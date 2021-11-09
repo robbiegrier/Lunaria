@@ -36,7 +36,7 @@ void USpaceshipWeaponComponent::FireWeapon()
 
 void USpaceshipWeaponComponent::InitializeProjectileBeforeSpawn(ASpaceProjectile* Projectile)
 {
-	Projectile->SetDamage(Attributes->GetAttackDamage());
+	//Projectile->SetDamage(Attributes->GetAttackDamage());
 
 	TArray<AActor*> Actors;
 	TargetingVolume->GetOverlappingActors(Actors, UHittable::StaticClass());

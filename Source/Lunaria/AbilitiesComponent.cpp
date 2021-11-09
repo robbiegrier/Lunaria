@@ -21,6 +21,19 @@ void UAbilitiesComponent::BeginPlay()
 	}
 }
 
+void UAbilitiesComponent::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	for (auto Pair : Abilities)
+	{
+		if (auto Ability = Pair.Value)
+		{
+			Ability->Destroy();
+		}
+	}
+}
+
 void UAbilitiesComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

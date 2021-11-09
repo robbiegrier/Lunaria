@@ -181,7 +181,7 @@ void AUser::HandleDebugAction()
 	//Spaceship->GetAttributesComponent()->SetTurnSpeed(Spaceship->GetAttributesComponent()->GetTurnSpeed() + 25.0f);
 
 	//Spaceship->GetAttributesComponent()->AddBoon(NewObject<UBoon>((UObject*)GetTransientPackage(), BoonClass));
-
+	Spaceship->GetAttributesComponent()->AddBoon(GetWorld()->SpawnActor<ABoon>(BoonClass));
 	//if (auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
 	//{
 	//	GameMode->StartNewArea();

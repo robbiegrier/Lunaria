@@ -49,7 +49,7 @@ private:
 		class UCombatComponent* CombatComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<class UBoon> BoonClass;
+		TSubclassOf<class ABoon> BoonClass;
 
 	UPROPERTY()
 		TArray<AActor*> InteractableActors;

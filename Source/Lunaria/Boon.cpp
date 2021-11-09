@@ -3,13 +3,38 @@
 #include "Boon.h"
 #include "Printer.h"
 
-UBoon::UBoon()
+ABoon::ABoon()
 {
 	BoonName = "Spaceship Upgrade";
 }
 
-void UBoon::NativeOnAdded(class AActor* AppliedTo)
+FAttributeModifier ABoon::GetAttributeModifier(const FString& Attribute) const
 {
-	Print("NativeOnAdded");
-	OnAdded();
+	if (auto Find = AttributeModifiers.Find(Attribute))
+	{
+		return *Find;
+	}
+	else
+	{
+		return FAttributeModifier();
+	}
+}
+
+void ABoon::SetAttributeModifier(const FString& Attribute, const FAttributeModifier& Modifier)
+{
+	AttributeModifiers.Add(Attribute, Modifier);
+}
+
+void ABoon::SetAttributeModifierAdditive(const FString& Attribute, float Additive)
+{
+	auto Modifier = GetAttributeModifier(Attribute);
+	Modifier.Additive = Additive;
+	SetAttributeModifier(Attribute, Modifier);
+}
+
+void ABoon::SetAttributeModifierMultiplier(const FString& Attribute, float Multiplier)
+{
+	auto Modifier = GetAttributeModifier(Attribute);
+	Modifier.Multiplier = Multiplier;
+	SetAttributeModifier(Attribute, Modifier);
 }

@@ -48,7 +48,7 @@ void ALunariaGameModeBase::StartNewArea()
 void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 {
 	auto ExitDirection = (Door->GetActorLocation() - MapManager->GetCenter()).GetSafeNormal();
-	MapManager->LoadNewMap(FMath::RandRange(1000.f, 2000.f), ExitDirection, FMath::RandRange(1, 8));
+	MapManager->LoadNewMap(FMath::RandRange(1000.f, 1400.f), ExitDirection, FMath::RandRange(1, 8));
 
 	if (auto Spaceship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn()))
 	{

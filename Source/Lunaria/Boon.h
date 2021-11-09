@@ -3,48 +3,54 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "GameFramework/Actor.h"
 #include "Boon.generated.h"
+
+USTRUCT(BlueprintType)
+struct FAttributeModifier
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
+		float Additive = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
+		float Multiplier = 0.f;
+};
 
 /**
  *
  */
-UCLASS(BlueprintType, Blueprintable)
-class LUNARIA_API UBoon : public UObject
+UCLASS()
+class LUNARIA_API ABoon : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	UBoon();
+	ABoon();
 
 	UFUNCTION(BlueprintCallable)
 		const FString& GetBoonName() const { return BoonName; }
 
-	virtual void NativeOnAdded(class AActor* AppliedTo);
+	UFUNCTION(BlueprintCallable)
+		FAttributeModifier GetAttributeModifier(const FString& Attribute) const;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = Hittable)
-		void OnAdded();
+	UFUNCTION(BlueprintCallable)
+		void SetAttributeModifier(const FString& Attribute, const FAttributeModifier& Modifier);
 
-	/// UNIMPLEMENTED
-	//void OnRemoved();
-	//void OnTakeDamage(float Amount);
-	//void OnDeath();
+	UFUNCTION(BlueprintCallable)
+		void SetAttributeModifierAdditive(const FString& Attribute, float Additive);
 
-	//// Movement Events
-	//void OnBlink(const FVector& Start, const FVector& End);
-	//void OnBlinkQueued(const FVector& Start, const FVector& End);
-
-	//// Hit with anything
-	//void OnHitEnemy(/* LunariaHitInteraction* HitInteraction */);
-	//void OnHitAlly(class AActor* Other);
-	//void OnKillEnemy(class AActor* Other);
-	//void OnHitNeutral(class AActor* Other);
-	//void OnKillNeutral(class AActor* Other);
-
-	//// Attack (X)
-	//void OnAttack();
+	UFUNCTION(BlueprintCallable)
+		void SetAttributeModifierMultiplier(const FString& Attribute, float Multiplier);
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boon", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Testing, meta = (AllowPrivateAccess = "true"))
+		TMap<FString, FAttributeModifier> AttributeModifiers;
+
+public:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void BeforeAttributeQueried(const FString& Attribute);
 };

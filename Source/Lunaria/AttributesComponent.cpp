@@ -21,12 +21,6 @@ void UAttributesComponent::SetMaxHealth(int32 InMaxHealth)
 	OnMaxHealthUpdated.Broadcast(GetMaxHealth(), Previous);
 }
 
-void UAttributesComponent::SetAttackDamage(int32 InAttackDamage)
-{
-	AttackDamage = InAttackDamage;
-	OnAttributesUpdated.Broadcast(this);
-}
-
 void UAttributesComponent::SetMoveSpeed(float InMoveSpeed)
 {
 	MoveSpeed = InMoveSpeed;
@@ -46,18 +40,36 @@ void UAttributesComponent::SetTargetingTurnSpeed(float InTargetingTurnSpeed)
 	OnAttributesUpdated.Broadcast(this);
 }
 
-void UAttributesComponent::AddBoon(UBoon* NewBoon)
+void UAttributesComponent::AddBoon(ABoon* NewBoon)
 {
 	if (NewBoon)
 	{
 		Boons.Add(NewBoon);
-		NewBoon->NativeOnAdded(GetOwner());
 	}
 }
 
 void UAttributesComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void UAttributesComponent::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+	ClearBoons();
+}
+
+void UAttributesComponent::ClearBoons()
+{
+	for (auto Boon : Boons)
+	{
+		if (Boon)
+		{
+			Boon->Destroy();
+		}
+	}
+
+	Boons.Empty();
 }
 
 void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -82,4 +94,21 @@ void UAttributesComponent::BindToActor(AActor* Actor)
 void UAttributesComponent::UnBind()
 {
 	OnAttributesUpdated.Clear();
+}
+
+float UAttributesComponent::Get(const FString& Attribute, float Seed)
+{
+	auto Base = Seed;
+	auto Multiplier = 1.f;
+
+	for (auto Boon : Boons)
+	{
+		Boon->BeforeAttributeQueried(Attribute);
+		auto Modifier = Boon->GetAttributeModifier(Attribute);
+
+		Base += Modifier.Additive;
+		Multiplier += Modifier.Multiplier / 100.f;
+	}
+
+	return Base * Multiplier;
 }
