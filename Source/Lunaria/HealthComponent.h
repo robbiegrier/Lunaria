@@ -21,39 +21,38 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-		int32 GetCurrentHealth() const { return CurrentHealth; }
+		float GetCurrentHealth() const { return CurrentHealth; }
 
 	UFUNCTION(BlueprintCallable)
-		int32 GetMaxHealth() const;
+		float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable)
-		void ApplyDamage(int32 Scale);
+		void ApplyDamage(float Scale);
 
 	UFUNCTION(BlueprintCallable)
-		void SetHealth(int32 Value, int32 Min = 1);
+		void SetHealth(float Value, float Min = 1);
 
 	UFUNCTION(BlueprintCallable)
 		void BindHealthBar(class UCpuHealthBar* Widget);
 
-	FHealthEvent& GetHealthDepletedEvent() { return HealthDepletedEvent; }
+	UFUNCTION(BlueprintCallable)
+		bool IsHealthDepleted() const;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	void HandleHealthChanged(int32 TrueChange);
 	void SendDataToWidgets();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		class UCpuHealthBar* HealthBarWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
-		int32 MaxHealthSeed = 100;
+		float MaxHealthSeed = 100.f;
 
 	UPROPERTY()
-		int32 CurrentHealth = MaxHealthSeed;
+		float CurrentHealth = MaxHealthSeed;
 
-	FHealthEvent HealthDepletedEvent;
 	FHealthEvent DamageTakenEvent;
 	FHealthEvent HealthGainedEvent;
 

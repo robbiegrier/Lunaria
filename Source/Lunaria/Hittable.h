@@ -18,28 +18,5 @@ class LUNARIA_API IHittable
 
 public:
 	UFUNCTION()
-		virtual void TakeProjectileHit(class ASpaceProjectile* Projectile);
-
-	UFUNCTION()
 		virtual void TakeHit(int32 DamageToApply, class AActor* Other);
-
-	UFUNCTION()
-		virtual void TakeLethalDamage();
-
-	virtual void NativeTakeLethalDamage() {}
-
-	UFUNCTION(BlueprintNativeEvent, Category = Hittable)
-		void OnHit();
-	void OnHit_Implementation() {}
-
-	UFUNCTION(BlueprintNativeEvent, Category = Hittable)
-		void OnHitIgnored();
-	void OnHitIgnored_Implementation() {}
-
-	UFUNCTION(BlueprintNativeEvent, Category = Hittable)
-		void OnTakeLethalDamage();
-	void OnTakeLethalDamage_Implementation() {}
-
-	UFUNCTION()
-		virtual void Tmp(class UAttributesComponent* Attributes) {};
 };

@@ -17,11 +17,6 @@ void UCombatComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-int32 UCombatComponent::GetAttackDamage()
-{
-	return BaseAttackDamage;
-}
-
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

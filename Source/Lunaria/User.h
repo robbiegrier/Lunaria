@@ -46,9 +46,6 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		class UCombatComponent* CombatComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class ABoon> BoonClass;
 
 	UPROPERTY()

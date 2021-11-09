@@ -9,6 +9,7 @@
 #include "Printer.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Door.h"
+#include "GameplayEventManager.h"
 
 ALunariaGameModeBase::ALunariaGameModeBase()
 {
@@ -28,6 +29,7 @@ void ALunariaGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	MapManager = Cast<AMapManager>(GetWorld()->SpawnActor(MapManagerClass));
+	EventManager = GetWorld()->SpawnActor<AGameplayEventManager>();
 }
 
 void ALunariaGameModeBase::StartNewArea()

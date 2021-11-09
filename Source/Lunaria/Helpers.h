@@ -68,4 +68,8 @@ public:
 	{
 		return Index >= 0 && Index < Arr.Num();
 	}
+
+	static bool AreDifferentTeams(class AActor* Left, class AActor* Right);
+
+	static bool AreSameTeam(class AActor* Left, class AActor* Right);
 };

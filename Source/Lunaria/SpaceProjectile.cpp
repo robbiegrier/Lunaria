@@ -8,6 +8,9 @@
 #include "TimerManager.h"
 #include "Spaceship.h"
 #include "Hittable.h"
+#include "CombatComponent.h"
+#include "Helpers.h"
+#include "GameplayEventManager.h"
 
 ASpaceProjectile::ASpaceProjectile()
 {
@@ -37,12 +40,22 @@ void ASpaceProjectile::BeginPlay()
 
 void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	auto IsSameOwnersProjectile = OtherActor->GetOwner() == GetOwner() && Cast<ASpaceProjectile>(OtherActor);
-	if (!(GetOwner() == OtherActor) && !IsSameOwnersProjectile)
+	if (!(GetOwner() == OtherActor) && !Cast<ASpaceProjectile>(OtherActor))
 	{
-		if (auto Hittable = Cast<IHittable>(OtherActor))
+		if (auto OtherAsHittable = Cast<IHittable>(OtherActor))
 		{
-			Hittable->TakeProjectileHit(this);
+			if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
+			{
+				//OtherAsHittable->TakeHit(GetDamage(), GetOwner());
+
+				auto Event = FGameplayEvent();
+				Event.Agent = GetOwner();
+				Event.Subject = OtherActor;
+				Event.Medium = this;
+				Event.EventType = EGameplayEventType::Hit;
+				Event.Tags.Add("Ability Type", "Attack");
+				AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
+			}
 		}
 
 		Die();

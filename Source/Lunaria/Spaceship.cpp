@@ -21,6 +21,7 @@
 #include "MapManager.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AbilitiesComponent.h"
+#include "CombatComponent.h"
 
 ASpaceship::ASpaceship()
 {
@@ -72,11 +73,22 @@ ASpaceship::ASpaceship()
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes Component"));
 
 	AbilitiesComponent = CreateDefaultSubobject<UAbilitiesComponent>(TEXT("Abilities Component"));
+
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("Combat Component"));
 }
 
 void ASpaceship::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsPlayerControlled())
+	{
+		CombatComponent->SetTeam(UCombatComponent::PlayerTeam);
+	}
+	else
+	{
+		CombatComponent->SetTeam(UCombatComponent::EnemyTeam);
+	}
 }
 
 void ASpaceship::Tick(float DeltaTime)

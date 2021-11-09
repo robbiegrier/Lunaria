@@ -43,6 +43,9 @@ public:
 	UFUNCTION()
 		class UAbilitiesComponent* GetAbilitiesComponent() const { return AbilitiesComponent; }
 
+	UFUNCTION()
+		class UCombatComponent* GetCombatComponent() const { return CombatComponent; }
+
 protected:
 	void BeginPlay() override;
 
@@ -68,8 +71,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
 		class UHealthComponent* HealthComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		class UAttributesComponent* Attributes;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Team, meta = (AllowPrivateAccess = "true"))
+		class UCombatComponent* CombatComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		class UStaticMeshComponent* DebugViz;

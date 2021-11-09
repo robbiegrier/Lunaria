@@ -12,13 +12,14 @@
 #include "DrawDebugHelpers.h"
 #include "LunariaGameModeBase.h"
 #include "Printer.h"
+#include "CombatComponent.h"
 
 AObstacle::AObstacle()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes Component"));
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
-	HealthComponent->GetHealthDepletedEvent().AddUObject(this, &AObstacle::HandleObstacleDestroyed);
+	//HealthComponent->GetHealthDepletedEvent().AddUObject(this, &AObstacle::HandleObstacleDestroyed);
 
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Bar Widget Component"));
 	HealthBarComponent->SetupAttachment(GetSphereComponent());
@@ -27,6 +28,9 @@ AObstacle::AObstacle()
 	HealthBarComponent->SetDrawAtDesiredSize(true);
 
 	GetMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	CombatComponent->SetTeam(UCombatComponent::NeutralTeam);
 }
 
 void AObstacle::BeginPlay()

@@ -19,9 +19,6 @@ public:
 	UFUNCTION()
 		virtual void NotifyAttributesUpdated(class UAttributesComponent* Attributes) {}
 
-	UFUNCTION()
-		void Tmp(class UAttributesComponent* Attributes) override { NotifyAttributesUpdated(Attributes); }
-
 protected:
 	virtual void BeginPlay() override;
 };

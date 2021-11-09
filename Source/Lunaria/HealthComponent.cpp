@@ -28,34 +28,25 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	SendDataToWidgets();
 }
 
-void UHealthComponent::ApplyDamage(int32 Scale)
+void UHealthComponent::ApplyDamage(float Scale)
 {
-	Scale = FMath::Max(Scale, 0);
+	Scale = FMath::Max(Scale, 0.f);
 
 	if (Scale > 0)
 	{
 		DamageTakenEvent.Broadcast(this, Scale);
 	}
 
-	SetHealth(CurrentHealth - Scale, 0);
+	SetHealth(CurrentHealth - Scale, 0.f);
 };
 
-void UHealthComponent::SetHealth(int32 Value, int32 Min)
+void UHealthComponent::SetHealth(float Value, float Min)
 {
 	if (Attributes)
 	{
 		auto PreviousHealth = CurrentHealth;
 		auto TrueChange = PreviousHealth - Value;
-		CurrentHealth = FMath::Clamp(Value, 0, GetMaxHealth());
-		HandleHealthChanged(TrueChange);
-	}
-}
-
-void UHealthComponent::HandleHealthChanged(int32 TrueChange)
-{
-	if (CurrentHealth == 0)
-	{
-		HealthDepletedEvent.Broadcast(this, TrueChange);
+		CurrentHealth = FMath::Min(Value, GetMaxHealth());
 	}
 }
 
@@ -73,7 +64,12 @@ void UHealthComponent::BindHealthBar(UCpuHealthBar* Widget)
 	SendDataToWidgets();
 }
 
-int32 UHealthComponent::GetMaxHealth() const
+bool UHealthComponent::IsHealthDepleted() const
+{
+	return CurrentHealth <= 0.f;
+}
+
+float UHealthComponent::GetMaxHealth() const
 {
 	return Attributes->Get("Max Health", MaxHealthSeed);
 }

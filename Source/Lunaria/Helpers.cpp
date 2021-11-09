@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "CombatComponent.h"
 
 USceneComponent* Helpers::GetMeshForFlairMovement(AActor* Actor)
 {
@@ -44,4 +45,25 @@ FVector Helpers::NearestPointInsideSphere(const FVector& InPoint, const FVector&
 
 	auto Direction = (InPoint - Center).GetSafeNormal();
 	return Center + (Direction * Radius);
+}
+
+bool Helpers::AreDifferentTeams(AActor* Left, AActor* Right)
+{
+	if (Left && Right)
+	{
+		if (auto LeftComp = Left->FindComponentByClass<UCombatComponent>())
+		{
+			if (auto RightComp = Right->FindComponentByClass<UCombatComponent>())
+			{
+				return LeftComp->GetTeam() != RightComp->GetTeam();
+			}
+		}
+	}
+
+	return true;
+}
+
+bool Helpers::AreSameTeam(AActor* Left, AActor* Right)
+{
+	return !AreDifferentTeams(Left, Right);
 }

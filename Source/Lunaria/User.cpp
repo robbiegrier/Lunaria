@@ -21,8 +21,6 @@
 
 AUser::AUser()
 {
-	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-	CombatComponent->SetTeam(UCombatComponent::PlayerTeam);
 }
 
 void AUser::SetupInputComponent()

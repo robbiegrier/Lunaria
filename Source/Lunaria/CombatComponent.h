@@ -16,13 +16,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-		int32 GetTeam() { return Team; }
+		int32 GetTeam() const { return Team; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetTeam(int32 InTeam) { Team = InTeam; }
-
-	UFUNCTION(BlueprintCallable)
-		int32 GetAttackDamage();
 
 	const static int32 PlayerTeam = 0;
 	const static int32 EnemyTeam = 1;
@@ -34,7 +31,4 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Team, meta = (AllowPrivateAccess = "true"))
 		int32 Team = EnemyTeam;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
-		int32 BaseAttackDamage = 10;
 };

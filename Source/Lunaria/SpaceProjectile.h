@@ -14,17 +14,16 @@ class LUNARIA_API ASpaceProjectile : public AActor
 public:
 	ASpaceProjectile();
 	virtual void Tick(float DeltaTime) override;
+	class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovementComponent; };
 
 	UFUNCTION(BlueprintCallable)
-		void SetDamage(int32 InDamage) { DamagePayload = InDamage; }
+		void SetDamage(float InDamage) { DamagePayload = InDamage; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetTravelDistance(float InDistance) { TravelDistance = InDistance; }
 
 	UFUNCTION(BlueprintCallable)
-		int32 GetDamage() const { return DamagePayload; }
-
-	class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovementComponent; };
+		float GetDamage() const { return DamagePayload; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -48,9 +47,7 @@ private:
 	UPROPERTY()
 		FTimerHandle Handle;
 
-	int32 DamagePayload = 0;
-
+	float DamagePayload = 0;
 	float TravelDistance = 9999999.f;
-
 	FVector StartingPoint;
 };

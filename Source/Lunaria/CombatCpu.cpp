@@ -22,7 +22,7 @@ void ACombatCpu::OnPossess(APawn* MyPawn)
 
 	if (auto Spaceship = Cast<ASpaceship>(GetPawn()))
 	{
-		Spaceship->GetHealthComponent()->GetHealthDepletedEvent().AddUObject(this, &ACombatCpu::HandleShipDeath);
+		//Spaceship->GetHealthComponent()->GetHealthDepletedEvent().AddUObject(this, &ACombatCpu::HandleShipDeath);
 	}
 
 	if (BehaviorTree)

@@ -25,6 +25,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		class AMapManager* GetMap() const { return MapManager; }
 
+	UFUNCTION(BlueprintCallable)
+		class AGameplayEventManager* GetEventManager() const { return EventManager; }
+
+	void SetEventManager(AGameplayEventManager* InMananger) { EventManager = InMananger; }
+
 	void StartNewArea();
 	void StartNewAreaFromDoor(class ADoor* Door);
 
@@ -46,4 +51,5 @@ private:
 		TSubclassOf<class UCpuHealthBar> HealthBarClass;
 
 	class AMapManager* MapManager;
+	class AGameplayEventManager* EventManager;
 };
