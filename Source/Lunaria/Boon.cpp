@@ -3,6 +3,7 @@
 #include "Boon.h"
 #include "Printer.h"
 #include "AttributesComponent.h"
+#include "GameplayEventManager.h"
 
 ABoon::ABoon()
 {
@@ -44,4 +45,9 @@ void ABoon::SetAttributeModifierMultiplier(const FString& Attribute, float Multi
 	auto Modifier = GetAttributeModifier(Attribute);
 	Modifier.Multiplier = Multiplier;
 	SetAttributeModifier(Attribute, Modifier);
+}
+
+void ABoon::WhenOwnerToAny(const FString& Action, UClass* SubjectClass, const FName& FuncName)
+{
+	AGameplayEventManager::Get(GetWorld())->WhenOneToMany(MyOwner, Action, SubjectClass, this, FuncName);
 }

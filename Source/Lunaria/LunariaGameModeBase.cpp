@@ -30,6 +30,7 @@ void ALunariaGameModeBase::BeginPlay()
 
 	MapManager = Cast<AMapManager>(GetWorld()->SpawnActor(MapManagerClass));
 	EventManager = GetWorld()->SpawnActor<AGameplayEventManager>();
+	OnEventManagerSpawned(EventManager);
 }
 
 void ALunariaGameModeBase::StartNewArea()

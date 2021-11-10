@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetAttributeModifierMultiplier(const FString& Attribute, float Multiplier);
 
+	UFUNCTION(BlueprintCallable)
+		void WhenOwnerToAny(const FString& Action, UClass* SubjectClass, const FName& FuncName);
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;

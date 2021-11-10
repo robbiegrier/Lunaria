@@ -23,6 +23,9 @@ public:
 		void SetTravelDistance(float InDistance) { TravelDistance = InDistance; }
 
 	UFUNCTION(BlueprintCallable)
+		void SetAbilityAssociation(const FString& InAssociation) { AbilityAssociation = InAssociation; }
+
+	UFUNCTION(BlueprintCallable)
 		float GetDamage() const { return DamagePayload; }
 
 protected:
@@ -50,4 +53,5 @@ private:
 	float DamagePayload = 0;
 	float TravelDistance = 9999999.f;
 	FVector StartingPoint;
+	FString AbilityAssociation;
 };

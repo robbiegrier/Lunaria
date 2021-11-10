@@ -36,6 +36,9 @@ public:
 	UClass* GetDebugWidgetClass() const { return DebugWidgetClass; }
 	UClass* GetHealthBarClass() const { return HealthBarClass; }
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnEventManagerSpawned(class AGameplayEventManager* Manager);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void StartPlay() override;

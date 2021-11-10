@@ -54,15 +54,80 @@ void AGameplayEventManager::ProcessGameplayEvents()
 	{
 		auto Event = Events.Pop();
 
-		if (Event.EventType == EGameplayEventType::Hit)
+		TriggerDelegates(Event);
+
+		if (Event.EventType == "Hit")
 		{
 			ProcessHitEvent(Event);
 		}
-		else if (Event.EventType == EGameplayEventType::Kill)
+		else if (Event.EventType == "Kill")
 		{
 			ProcessKillEvent(Event);
 		}
 	}
+}
+
+void AGameplayEventManager::TriggerDelegates(const FGameplayEvent& Event)
+{
+	TriggerOneToManyDelegates(Event.Agent, Event.EventType, Event.Subject->GetClass(), Event);
+	TriggerManyToOneDelegates(Event.Agent->GetClass(), Event.EventType, Event.Subject, Event);
+}
+
+void AGameplayEventManager::TriggerOneToManyDelegates(AActor* Agent, const FString& Action, UClass* SubjectClass, const FGameplayEvent& Event)
+{
+	WithOneToMany(Agent, Action, SubjectClass, [&Event](auto& Delegate) {
+		Delegate.Broadcast(Event);
+	});
+}
+
+void AGameplayEventManager::TriggerManyToOneDelegates(UClass* AgentClass, const FString& Action, AActor* Subject, const FGameplayEvent& Event)
+{
+	WithManyToOne(AgentClass, Action, Subject, [&Event](auto& Delegate) {
+		Delegate.Broadcast(Event);
+	});
+}
+
+void AGameplayEventManager::WhenOneToMany(AActor* Agent, const FString& Action, UClass* SubjectClass, UObject* Object, const FName& FuncName)
+{
+	auto& ClassToDelegates = GetOneToManyClassMap(Agent, Action);
+	auto Find = ClassToDelegates.Find(SubjectClass);
+
+	if (!Find)
+	{
+		ClassToDelegates.Add(SubjectClass, FGameplayEventSignature());
+	}
+
+	WithOneToMany(Agent, Action, SubjectClass, [Object, &FuncName](auto& Delegate) {
+		Delegate.AddUFunction(Object, FuncName);
+	});
+}
+
+void AGameplayEventManager::WhenManyToOne(UClass* AgentClass, const FString& Action, AActor* Subject, UObject* Object, const FName& FuncName)
+{
+	WithManyToOne(AgentClass, Action, Subject, [Object, &FuncName](auto& Delegate) {
+		Delegate.AddUFunction(Object, FuncName);
+	});
+}
+
+TMap<UClass*, FGameplayEventSignature>& AGameplayEventManager::GetOneToManyClassMap(AActor* Agent, const FString& Action)
+{
+	auto Find1 = OneToManyMap.Find(Agent);
+
+	if (!Find1)
+	{
+		OneToManyMap.Add(Agent, TMap<FString, TMap<UClass*, FGameplayEventSignature>>());
+	}
+
+	auto& AgentMap = *OneToManyMap.Find(Agent);
+
+	auto Find2 = AgentMap.Find(Action);
+
+	if (!Find2)
+	{
+		AgentMap.Add(Action, TMap<UClass*, FGameplayEventSignature>());
+	}
+
+	return *AgentMap.Find(Action);
 }
 
 void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
@@ -71,17 +136,16 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 	{
 		if (auto AgentAttributes = Event.Agent->FindComponentByClass<UAttributesComponent>())
 		{
-			if (auto Projectile = Cast<ASpaceProjectile>(Event.Medium))
-			{
-				auto Damage = AgentAttributes->Get(*Event.Tags.Find("Ability Type") + " Ability Damage", Projectile->GetDamage());
-				HealthComp->ApplyDamage(Damage);
+			auto FindDamage = Event.Values.Find("Damage");
+			auto Damage = FindDamage ? *FindDamage : 0.f;
 
-				if (HealthComp->IsHealthDepleted())
-				{
-					auto KillEvent = Event;
-					KillEvent.EventType = EGameplayEventType::Kill;
-					SubmitEvent(KillEvent);
-				}
+			HealthComp->ApplyDamage(Damage);
+
+			if (HealthComp->IsHealthDepleted())
+			{
+				auto KillEvent = Event;
+				KillEvent.EventType = "Kill";
+				SubmitEvent(KillEvent);
 			}
 		}
 	}

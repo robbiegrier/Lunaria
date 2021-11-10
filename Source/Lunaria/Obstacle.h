@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SpaceObject.h"
 #include "Hittable.h"
+#include "GameplayEventManager.h"
 #include "Obstacle.generated.h"
 
 UCLASS()
@@ -16,6 +17,9 @@ public:
 	AObstacle();
 	virtual void Tick(float DeltaTime) override;
 	void HandleCollisionRecognized(AActor* OtherActor);
+
+	UFUNCTION(BlueprintCallable)
+		void WhenObstacleEvent(const FString& Action, const FName& FuncName);
 
 protected:
 	virtual void BeginPlay() override;

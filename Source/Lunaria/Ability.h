@@ -53,6 +53,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		int32 GetCooldownCharges();
 
+	UFUNCTION(BlueprintCallable)
+		const FString& GetAbilityType() const { return AbilityType; }
+
+	UFUNCTION(BlueprintCallable)
+		float GetAttributeValue(const FString& Attribute, float Seed) const;
+
 protected:
 	virtual void BeginPlay() override;
 

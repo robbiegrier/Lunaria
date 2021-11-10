@@ -19,7 +19,6 @@ AObstacle::AObstacle()
 	PrimaryActorTick.bCanEverTick = true;
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes Component"));
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
-	//HealthComponent->GetHealthDepletedEvent().AddUObject(this, &AObstacle::HandleObstacleDestroyed);
 
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Bar Widget Component"));
 	HealthBarComponent->SetupAttachment(GetSphereComponent());
@@ -81,4 +80,9 @@ void AObstacle::Tick(float DeltaTime)
 
 void AObstacle::HandleCollisionRecognized(AActor* OtherActor)
 {
+}
+
+void AObstacle::WhenObstacleEvent(const FString& Action, const FName& FuncName)
+{
+	AGameplayEventManager::Get(GetWorld())->WhenManyToOne(UObject::StaticClass(), Action, this, this, FuncName);
 }

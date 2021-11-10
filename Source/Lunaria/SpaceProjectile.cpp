@@ -11,6 +11,7 @@
 #include "CombatComponent.h"
 #include "Helpers.h"
 #include "GameplayEventManager.h"
+#include "AttributesComponent.h"
 
 ASpaceProjectile::ASpaceProjectile()
 {
@@ -46,14 +47,10 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
 			{
-				//OtherAsHittable->TakeHit(GetDamage(), GetOwner());
-
-				auto Event = FGameplayEvent();
-				Event.Agent = GetOwner();
-				Event.Subject = OtherActor;
-				Event.Medium = this;
-				Event.EventType = EGameplayEventType::Hit;
-				Event.Tags.Add("Ability Type", "Attack");
+				auto Event = FGameplayEvent(GetOwner(), "Hit", OtherActor);
+				Event.Tags.Add("AbilityType", AbilityAssociation);
+				Event.Values.Add("Damage", DamagePayload);
+				Event.Vectors.Add("Location", GetActorLocation());
 				AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
 			}
 		}

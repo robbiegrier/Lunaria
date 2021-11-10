@@ -85,19 +85,19 @@ UAttributesComponent* AAbility::GetAttributes() const
 
 float AAbility::GetCooldown()
 {
-	if (MyOwner)
-	{
-		return GetAttributes()->Get(AbilityType + " Ability Cooldown", CooldownSeed);
-	}
-
-	return CooldownSeed;
+	return GetAttributeValue("Cooldown", CooldownSeed);
 }
 
 int32 AAbility::GetCooldownCharges()
 {
+	return GetAttributeValue("Charges", CooldownChargesSeed);
+}
+
+float AAbility::GetAttributeValue(const FString& Attribute, float Seed) const
+{
 	if (MyOwner)
 	{
-		return GetAttributes()->Get(AbilityType + " Ability Charges", CooldownChargesSeed);
+		return GetAttributes()->Get(AbilityType + Attribute, Seed);
 	}
 
 	return CooldownChargesSeed;
