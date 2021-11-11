@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayEventObserver.h"
 #include "Boon.generated.h"
 
 USTRUCT(BlueprintType)
@@ -21,7 +22,7 @@ public:
  *
  */
 UCLASS()
-class LUNARIA_API ABoon : public AActor
+class LUNARIA_API ABoon : public AActor, public IGameplayEventObserver
 {
 	GENERATED_BODY()
 
@@ -43,9 +44,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void SetAttributeModifierMultiplier(const FString& Attribute, float Multiplier);
-
-	UFUNCTION(BlueprintCallable)
-		void WhenOwnerToAny(const FString& Action, UClass* SubjectClass, const FName& FuncName);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))

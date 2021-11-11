@@ -28,6 +28,22 @@ void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
+void UAttributesComponent::NativeWhenAgentOf(const FGameplayEvent& Event)
+{
+	for (auto Boon : Boons)
+	{
+		Boon->ExecuteAgentOf(Event);
+	}
+}
+
+void UAttributesComponent::NativeWhenSubjectOf(const FGameplayEvent& Event)
+{
+	for (auto Boon : Boons)
+	{
+		Boon->ExecuteSubjectOf(Event);
+	}
+}
+
 void UAttributesComponent::EndPlay(EEndPlayReason::Type Reason)
 {
 	Super::EndPlay(Reason);

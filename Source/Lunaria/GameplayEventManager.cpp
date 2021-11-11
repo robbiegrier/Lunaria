@@ -7,6 +7,7 @@
 #include "HealthComponent.h"
 #include "SpaceProjectile.h"
 #include "AttributesComponent.h"
+#include "GameplayEventObserver.h"
 
 AGameplayEventManager::AGameplayEventManager()
 {
@@ -54,80 +55,50 @@ void AGameplayEventManager::ProcessGameplayEvents()
 	{
 		auto Event = Events.Pop();
 
-		TriggerDelegates(Event);
+		TriggerAgentObservation(Event);
+		TriggerSubjectObservation(Event);
 
-		if (Event.EventType == "Hit")
+		if (Event.Action == ENativeEventType::Hit)
 		{
 			ProcessHitEvent(Event);
 		}
-		else if (Event.EventType == "Kill")
+		else if (Event.Action == ENativeEventType::Kill)
 		{
 			ProcessKillEvent(Event);
 		}
 	}
 }
 
-void AGameplayEventManager::TriggerDelegates(const FGameplayEvent& Event)
+void AGameplayEventManager::TriggerSubjectObservation(const FGameplayEvent& Event)
 {
-	TriggerOneToManyDelegates(Event.Agent, Event.EventType, Event.Subject->GetClass(), Event);
-	TriggerManyToOneDelegates(Event.Agent->GetClass(), Event.EventType, Event.Subject, Event);
-}
-
-void AGameplayEventManager::TriggerOneToManyDelegates(AActor* Agent, const FString& Action, UClass* SubjectClass, const FGameplayEvent& Event)
-{
-	WithOneToMany(Agent, Action, SubjectClass, [&Event](auto& Delegate) {
-		Delegate.Broadcast(Event);
-	});
-}
-
-void AGameplayEventManager::TriggerManyToOneDelegates(UClass* AgentClass, const FString& Action, AActor* Subject, const FGameplayEvent& Event)
-{
-	WithManyToOne(AgentClass, Action, Subject, [&Event](auto& Delegate) {
-		Delegate.Broadcast(Event);
-	});
-}
-
-void AGameplayEventManager::WhenOneToMany(AActor* Agent, const FString& Action, UClass* SubjectClass, UObject* Object, const FName& FuncName)
-{
-	auto& ClassToDelegates = GetOneToManyClassMap(Agent, Action);
-	auto Find = ClassToDelegates.Find(SubjectClass);
-
-	if (!Find)
+	if (auto Actor = Event.Subject)
 	{
-		ClassToDelegates.Add(SubjectClass, FGameplayEventSignature());
-	}
+		if (auto Observer = Cast<IGameplayEventObserver>(Actor))
+		{
+			Observer->ExecuteSubjectOf(Event);
+		}
 
-	WithOneToMany(Agent, Action, SubjectClass, [Object, &FuncName](auto& Delegate) {
-		Delegate.AddUFunction(Object, FuncName);
-	});
+		for (auto Component : Actor->GetComponentsByInterface(UGameplayEventObserver::StaticClass()))
+		{
+			Cast<IGameplayEventObserver>(Component)->ExecuteSubjectOf(Event);
+		}
+	}
 }
 
-void AGameplayEventManager::WhenManyToOne(UClass* AgentClass, const FString& Action, AActor* Subject, UObject* Object, const FName& FuncName)
+void AGameplayEventManager::TriggerAgentObservation(const FGameplayEvent& Event)
 {
-	WithManyToOne(AgentClass, Action, Subject, [Object, &FuncName](auto& Delegate) {
-		Delegate.AddUFunction(Object, FuncName);
-	});
-}
-
-TMap<UClass*, FGameplayEventSignature>& AGameplayEventManager::GetOneToManyClassMap(AActor* Agent, const FString& Action)
-{
-	auto Find1 = OneToManyMap.Find(Agent);
-
-	if (!Find1)
+	if (auto Actor = Event.Agent)
 	{
-		OneToManyMap.Add(Agent, TMap<FString, TMap<UClass*, FGameplayEventSignature>>());
+		if (auto Observer = Cast<IGameplayEventObserver>(Actor))
+		{
+			Observer->ExecuteAgentOf(Event);
+		}
+
+		for (auto Component : Actor->GetComponentsByInterface(UGameplayEventObserver::StaticClass()))
+		{
+			Cast<IGameplayEventObserver>(Component)->ExecuteAgentOf(Event);
+		}
 	}
-
-	auto& AgentMap = *OneToManyMap.Find(Agent);
-
-	auto Find2 = AgentMap.Find(Action);
-
-	if (!Find2)
-	{
-		AgentMap.Add(Action, TMap<UClass*, FGameplayEventSignature>());
-	}
-
-	return *AgentMap.Find(Action);
 }
 
 void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
@@ -144,7 +115,7 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 			if (HealthComp->IsHealthDepleted())
 			{
 				auto KillEvent = Event;
-				KillEvent.EventType = "Kill";
+				KillEvent.Action = ENativeEventType::Kill;
 				SubmitEvent(KillEvent);
 			}
 		}

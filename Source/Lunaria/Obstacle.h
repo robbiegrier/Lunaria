@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "SpaceObject.h"
 #include "Hittable.h"
-#include "GameplayEventManager.h"
+#include "GameplayEventObserver.h"
 #include "Obstacle.generated.h"
 
 UCLASS()
-class LUNARIA_API AObstacle : public ASpaceObject, public IHittable
+class LUNARIA_API AObstacle : public ASpaceObject, public IHittable, public IGameplayEventObserver
 {
 	GENERATED_BODY()
 
@@ -17,9 +17,6 @@ public:
 	AObstacle();
 	virtual void Tick(float DeltaTime) override;
 	void HandleCollisionRecognized(AActor* OtherActor);
-
-	UFUNCTION(BlueprintCallable)
-		void WhenObstacleEvent(const FString& Action, const FName& FuncName);
 
 protected:
 	virtual void BeginPlay() override;

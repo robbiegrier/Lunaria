@@ -46,8 +46,3 @@ void ABoon::SetAttributeModifierMultiplier(const FString& Attribute, float Multi
 	Modifier.Multiplier = Multiplier;
 	SetAttributeModifier(Attribute, Modifier);
 }
-
-void ABoon::WhenOwnerToAny(const FString& Action, UClass* SubjectClass, const FName& FuncName)
-{
-	AGameplayEventManager::Get(GetWorld())->WhenOneToMany(MyOwner, Action, SubjectClass, this, FuncName);
-}

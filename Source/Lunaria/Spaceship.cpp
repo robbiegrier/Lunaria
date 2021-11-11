@@ -117,6 +117,11 @@ void ASpaceship::RespawnOnMap(AMapManager* MapManager)
 	SetActorRotation(UKismetMathLibrary::MakeRotFromX(MapManager->GetEntryDirection()));
 }
 
+void ASpaceship::NativeWhenAgentOf(const FGameplayEvent& Event)
+{
+	Print("Was agent of " + Event.EventType);
+}
+
 void ASpaceship::HandleThrottleInput(float Scale)
 {
 	if (SpaceshipMovementComponent)

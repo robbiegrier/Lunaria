@@ -81,8 +81,3 @@ void AObstacle::Tick(float DeltaTime)
 void AObstacle::HandleCollisionRecognized(AActor* OtherActor)
 {
 }
-
-void AObstacle::WhenObstacleEvent(const FString& Action, const FName& FuncName)
-{
-	AGameplayEventManager::Get(GetWorld())->WhenManyToOne(UObject::StaticClass(), Action, this, this, FuncName);
-}

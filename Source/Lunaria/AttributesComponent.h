@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayEventObserver.h"
 #include "AttributesComponent.generated.h"
 
 /*
@@ -11,13 +12,15 @@
 * stats to update health, damage, and speed behaviors of the actor.
 */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class LUNARIA_API UAttributesComponent : public UActorComponent
+class LUNARIA_API UAttributesComponent : public UActorComponent, public IGameplayEventObserver
 {
 	GENERATED_BODY()
 
 public:
 	UAttributesComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void NativeWhenAgentOf(const FGameplayEvent& Event) override;
+	virtual void NativeWhenSubjectOf(const FGameplayEvent& Event) override;
 
 	UFUNCTION(BlueprintCallable)
 		float Get(const FString& Attribute, float Seed);

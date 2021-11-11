@@ -47,7 +47,7 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
 			{
-				auto Event = FGameplayEvent(GetOwner(), "Hit", OtherActor);
+				auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, OtherActor);
 				Event.Tags.Add("AbilityType", AbilityAssociation);
 				Event.Values.Add("Damage", DamagePayload);
 				Event.Vectors.Add("Location", GetActorLocation());

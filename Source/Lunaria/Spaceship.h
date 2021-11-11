@@ -6,10 +6,11 @@
 #include "GameFramework/Character.h"
 #include "Hittable.h"
 #include "Ability.h"
+#include "GameplayEventObserver.h"
 #include "Spaceship.generated.h"
 
 UCLASS()
-class LUNARIA_API ASpaceship : public ACharacter, public IHittable
+class LUNARIA_API ASpaceship : public ACharacter, public IHittable, public IGameplayEventObserver
 {
 	GENERATED_BODY()
 
@@ -18,6 +19,7 @@ public:
 	void Tick(float DeltaTime) override;
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void RespawnOnMap(class AMapManager* MapManager);
+	virtual void NativeWhenAgentOf(const FGameplayEvent& Event) override;
 
 	UFUNCTION()
 		void HandleThrottleInput(float Scale);
