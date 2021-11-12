@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void AddBoon(class ABoon* NewBoon);
 
+	UFUNCTION(BlueprintCallable)
+		void RemoveAndDestroyBoon(class ABoon* TheBoon);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;

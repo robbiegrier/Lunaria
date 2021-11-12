@@ -59,6 +59,12 @@ void UAttributesComponent::AddBoon(ABoon* NewBoon)
 	}
 }
 
+void UAttributesComponent::RemoveAndDestroyBoon(ABoon* TheBoon)
+{
+	Boons.Remove(TheBoon);
+	TheBoon->Destroy();
+}
+
 void UAttributesComponent::ClearBoons()
 {
 	for (auto Boon : Boons)

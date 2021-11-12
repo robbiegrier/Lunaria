@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetAttributeModifierMultiplier(const FString& Attribute, float Multiplier);
 
+	UFUNCTION(BlueprintCallable)
+		void Remove();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;
@@ -54,6 +57,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		AActor* MyOwner;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
+		class UAttributesComponent* MyOwnerAttributes;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")

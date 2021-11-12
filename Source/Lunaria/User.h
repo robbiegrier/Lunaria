@@ -63,4 +63,6 @@ private:
 	float UpDownImpulse{ 0.f };
 	float RightLeftImpulse{ 0.f };
 	class ASpaceship* Spaceship;
+
+	class ABoon* BoonSpawn;
 };

@@ -13,6 +13,7 @@ ABoon::ABoon()
 void ABoon::NativeOnAdded(UAttributesComponent* Attributes)
 {
 	MyOwner = Attributes->GetOwner();
+	MyOwnerAttributes = Attributes;
 	OnAdded();
 }
 
@@ -45,4 +46,12 @@ void ABoon::SetAttributeModifierMultiplier(const FString& Attribute, float Multi
 	auto Modifier = GetAttributeModifier(Attribute);
 	Modifier.Multiplier = Multiplier;
 	SetAttributeModifier(Attribute, Modifier);
+}
+
+void ABoon::Remove()
+{
+	if (MyOwnerAttributes)
+	{
+		MyOwnerAttributes->RemoveAndDestroyBoon(this);
+	}
 }

@@ -119,7 +119,7 @@ void ASpaceship::RespawnOnMap(AMapManager* MapManager)
 
 void ASpaceship::NativeWhenAgentOf(const FGameplayEvent& Event)
 {
-	Print("Was agent of " + Event.EventType);
+	//Print("Was agent of " + Event.EventType);
 }
 
 void ASpaceship::HandleThrottleInput(float Scale)

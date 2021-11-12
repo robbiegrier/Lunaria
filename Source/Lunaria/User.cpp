@@ -179,15 +179,24 @@ void AUser::HandleDebugAction()
 	//Spaceship->GetAttributesComponent()->SetTurnSpeed(Spaceship->GetAttributesComponent()->GetTurnSpeed() + 25.0f);
 
 	//Spaceship->GetAttributesComponent()->AddBoon(NewObject<UBoon>((UObject*)GetTransientPackage(), BoonClass));
-	Spaceship->GetAttributesComponent()->AddBoon(GetWorld()->SpawnActor<ABoon>(BoonClass));
 	//if (auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
 	//{
 	//	GameMode->StartNewArea();
 	//}
 
-	if (auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
+	//if (auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
+	//{
+	//	GameMode->GetMap()->OpenCurrentDoors();
+	//}
+
+	if (!BoonSpawn || BoonSpawn->IsActorBeingDestroyed())
 	{
-		GameMode->GetMap()->OpenCurrentDoors();
+		BoonSpawn = GetWorld()->SpawnActor<ABoon>(BoonClass);
+		Spaceship->GetAttributesComponent()->AddBoon(BoonSpawn);
+	}
+	else
+	{
+		Spaceship->GetAttributesComponent()->RemoveAndDestroyBoon(BoonSpawn);
 	}
 }
 
