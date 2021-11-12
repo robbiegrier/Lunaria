@@ -8,6 +8,7 @@
 ABoon::ABoon()
 {
 	BoonName = "Spaceship Upgrade";
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ABoon::NativeOnAdded(UAttributesComponent* Attributes)

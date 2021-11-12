@@ -6,7 +6,7 @@
 #include "CpuHealthBar.h"
 #include "HealthComponent.h"
 #include "AttributeObserver.h"
-#include "Boon.h"
+#include "StatusEffect.h"
 
 UAttributesComponent::UAttributesComponent()
 {
@@ -25,6 +25,11 @@ void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	for (auto Boon : Boons)
 	{
 		Boon->SetActorLocation(GetOwner()->GetActorLocation());
+	}
+
+	for (auto& StatusEffect : StatusEffects)
+	{
+		StatusEffect.Value->SetActorLocation(GetOwner()->GetActorLocation());
 	}
 }
 
@@ -48,6 +53,7 @@ void UAttributesComponent::EndPlay(EEndPlayReason::Type Reason)
 {
 	Super::EndPlay(Reason);
 	ClearBoons();
+	ClearStatusEffects();
 }
 
 void UAttributesComponent::AddBoon(ABoon* NewBoon)
@@ -59,10 +65,55 @@ void UAttributesComponent::AddBoon(ABoon* NewBoon)
 	}
 }
 
+void UAttributesComponent::AddBoonFromClass(TSubclassOf<ABoon> NewBoonClass)
+{
+	if (NewBoonClass)
+	{
+		auto NewBoon = GetWorld()->SpawnActor<ABoon>(NewBoonClass);
+		Boons.Add(NewBoon);
+		NewBoon->NativeOnAdded(this);
+	}
+}
+
+void UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> NewEffectClass)
+{
+	if (NewEffectClass)
+	{
+		auto AddedEffect = static_cast<AStatusEffect*>(nullptr);
+		auto Find = StatusEffects.Find(NewEffectClass);
+
+		if (!Find)
+		{
+			AddedEffect = GetWorld()->SpawnActor<AStatusEffect>();
+			StatusEffects.Add(NewEffectClass, AddedEffect);
+			AddedEffect->SetBoonClass(NewEffectClass);
+			AddedEffect->NativeOnAdded(this);
+		}
+		else
+		{
+			AddedEffect = *Find;
+		}
+
+		AddedEffect->AddStack();
+	}
+}
+
 void UAttributesComponent::RemoveAndDestroyBoon(ABoon* TheBoon)
 {
-	Boons.Remove(TheBoon);
-	TheBoon->Destroy();
+	if (TheBoon)
+	{
+		Boons.Remove(TheBoon);
+		TheBoon->Destroy();
+	}
+}
+
+void UAttributesComponent::RemoveAndDestroyStatusEffect(AStatusEffect* TheStatusEffect)
+{
+	if (TheStatusEffect)
+	{
+		StatusEffects.Remove(TheStatusEffect->GetBoonClass());
+		TheStatusEffect->Destroy();
+	}
 }
 
 void UAttributesComponent::ClearBoons()
@@ -78,6 +129,19 @@ void UAttributesComponent::ClearBoons()
 	Boons.Empty();
 }
 
+void UAttributesComponent::ClearStatusEffects()
+{
+	for (auto& StatusEffect : StatusEffects)
+	{
+		if (StatusEffect.Value)
+		{
+			StatusEffect.Value->Destroy();
+		}
+	}
+
+	StatusEffects.Empty();
+}
+
 float UAttributesComponent::Get(const FString& Attribute, float Seed)
 {
 	auto Base = Seed;
@@ -90,6 +154,18 @@ float UAttributesComponent::Get(const FString& Attribute, float Seed)
 
 		Base += Modifier.Additive;
 		Multiplier += Modifier.Multiplier / 100.f;
+	}
+
+	for (auto& EffectRegister : StatusEffects)
+	{
+		for (auto Boon : EffectRegister.Value->GetStatuses())
+		{
+			Boon->BeforeAttributeQueried(Attribute);
+			auto Modifier = Boon->GetAttributeModifier(Attribute);
+
+			Base += Modifier.Additive;
+			Multiplier += Modifier.Multiplier / 100.f;
+		}
 	}
 
 	return Base * Multiplier;

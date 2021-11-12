@@ -118,19 +118,16 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 {
 	if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
 	{
-		if (auto AgentAttributes = Event.Agent->FindComponentByClass<UAttributesComponent>())
+		auto FindDamage = Event.Values.Find("Damage");
+		auto Damage = FindDamage ? *FindDamage : 0.f;
+
+		HealthComp->ApplyDamage(Damage);
+
+		if (HealthComp->IsHealthDepleted())
 		{
-			auto FindDamage = Event.Values.Find("Damage");
-			auto Damage = FindDamage ? *FindDamage : 0.f;
-
-			HealthComp->ApplyDamage(Damage);
-
-			if (HealthComp->IsHealthDepleted())
-			{
-				auto KillEvent = Event;
-				KillEvent.Action = ENativeEventType::Kill;
-				SubmitEvent(KillEvent);
-			}
+			auto KillEvent = Event;
+			KillEvent.Action = ENativeEventType::Kill;
+			SubmitEvent(KillEvent);
 		}
 	}
 }

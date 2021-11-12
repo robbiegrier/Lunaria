@@ -6,6 +6,7 @@
 #include "Printer.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Helpers.h"
+#include "AttributesComponent.h"
 
 USpaceObjectMovementComponent::USpaceObjectMovementComponent()
 {
@@ -29,6 +30,7 @@ void USpaceObjectMovementComponent::BeginPlay()
 	GetOwner()->SetActorLocation(Location);
 	LocationLastFrame = GetOwner()->GetActorLocation();
 	//QueryAndUpdateOrbitalParent();
+	Attributes = GetOwner()->FindComponentByClass<UAttributesComponent>();
 }
 
 void USpaceObjectMovementComponent::QueryAndUpdateOrbitalParent()
@@ -116,15 +118,17 @@ void USpaceObjectMovementComponent::UpdateOrbit(float DeltaTime)
 	if (OrbitalParent)
 	{
 		GetOwner()->SetActorLocation(FMath::Lerp(GetOwner()->GetActorLocation(), GetTargetLocation(), 0.2f));
-		CurrentOrbitalRotation = FMath::Fmod(CurrentOrbitalRotation - (OrbitalSpeed * DeltaTime), 360.f);
-		//Print(LocationLastFrame.ToString() + " " + GetOwner()->GetActorLocation().ToString());
+		auto MoveSpeed = Attributes ? Attributes->Get("MoveSpeed", OrbitalSpeed) : OrbitalSpeed;
+		CurrentOrbitalRotation = FMath::Fmod(CurrentOrbitalRotation - (MoveSpeed * DeltaTime), 360.f);
 		Velocity = GetOwner()->GetActorLocation() - LocationLastFrame;
-		//Print(Velocity.ToString());
 		LocationLastFrame = GetOwner()->GetActorLocation();
 	}
 	else
 	{
-		GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + Velocity);
+		auto Scale = Velocity.Size();
+		auto Direction = Velocity.GetSafeNormal();
+		Scale = Attributes ? Attributes->Get("MoveSpeed", Scale) : Scale;
+		GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + (Direction * Scale));
 	}
 }
 

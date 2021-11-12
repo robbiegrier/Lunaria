@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayEventObserver.h"
+#include "Boon.h"
 #include "AttributesComponent.generated.h"
 
 /*
@@ -26,10 +27,19 @@ public:
 		float Get(const FString& Attribute, float Seed);
 
 	UFUNCTION(BlueprintCallable)
-		void AddBoon(class ABoon* NewBoon);
+		void AddBoon(ABoon* NewBoon);
 
 	UFUNCTION(BlueprintCallable)
-		void RemoveAndDestroyBoon(class ABoon* TheBoon);
+		void AddBoonFromClass(TSubclassOf<ABoon> NewBoonClass);
+
+	UFUNCTION(BlueprintCallable)
+		void AddStatusEffectFromClass(TSubclassOf<ABoon> NewEffectClass);
+
+	UFUNCTION(BlueprintCallable)
+		void RemoveAndDestroyBoon(ABoon* TheBoon);
+
+	UFUNCTION(BlueprintCallable)
+		void RemoveAndDestroyStatusEffect(class AStatusEffect* TheStatusEffect);
 
 protected:
 	virtual void BeginPlay() override;
@@ -37,7 +47,11 @@ protected:
 
 private:
 	void ClearBoons();
+	void ClearStatusEffects();
 
 	UPROPERTY()
-		TArray<class ABoon*> Boons;
+		TArray<ABoon*> Boons;
+
+	UPROPERTY()
+		TMap<UClass*, class AStatusEffect*> StatusEffects;
 };

@@ -77,4 +77,5 @@ private:
 	FVector LocationLastFrame;
 	AActor* OrbitalParent;
 	float CurrentOrbitalRotation{ 0.f };
+	class UAttributesComponent* Attributes;
 };

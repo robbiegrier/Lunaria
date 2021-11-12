@@ -48,6 +48,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Remove();
 
+	UFUNCTION(BlueprintCallable)
+		float GetDurationAsStatusEffect() const { return DurationAsStatusEffect; }
+
+	UFUNCTION(BlueprintCallable)
+		int32 GetMaxStacksAsStatusEffect() const { return MaxStacksAsStatusEffect; }
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;
@@ -60,6 +66,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		class UAttributesComponent* MyOwnerAttributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status Effect", meta = (AllowPrivateAccess = "true"))
+		float DurationAsStatusEffect = 2.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status Effect", meta = (AllowPrivateAccess = "true"))
+		int32 MaxStacksAsStatusEffect = 3;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
