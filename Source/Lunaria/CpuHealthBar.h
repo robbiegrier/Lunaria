@@ -18,10 +18,13 @@ public:
 	void NativeConstruct() override;
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void SetHealthValues(int32 Current, int32 Max);
+	void SetHealthValues(float Current, float Max);
 
 	UFUNCTION(BlueprintCallable)
 		void SetScale(const FVector2D& InScale);
+
+	UFUNCTION(BlueprintCallable)
+		void SetMyOwner(class AActor* InOwner);
 
 private:
 
@@ -41,4 +44,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior", meta = (AllowPrivateAccess = "true"))
 		float BackgroundInterpolateSpeed = 0.1f;
+
+	class UHealthComponent* MyOwnerHealth;
 };

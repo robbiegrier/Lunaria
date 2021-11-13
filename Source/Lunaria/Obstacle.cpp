@@ -13,6 +13,7 @@
 #include "LunariaGameModeBase.h"
 #include "Printer.h"
 #include "CombatComponent.h"
+#include "Helpers.h"
 
 AObstacle::AObstacle()
 {
@@ -35,19 +36,7 @@ AObstacle::AObstacle()
 void AObstacle::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HealthBarComponent->GetWidgetClass() == nullptr)
-	{
-		if (auto Gamemode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
-		{
-			HealthBarComponent->SetWidgetClass(Gamemode->GetHealthBarClass());
-		}
-	}
-
-	if (auto HealthBar = Cast<UCpuHealthBar>(HealthBarComponent->GetUserWidgetObject()))
-	{
-		HealthComponent->BindHealthBar(HealthBar);
-	}
+	Helpers::BindHealthBar(this, HealthBarComponent);
 }
 
 void AObstacle::NotifyActorBeginOverlap(AActor* OtherActor)

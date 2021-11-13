@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Printer.h"
+#include "HealthComponent.h"
 
 UCpuHealthBar::UCpuHealthBar(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
@@ -20,18 +21,33 @@ void UCpuHealthBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	InterpolateBackground(InDeltaTime);
+
+	if (MyOwnerHealth)
+	{
+		auto MaxHealth = MyOwnerHealth->GetMaxHealth();
+		auto CurrentHealth = MyOwnerHealth->GetCurrentHealthFast(MaxHealth);
+		SetHealthValues(CurrentHealth, MaxHealth);
+	}
 }
 
-void UCpuHealthBar::SetHealthValues(int32 Current, int32 Max)
+void UCpuHealthBar::SetMyOwner(AActor* InOwner)
+{
+	if (InOwner)
+	{
+		MyOwnerHealth = InOwner->FindComponentByClass<UHealthComponent>();
+	}
+}
+
+void UCpuHealthBar::SetHealthValues(float Current, float Max)
 {
 	if (HealthBar)
 	{
-		HealthBar->SetPercent(static_cast<float>(Current) / static_cast<float>(Max));
+		HealthBar->SetPercent(Current / Max);
 	}
 
 	if (HealthText)
 	{
-		HealthText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), Current, Max)));
+		HealthText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), static_cast<int32>(Current), static_cast<int32>(Max))));
 	}
 }
 

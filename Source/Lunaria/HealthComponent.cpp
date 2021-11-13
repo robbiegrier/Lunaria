@@ -12,19 +12,13 @@
 
 UHealthComponent::UHealthComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Attributes = Helpers::GetSister<UAttributesComponent>(this);
-}
-
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	SendDataToWidgets();
 }
 
 float UHealthComponent::GetCurrentHealth() const
@@ -43,19 +37,9 @@ void UHealthComponent::ApplyDamage(float Scale)
 	MissingHealth += Scale;
 };
 
-void UHealthComponent::SendDataToWidgets()
-{
-	if (HealthBarWidget)
-	{
-		auto Max = GetMaxHealth();
-		HealthBarWidget->SetHealthValues(GetCurrentHealthFast(Max), Max);
-	}
-}
-
 void UHealthComponent::BindHealthBar(UCpuHealthBar* Widget)
 {
 	HealthBarWidget = Widget;
-	SendDataToWidgets();
 }
 
 bool UHealthComponent::IsHealthDepleted() const

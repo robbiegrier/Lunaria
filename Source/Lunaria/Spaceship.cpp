@@ -22,6 +22,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "AbilitiesComponent.h"
 #include "CombatComponent.h"
+#include "Components/WidgetComponent.h"
 
 ASpaceship::ASpaceship()
 {
@@ -67,6 +68,12 @@ ASpaceship::ASpaceship()
 	InteractionVolume->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
 	InteractionVolume->ShapeColor = FColor::Emerald;
 
+	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Bar Widget Component"));
+	HealthBarComponent->SetupAttachment(GetCapsuleComponent());
+
+	HealthBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	HealthBarComponent->SetDrawAtDesiredSize(true);
+
 	DebugViz = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DebugViz Component"));
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
@@ -80,15 +87,8 @@ ASpaceship::ASpaceship()
 void ASpaceship::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (IsPlayerControlled())
-	{
-		CombatComponent->SetTeam(UCombatComponent::PlayerTeam);
-	}
-	else
-	{
-		CombatComponent->SetTeam(UCombatComponent::EnemyTeam);
-	}
+	CombatComponent->SetTeam(IsPlayerControlled() ? UCombatComponent::PlayerTeam : UCombatComponent::EnemyTeam);
+	Helpers::BindHealthBar(this, HealthBarComponent);
 }
 
 void ASpaceship::Tick(float DeltaTime)

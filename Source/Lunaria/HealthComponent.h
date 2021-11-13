@@ -17,7 +17,6 @@ class LUNARIA_API UHealthComponent : public UActorComponent
 
 public:
 	UHealthComponent();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
 		float GetCurrentHealth() const;
@@ -41,8 +40,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	void SendDataToWidgets();
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		class UCpuHealthBar* HealthBarWidget;
 

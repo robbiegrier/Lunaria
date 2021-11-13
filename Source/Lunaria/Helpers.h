@@ -72,4 +72,6 @@ public:
 	static bool AreDifferentTeams(class AActor* Left, class AActor* Right);
 
 	static bool AreSameTeam(class AActor* Left, class AActor* Right);
+
+	static void BindHealthBar(class AActor* Actor, class UWidgetComponent* HealthBarWidgetComponent);
 };

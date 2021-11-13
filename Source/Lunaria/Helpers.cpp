@@ -5,6 +5,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "CombatComponent.h"
+#include "Components/WidgetComponent.h"
+#include "LunariaGameModeBase.h"
 
 USceneComponent* Helpers::GetMeshForFlairMovement(AActor* Actor)
 {
@@ -66,4 +68,23 @@ bool Helpers::AreDifferentTeams(AActor* Left, AActor* Right)
 bool Helpers::AreSameTeam(AActor* Left, AActor* Right)
 {
 	return !AreDifferentTeams(Left, Right);
+}
+
+void Helpers::BindHealthBar(AActor* Actor, UWidgetComponent* HealthBarWidgetComponent)
+{
+	if (Actor)
+	{
+		if (HealthBarWidgetComponent->GetWidgetClass() == nullptr)
+		{
+			if (auto Gamemode = Cast<ALunariaGameModeBase>(Actor->GetWorld()->GetAuthGameMode()))
+			{
+				HealthBarWidgetComponent->SetWidgetClass(Gamemode->GetHealthBarClass());
+			}
+		}
+
+		if (auto HealthBar = Cast<UCpuHealthBar>(HealthBarWidgetComponent->GetUserWidgetObject()))
+		{
+			HealthBar->SetMyOwner(Actor);
+		}
+	}
 }
