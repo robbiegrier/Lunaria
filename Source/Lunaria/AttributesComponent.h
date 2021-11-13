@@ -41,6 +41,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RemoveAndDestroyStatusEffect(class AStatusEffect* TheStatusEffect);
 
+	UFUNCTION(BlueprintCallable)
+		const TMap<UClass*, class AStatusEffect*>& GetCurrentStatusEffects() const { return StatusEffects; }
+
+	UFUNCTION(BlueprintCallable)
+		const TArray<ABoon*>& GetCurrentBoons() const { return Boons; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;

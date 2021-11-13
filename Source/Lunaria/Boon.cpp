@@ -4,11 +4,14 @@
 #include "Printer.h"
 #include "AttributesComponent.h"
 #include "GameplayEventManager.h"
+#include "Components/SceneComponent.h"
 
 ABoon::ABoon()
 {
 	BoonName = "Spaceship Upgrade";
 	PrimaryActorTick.bCanEverTick = true;
+	SceneComponent = CreateDefaultSubobject<USceneComponent>("Root Scene Component");
+	RootComponent = SceneComponent;
 }
 
 void ABoon::NativeOnAdded(UAttributesComponent* Attributes)

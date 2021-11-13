@@ -10,7 +10,7 @@
 
 UAttributesComponent::UAttributesComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UAttributesComponent::BeginPlay()
@@ -24,12 +24,12 @@ void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	for (auto Boon : Boons)
 	{
-		Boon->SetActorLocation(GetOwner()->GetActorLocation());
+		Boon->SetActorTransform(GetOwner()->GetActorTransform());
 	}
 
 	for (auto& StatusEffect : StatusEffects)
 	{
-		StatusEffect.Value->SetActorLocation(GetOwner()->GetActorLocation());
+		StatusEffect.Value->SetActorTransform(GetOwner()->GetActorTransform());
 	}
 }
 

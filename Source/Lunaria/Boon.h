@@ -73,6 +73,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status Effect", meta = (AllowPrivateAccess = "true"))
 		int32 MaxStacksAsStatusEffect = 3;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Scene, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* SceneComponent;
+
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void BeforeAttributeQueried(const FString& Attribute);

@@ -6,6 +6,7 @@
 #include "Components/Border.h"
 #include "Printer.h"
 #include "HealthComponent.h"
+#include "AttributesComponent.h"
 
 UCpuHealthBar::UCpuHealthBar(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
@@ -20,8 +21,12 @@ void UCpuHealthBar::NativeConstruct()
 void UCpuHealthBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+	UpdateHealth();
 	InterpolateBackground(InDeltaTime);
+}
 
+void UCpuHealthBar::UpdateHealth()
+{
 	if (MyOwnerHealth)
 	{
 		auto MaxHealth = MyOwnerHealth->GetMaxHealth();

@@ -36,6 +36,9 @@ protected:
 private:
 	void ClearStatuses();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Scene, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* SceneComponent;
+
 	UClass* BoonClass;
 	TArray<class ABoon*> Statuses;
 	class UAttributesComponent* MyOwnerAttributes;

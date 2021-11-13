@@ -5,10 +5,13 @@
 #include "Boon.h"
 #include "Printer.h"
 #include "AttributesComponent.h"
+#include "Components/SceneComponent.h"
 
 AStatusEffect::AStatusEffect()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SceneComponent = CreateDefaultSubobject<USceneComponent>("Root Scene Component");
+	RootComponent = SceneComponent;
 }
 
 void AStatusEffect::AddStack()
@@ -66,7 +69,7 @@ void AStatusEffect::Tick(float DeltaTime)
 
 	for (auto Status : Statuses)
 	{
-		Status->SetActorLocation(GetActorLocation());
+		Status->SetActorTransform(GetActorTransform());
 	}
 
 	auto TimePassed = GetWorld()->GetTimeSeconds() - LastStackTime;

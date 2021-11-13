@@ -27,8 +27,8 @@ public:
 		void SetMyOwner(class AActor* InOwner);
 
 private:
-
 	void InterpolateBackground(float InDeltaTime);
+	void UpdateHealth();
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 		class UProgressBar* HealthBar;
