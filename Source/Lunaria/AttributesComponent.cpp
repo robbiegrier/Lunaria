@@ -102,6 +102,7 @@ void UAttributesComponent::RemoveAndDestroyBoon(ABoon* TheBoon)
 {
 	if (TheBoon)
 	{
+		TheBoon->OnRemoved();
 		Boons.Remove(TheBoon);
 		TheBoon->Destroy();
 	}
@@ -116,12 +117,30 @@ void UAttributesComponent::RemoveAndDestroyStatusEffect(AStatusEffect* TheStatus
 	}
 }
 
+void UAttributesComponent::RemoveAndDestroyStatusEffectByName(const FString& StatusEffectName)
+{
+	auto TheEffect = static_cast<AStatusEffect*>(nullptr);
+
+	for (auto& Pair : StatusEffects)
+	{
+		auto Boon = Pair.Value->GetStatuses()[0];
+		if (Boon->GetBoonName() == StatusEffectName)
+		{
+			TheEffect = Pair.Value;
+			break;
+		}
+	}
+
+	RemoveAndDestroyStatusEffect(TheEffect);
+}
+
 void UAttributesComponent::ClearBoons()
 {
 	for (auto Boon : Boons)
 	{
 		if (Boon)
 		{
+			Boon->OnRemoved();
 			Boon->Destroy();
 		}
 	}

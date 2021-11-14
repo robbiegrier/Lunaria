@@ -55,6 +55,7 @@ public:
 	template <typename ElementType>
 	static ElementType GetRandomArrayElement(const TArray<ElementType>& Collection)
 	{
+		if (Collection.Num() <= 0) return nullptr;
 		return Collection[FMath::RandRange(0, Collection.Num() - 1)];
 	}
 

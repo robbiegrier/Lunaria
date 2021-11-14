@@ -42,6 +42,9 @@ public:
 		void RemoveAndDestroyStatusEffect(class AStatusEffect* TheStatusEffect);
 
 	UFUNCTION(BlueprintCallable)
+		void RemoveAndDestroyStatusEffectByName(const FString& StatusEffectName);
+
+	UFUNCTION(BlueprintCallable)
 		const TMap<UClass*, class AStatusEffect*>& GetCurrentStatusEffects() const { return StatusEffects; }
 
 	UFUNCTION(BlueprintCallable)

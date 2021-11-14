@@ -72,7 +72,6 @@ void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 Nu
 	SpawnRandomDoors(NumberOfDoors);
 	InitializeCircleVisualization();
 	SetRandomCosmicSoup();
-	OpenCurrentDoors();
 
 	for (auto i = 0; i < 1; i++)
 	{

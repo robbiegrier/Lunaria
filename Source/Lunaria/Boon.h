@@ -82,4 +82,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnAdded();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnRemoved();
 };

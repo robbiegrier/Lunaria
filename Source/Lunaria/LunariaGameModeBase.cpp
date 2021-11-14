@@ -35,7 +35,7 @@ void ALunariaGameModeBase::BeginPlay()
 
 void ALunariaGameModeBase::StartNewArea()
 {
-	static auto TestScale = 1000.f;
+	static auto TestScale = 500.f;
 	static auto TestEntDir = FVector(1.f, 1.f, 0.f);
 	MapManager->LoadNewMap(TestScale, TestEntDir, 1);
 
@@ -43,9 +43,7 @@ void ALunariaGameModeBase::StartNewArea()
 	GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorLocation(Nearest);
 	GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorRotation(UKismetMathLibrary::MakeRotFromX(TestEntDir));
 
-	TestScale *= 1.2f;
-
-	TestEntDir = FVector(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f), 0.f);
+	StartTasks();
 }
 
 void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
@@ -56,5 +54,62 @@ void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 	if (auto Spaceship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn()))
 	{
 		Spaceship->RespawnOnMap(MapManager);
+	}
+
+	StartTasks();
+}
+
+void ALunariaGameModeBase::StartTasks()
+{
+	MapManager->CloseCurrentDoors();
+
+	LevelTaskList.Empty();
+
+	LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
+	LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
+
+	CurrentTaskIndex = 0;
+	StartTask(GetCurrentLevelTaskClass());
+}
+
+TSubclassOf<ALevelTask> ALunariaGameModeBase::GetCurrentLevelTaskClass() const
+{
+	if (Helpers::IsValidIndex(LevelTaskList, CurrentTaskIndex))
+	{
+		return LevelTaskList[CurrentTaskIndex];
+	}
+
+	return nullptr;
+}
+
+void ALunariaGameModeBase::StartTask(TSubclassOf<ALevelTask> TaskClass)
+{
+	if (TaskClass)
+	{
+		CurrentTask = GetWorld()->SpawnActor<ALevelTask>(TaskClass);
+		CurrentTask->GetTaskCompleteEvent().AddUObject(this, &ALunariaGameModeBase::OnCurrentTaskComplete);
+		CurrentTask->NativeStartTask();
+	}
+}
+
+void ALunariaGameModeBase::StartNextTask()
+{
+	++CurrentTaskIndex;
+	StartTask(GetCurrentLevelTaskClass());
+}
+
+void ALunariaGameModeBase::OnCurrentTaskComplete()
+{
+	Print("Completed a Task", FColor::Blue);
+	CurrentTask->Destroy();
+
+	if (CurrentTaskIndex < LevelTaskList.Num() - 1)
+	{
+		StartNextTask();
+	}
+	else
+	{
+		Print("All Tasks Complete", FColor::Green);
+		MapManager->OpenCurrentDoors();
 	}
 }

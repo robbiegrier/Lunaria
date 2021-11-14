@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float GetDamage() const { return DamagePayload; }
 
+	UFUNCTION(BlueprintCallable)
+		class UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
+
 protected:
 	virtual void BeginPlay() override;
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;

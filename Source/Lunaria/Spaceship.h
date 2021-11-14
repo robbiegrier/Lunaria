@@ -28,24 +28,24 @@ public:
 		void HandleRutterInput(float Scale);
 
 	UFUNCTION()
-		void TurnToFaceDirection(const FVector& Direction, float MinDeltaAngle = 0.95f);
+		void TurnToFaceDirection(const FVector& Direction, float MinDeltaAngle = 0.98f);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		class USpaceshipMovementComponent* GetSpaceshipMovement() const { return SpaceshipMovementComponent; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		class UHealthComponent* GetHealthComponent() const { return HealthComponent; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		class UAttributesComponent* GetAttributesComponent() const { return Attributes; }
 
 	UFUNCTION()
 		class USphereComponent* GetInteractionVolume() const { return InteractionVolume; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		class UAbilitiesComponent* GetAbilitiesComponent() const { return AbilitiesComponent; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		class UCombatComponent* GetCombatComponent() const { return CombatComponent; }
 
 protected:
@@ -57,9 +57,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-		class USphereComponent* GenericAwarenessVolume;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		class USphereComponent* InteractionVolume;

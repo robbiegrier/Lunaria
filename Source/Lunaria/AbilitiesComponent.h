@@ -22,10 +22,17 @@ public:
 	UAbilitiesComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	AAbility* GetAbility(EAbilityKey Key) const;
-	void PressAbility(EAbilityKey Key);
-	void ReleaseAbility(EAbilityKey Key);
-	void SetAbility(EAbilityKey Key, AAbility* Ability);
+	UFUNCTION(BlueprintCallable)
+		AAbility* GetAbility(EAbilityKey Key) const;
+
+	UFUNCTION(BlueprintCallable)
+		void PressAbility(EAbilityKey Key);
+
+	UFUNCTION(BlueprintCallable)
+		void ReleaseAbility(EAbilityKey Key);
+
+	UFUNCTION(BlueprintCallable)
+		void SetAbility(EAbilityKey Key, AAbility* Ability);
 
 protected:
 	virtual void BeginPlay() override;

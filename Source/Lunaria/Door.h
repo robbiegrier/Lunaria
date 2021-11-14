@@ -46,6 +46,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnDoorInteractWhenOpen();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnOpen();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnClose();
 };
 
 /// Door States

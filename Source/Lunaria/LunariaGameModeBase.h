@@ -7,6 +7,7 @@
 #include "CpuHealthBar.h"
 #include "DebugWidget.h"
 #include "MapManager.h"
+#include "LevelTask.h"
 #include "LunariaGameModeBase.generated.h"
 
 /**
@@ -44,6 +45,18 @@ protected:
 	virtual void StartPlay() override;
 
 private:
+	void StartTasks();
+	TSubclassOf<ALevelTask> GetCurrentLevelTaskClass() const;
+	void StartTask(TSubclassOf<ALevelTask> TaskClass);
+	void StartNextTask();
+	void OnCurrentTaskComplete();
+	TArray<TSubclassOf<ALevelTask>> LevelTaskList;
+	int32 CurrentTaskIndex = 0;
+	ALevelTask* CurrentTask;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks, meta = (AllowPrivateAccess = "true"))
+		TArray<TSubclassOf<ALevelTask>> CombatTaskClasses;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Map, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AMapManager> MapManagerClass;
 

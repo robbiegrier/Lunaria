@@ -52,10 +52,17 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 				Event.Values.Add("Damage", DamagePayload);
 				Event.Vectors.Add("Location", GetActorLocation());
 				AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
+				Die();
+			}
+			else
+			{
+				// When hit a friendly, do not die
 			}
 		}
-
-		Die();
+		else
+		{
+			Die();
+		}
 	}
 }
 

@@ -193,20 +193,38 @@ void AGameplayEventManager::BroadcastClassEventDelegate(ClassDelegateMapType& Ma
 
 			if (Class->IsChildOf(ClassKey))
 			{
-				auto Removals = TArray<FGameplayEventDynamicDelegate>();
-
-				for (auto& Delegate : Pair.Value)
+				for (auto i = 0; i < Pair.Value.Num(); i++)
 				{
-					if (!Delegate.ExecuteIfBound(Event))
+					auto& Delegate = Pair.Value[i];
+					Delegate.ExecuteIfBound(Event);
+				}
+
+				/*	for (auto i = 0; i < Pair.Value.Num();)
 					{
-						Removals.Add(Delegate);
-					}
-				}
+						auto& Delegate = Pair.Value[i];
+						if (!Delegate.ExecuteIfBound(Event))
+						{
+							Pair.Value.Remove(Delegate);
+						}
+						else
+						{
+							i++;
+						}
+					}*/
+					//auto Removals = TArray<FGameplayEventDynamicDelegate>();
 
-				for (auto& Delegate : Removals)
-				{
-					Pair.Value.Remove(Delegate);
-				}
+					//for (auto& Delegate : Pair.Value)
+					//{
+					//	if (!Delegate.ExecuteIfBound(Event))
+					//	{
+					//		Removals.Add(Delegate);
+					//	}
+					//}
+
+					//for (auto& Delegate : Removals)
+					//{
+					//	Pair.Value.Remove(Delegate);
+					//}
 			}
 		}
 	}

@@ -55,11 +55,6 @@ ASpaceship::ASpaceship()
 	GetMesh()->SetCastShadow(false);
 	GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("Spaceship")));
 
-	GenericAwarenessVolume = CreateDefaultSubobject<USphereComponent>(TEXT("Generic Awareness Volume Component"));
-	GenericAwarenessVolume->SetupAttachment(RootComponent);
-	GenericAwarenessVolume->SetSphereRadius(2000.f);
-	GenericAwarenessVolume->ShapeColor = FColor::Cyan;
-
 	SpaceshipMovementComponent = CreateDefaultSubobject<USpaceshipMovementComponent>("Spaceship Movement Component");
 
 	InteractionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("Interaction Volume Component"));

@@ -30,7 +30,7 @@ ADoor::ADoor()
 void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentState = ClosedState;
+	Close();
 }
 
 void ADoor::Tick(float DeltaTime)
@@ -56,11 +56,13 @@ void ADoor::Interact()
 void ADoor::Open()
 {
 	CurrentState = OpenState;
+	OnOpen();
 }
 
 void ADoor::Close()
 {
 	CurrentState = ClosedState;
+	OnClose();
 }
 
 void InteractableDoorOpenState::Execute(AActor* Subject)

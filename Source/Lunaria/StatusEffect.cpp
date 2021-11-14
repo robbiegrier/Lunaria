@@ -56,6 +56,7 @@ void AStatusEffect::ClearStatuses()
 	{
 		if (Status)
 		{
+			Status->OnRemoved();
 			Status->Destroy();
 		}
 	}
