@@ -36,8 +36,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
 private:
+	using ClassDelegateMapType = TMap<ENativeEventType, TMap<UClass*, TArray<FGameplayEventDynamicDelegate>>>;
+
 	void ProcessGameplayEvents();
 	void TriggerSubjectObservation(const FGameplayEvent& Event);
 	void TriggerAgentObservation(const FGameplayEvent& Event);
@@ -45,13 +48,24 @@ private:
 	void TriggerSubjectOfClassDelegates(const FGameplayEvent& Event);
 	void ProcessHitEvent(const FGameplayEvent& Event);
 	void ProcessKillEvent(const FGameplayEvent& Event);
+	void CullHangingDelegates(ClassDelegateMapType& Map);
 
 	UPROPERTY()
 		TArray<FGameplayEvent> Events;
 
-	using ClassDelegateMapType = TMap<ENativeEventType, TMap<UClass*, TArray<FGameplayEventDynamicDelegate>>>;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Scene, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* SceneComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		class UWidgetComponent* DebugWidgetComponent;
+
 	ClassDelegateMapType AgentOfClassDelegates;
 	ClassDelegateMapType SubjectOfClassDelegates;
+
+	FTimerHandle DelegateCullTimerHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Garbage, meta = (AllowPrivateAccess = "true"))
+		float CullInterval = 60.f;
 
 	static void BroadcastClassEventDelegate(ClassDelegateMapType& Map, UClass* Class, const FGameplayEvent& Event);
 	static void AddClassEventDelegate(ClassDelegateMapType& Map, ENativeEventType Action, UClass* Class, FGameplayEventDynamicDelegate ClientFunction);

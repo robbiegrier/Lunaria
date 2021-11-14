@@ -8,21 +8,94 @@
 #include "SpaceProjectile.h"
 #include "AttributesComponent.h"
 #include "GameplayEventObserver.h"
+#include "Components/WidgetComponent.h"
+#include "TimerManager.h"
 
 AGameplayEventManager::AGameplayEventManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	SceneComponent = CreateDefaultSubobject<USceneComponent>("Root Scene Component");
+	RootComponent = SceneComponent;
+
+	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Debug Widget Component"));
+	DebugWidgetComponent->SetupAttachment(RootComponent);
+
+	DebugWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	DebugWidgetComponent->SetDrawAtDesiredSize(true);
 }
 
 void AGameplayEventManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (auto GameMode = ALunariaGameModeBase::Get(GetWorld()))
+	{
+		DebugWidgetComponent->SetWidgetClass(GameMode->GetDebugWidgetClass());
+	}
+
+	auto CullDirective = [this] {
+		CullHangingDelegates(AgentOfClassDelegates);
+		CullHangingDelegates(SubjectOfClassDelegates);
+	};
+
+	GetWorld()->GetTimerManager().SetTimer(DelegateCullTimerHandle, CullDirective, CullInterval, true, CullInterval);
+}
+
+void AGameplayEventManager::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+	DelegateCullTimerHandle.Invalidate();
 }
 
 void AGameplayEventManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	ProcessGameplayEvents();
+
+	if (auto DebugWidget = Cast<UDebugWidget>(DebugWidgetComponent->GetUserWidgetObject()))
+	{
+		DebugWidget->SetText("Gameplay Event Manager");
+
+		auto DelegateMapDebug = FString("Delegate Map:\n");
+		DelegateMapDebug += "\tAgent Of Map:\n";
+		for (auto& ActionMapping : AgentOfClassDelegates)
+		{
+			auto Action = ActionMapping.Key;
+			DelegateMapDebug += "\t\t";
+			DelegateMapDebug += Action == ENativeEventType::Hit ? "Hit" : Action == ENativeEventType::Kill ? "Kill" : "Other";
+			DelegateMapDebug += ":\n";
+
+			for (auto& ClassMapping : ActionMapping.Value)
+			{
+				DelegateMapDebug += "\t\t\t";
+				auto ClassName = ClassMapping.Key->GetName();
+				DelegateMapDebug += ClassName + ": " + FString::FromInt(ClassMapping.Value.Num());
+				DelegateMapDebug += "\n";
+			}
+		}
+
+		DelegateMapDebug += "\n";
+
+		DelegateMapDebug += "\tSubject Of Map:\n";
+		for (auto& ActionMapping : SubjectOfClassDelegates)
+		{
+			auto Action = ActionMapping.Key;
+			DelegateMapDebug += "\t\t";
+			DelegateMapDebug += Action == ENativeEventType::Hit ? "Hit" : Action == ENativeEventType::Kill ? "Kill" : "Other";
+			DelegateMapDebug += ":\n";
+
+			for (auto& ClassMapping : ActionMapping.Value)
+			{
+				DelegateMapDebug += "\t\t\t";
+				auto ClassName = ClassMapping.Key->GetName();
+				DelegateMapDebug += ClassName + ": " + FString::FromInt(ClassMapping.Value.Num());
+				DelegateMapDebug += "\n";
+			}
+		}
+
+		DebugWidget->SetSubText(DelegateMapDebug);
+	}
 }
 
 AGameplayEventManager* AGameplayEventManager::Get(AActor* ActorContext)
@@ -183,49 +256,38 @@ void AGameplayEventManager::TriggerSubjectOfClassDelegates(const FGameplayEvent&
 
 void AGameplayEventManager::BroadcastClassEventDelegate(ClassDelegateMapType& Map, UClass* Class, const FGameplayEvent& Event)
 {
-	if (auto FindString = Map.Find(Event.Action))
+	if (auto FoundClassMapForAction = Map.Find(Event.Action))
 	{
-		auto& ClassMap = *FindString;
+		const auto& ClassMap = *FoundClassMapForAction;
 
-		for (auto& Pair : ClassMap)
+		for (const auto& Pair : ClassMap)
 		{
-			auto& ClassKey = Pair.Key;
+			const auto& ClassKey = Pair.Key;
 
 			if (Class->IsChildOf(ClassKey))
 			{
+				// Using for-ranged loop triggers false positive for changing the array
 				for (auto i = 0; i < Pair.Value.Num(); i++)
 				{
-					auto& Delegate = Pair.Value[i];
+					const auto& Delegate = Pair.Value[i];
 					Delegate.ExecuteIfBound(Event);
 				}
-
-				/*	for (auto i = 0; i < Pair.Value.Num();)
-					{
-						auto& Delegate = Pair.Value[i];
-						if (!Delegate.ExecuteIfBound(Event))
-						{
-							Pair.Value.Remove(Delegate);
-						}
-						else
-						{
-							i++;
-						}
-					}*/
-					//auto Removals = TArray<FGameplayEventDynamicDelegate>();
-
-					//for (auto& Delegate : Pair.Value)
-					//{
-					//	if (!Delegate.ExecuteIfBound(Event))
-					//	{
-					//		Removals.Add(Delegate);
-					//	}
-					//}
-
-					//for (auto& Delegate : Removals)
-					//{
-					//	Pair.Value.Remove(Delegate);
-					//}
 			}
+		}
+	}
+}
+
+void AGameplayEventManager::CullHangingDelegates(ClassDelegateMapType& Map)
+{
+	for (auto& ActionClassMapPair : Map)
+	{
+		for (auto& ClassDelegateMapPair : ActionClassMapPair.Value)
+		{
+			auto& Delegates = ClassDelegateMapPair.Value;
+
+			Delegates.RemoveAll([](const auto& Delegate) {
+				return !Delegate.IsBound();
+			});
 		}
 	}
 }
