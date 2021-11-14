@@ -5,17 +5,20 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "FGameplayEvent.h"
+#include "DetailTogglable.h"
 #include "GameplayEventManager.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FGameplayEventDynamicDelegate, const FGameplayEvent&, Event);
 UCLASS()
-class LUNARIA_API AGameplayEventManager : public AActor
+class LUNARIA_API AGameplayEventManager : public AActor, public IDetailTogglable
 {
 	GENERATED_BODY()
 
 public:
 	AGameplayEventManager();
 	virtual void Tick(float DeltaTime) override;
+	virtual void ToggleDetailOn() override;
+	virtual void ToggleDetailOff() override;
 
 	UFUNCTION(BlueprintCallable)
 		static AGameplayEventManager* Get(AActor* ActorContext);
@@ -49,6 +52,8 @@ private:
 	void ProcessHitEvent(const FGameplayEvent& Event);
 	void ProcessKillEvent(const FGameplayEvent& Event);
 	void CullHangingDelegates(ClassDelegateMapType& Map);
+	FString PrintDelegateMap(const ClassDelegateMapType& Map);
+	void DebugMaps();
 
 	UPROPERTY()
 		TArray<FGameplayEvent> Events;

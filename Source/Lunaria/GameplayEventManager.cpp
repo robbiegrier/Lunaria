@@ -10,6 +10,7 @@
 #include "GameplayEventObserver.h"
 #include "Components/WidgetComponent.h"
 #include "TimerManager.h"
+#include "User.h"
 
 AGameplayEventManager::AGameplayEventManager()
 {
@@ -40,6 +41,7 @@ void AGameplayEventManager::BeginPlay()
 	};
 
 	GetWorld()->GetTimerManager().SetTimer(DelegateCullTimerHandle, CullDirective, CullInterval, true, CullInterval);
+	SetInitialDetailToggleState();
 }
 
 void AGameplayEventManager::EndPlay(EEndPlayReason::Type Reason)
@@ -53,49 +55,20 @@ void AGameplayEventManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	ProcessGameplayEvents();
 
-	if (auto DebugWidget = Cast<UDebugWidget>(DebugWidgetComponent->GetUserWidgetObject()))
+	if (DebugWidgetComponent->GetVisibleFlag())
 	{
-		DebugWidget->SetText("Gameplay Event Manager");
-
-		auto DelegateMapDebug = FString("Delegate Map:\n");
-		DelegateMapDebug += "\tAgent Of Map:\n";
-		for (auto& ActionMapping : AgentOfClassDelegates)
-		{
-			auto Action = ActionMapping.Key;
-			DelegateMapDebug += "\t\t";
-			DelegateMapDebug += Action == ENativeEventType::Hit ? "Hit" : Action == ENativeEventType::Kill ? "Kill" : "Other";
-			DelegateMapDebug += ":\n";
-
-			for (auto& ClassMapping : ActionMapping.Value)
-			{
-				DelegateMapDebug += "\t\t\t";
-				auto ClassName = ClassMapping.Key->GetName();
-				DelegateMapDebug += ClassName + ": " + FString::FromInt(ClassMapping.Value.Num());
-				DelegateMapDebug += "\n";
-			}
-		}
-
-		DelegateMapDebug += "\n";
-
-		DelegateMapDebug += "\tSubject Of Map:\n";
-		for (auto& ActionMapping : SubjectOfClassDelegates)
-		{
-			auto Action = ActionMapping.Key;
-			DelegateMapDebug += "\t\t";
-			DelegateMapDebug += Action == ENativeEventType::Hit ? "Hit" : Action == ENativeEventType::Kill ? "Kill" : "Other";
-			DelegateMapDebug += ":\n";
-
-			for (auto& ClassMapping : ActionMapping.Value)
-			{
-				DelegateMapDebug += "\t\t\t";
-				auto ClassName = ClassMapping.Key->GetName();
-				DelegateMapDebug += ClassName + ": " + FString::FromInt(ClassMapping.Value.Num());
-				DelegateMapDebug += "\n";
-			}
-		}
-
-		DebugWidget->SetSubText(DelegateMapDebug);
+		DebugMaps();
 	}
+}
+
+void AGameplayEventManager::ToggleDetailOn()
+{
+	DebugWidgetComponent->SetVisibility(true);
+}
+
+void AGameplayEventManager::ToggleDetailOff()
+{
+	DebugWidgetComponent->SetVisibility(false);
 }
 
 AGameplayEventManager* AGameplayEventManager::Get(AActor* ActorContext)
@@ -207,7 +180,6 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 
 void AGameplayEventManager::ProcessKillEvent(const FGameplayEvent& Event)
 {
-	Print("KO!");
 	Event.Subject->Destroy();
 }
 
@@ -289,5 +261,47 @@ void AGameplayEventManager::CullHangingDelegates(ClassDelegateMapType& Map)
 				return !Delegate.IsBound();
 			});
 		}
+	}
+}
+
+FString AGameplayEventManager::PrintDelegateMap(const ClassDelegateMapType& Map)
+{
+	auto Output = FString();
+
+	for (auto& ActionMapping : Map)
+	{
+		auto Action = ActionMapping.Key;
+		Output += "\t\t";
+		Output += Action == ENativeEventType::Hit ? "Hit" : Action == ENativeEventType::Kill ? "Kill" : "Other";
+		Output += ":\n";
+
+		for (auto& ClassMapping : ActionMapping.Value)
+		{
+			Output += "\t\t\t";
+			auto ClassName = ClassMapping.Key->GetName();
+			Output += ClassName + ": " + FString::FromInt(ClassMapping.Value.Num());
+			Output += "\n";
+		}
+	}
+
+	return Output;
+}
+
+void AGameplayEventManager::DebugMaps()
+{
+	if (auto DebugWidget = Cast<UDebugWidget>(DebugWidgetComponent->GetUserWidgetObject()))
+	{
+		DebugWidget->SetText("Gameplay Event Manager");
+
+		auto DelegateMapDebug = FString("Delegate Map:\n");
+		DelegateMapDebug += "\tAgent Of Map:\n";
+		DelegateMapDebug += PrintDelegateMap(AgentOfClassDelegates);
+
+		DelegateMapDebug += "\n";
+
+		DelegateMapDebug += "\tSubject Of Map:\n";
+		DelegateMapDebug += PrintDelegateMap(SubjectOfClassDelegates);
+
+		DebugWidget->SetSubText(DelegateMapDebug);
 	}
 }
