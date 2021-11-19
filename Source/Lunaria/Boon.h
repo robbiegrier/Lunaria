@@ -55,6 +55,8 @@ public:
 		int32 GetMaxStacksAsStatusEffect() const { return MaxStacksAsStatusEffect; }
 
 private:
+	FAttributeModifier* FindModifier(const FGameplayTagContainer& Attribute) const;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;
 

@@ -21,8 +21,6 @@ AAbility::AAbility()
 	ContextAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("Context Audio Component"));
 	ContextAudioPlayer->SetupAttachment(RootComponent);
 	ContextAudioPlayer->SetAutoActivate(false);
-
-	AbilityType = "Generic";
 }
 
 void AAbility::BeginPlay()
@@ -71,6 +69,12 @@ void AAbility::Tick(float DeltaTime)
 	{
 		TickOff(DeltaTime);
 	}
+}
+
+void AAbility::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	TagContainer = GameplayTags;
+	TagContainer.AddTag(AbilityTag);
 }
 
 void AAbility::Attach(AActor* InOwner)

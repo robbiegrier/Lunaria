@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameplayTagContainer.h"
+#include "GameplayTagAssetInterface.h"
 #include "Ability.generated.h"
 
 UENUM()
@@ -18,13 +19,14 @@ enum class EAbilityExecution : uint8
 };
 
 UCLASS()
-class LUNARIA_API AAbility : public AActor
+class LUNARIA_API AAbility : public AActor, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
 public:
 	AAbility();
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
 	void Attach(AActor* InOwner);
 
@@ -55,9 +57,6 @@ public:
 		int32 GetCooldownCharges();
 
 	UFUNCTION(BlueprintCallable)
-		const FString& GetAbilityType() const { return AbilityType; }
-
-	UFUNCTION(BlueprintCallable)
 		float GetAttributeValue(const FString& Attribute, float Seed) const;
 
 	UFUNCTION(BlueprintCallable)
@@ -71,9 +70,6 @@ protected:
 
 private:
 	void UpdateStrategy(TEnumAsByte<EAbilityExecution> Type);
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
-		FString AbilityType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
 		TEnumAsByte<EAbilityExecution> ExecutionType;
@@ -114,6 +110,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
 		FGameplayTag AbilityTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
+		FGameplayTagContainer GameplayTags;
 
 	TSharedPtr<class FAbilityStrategy> AbilityStrategy;
 

@@ -25,20 +25,13 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes)
 
 const FAttributeModifier& ABoon::GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const
 {
-	auto Find = AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
-		return Attribute.HasAll(Element.Attribute);
-	});
-
+	auto Find = FindModifier(Attribute);
 	return Find ? *Find : NullModifier;
 }
 
 void ABoon::SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier)
 {
-	auto Find = AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
-		return Attribute.HasAll(Element.Attribute);
-	});
-
-	if (Find)
+	if (auto Find = FindModifier(Attribute))
 	{
 		*Find = Modifier;
 	}
@@ -54,4 +47,11 @@ void ABoon::Remove()
 	{
 		MyOwnerAttributes->RemoveAndDestroyBoon(this);
 	}
+}
+
+FAttributeModifier* ABoon::FindModifier(const FGameplayTagContainer& Attribute) const
+{
+	return const_cast<FAttributeModifier*>(AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
+		return Attribute.HasAll(Element.Attribute);
+	}));
 }

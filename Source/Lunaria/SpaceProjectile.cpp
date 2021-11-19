@@ -27,6 +27,8 @@ ASpaceProjectile::ASpaceProjectile()
 	ProjectileMovementComponent->InitialSpeed = 1500.f;
 	ProjectileMovementComponent->MaxSpeed = 1500.f;
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
+
+	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
 }
 
 void ASpaceProjectile::BeginPlay()
@@ -48,9 +50,10 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 			if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
 			{
 				auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, OtherActor);
-				Event.Tags.Add("AbilityType", AbilityAssociation);
 				Event.Values.Add("Damage", DamagePayload);
 				Event.Vectors.Add("Location", GetActorLocation());
+				Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
+				Event.EventTags.AppendTags(GameplayTags);
 				AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
 				Die();
 			}
@@ -80,4 +83,11 @@ void ASpaceProjectile::Tick(float DeltaTime)
 	{
 		Die();
 	}
+}
+
+void ASpaceProjectile::SetPayloadProperties(const FGameplayTagContainer& TagContainer, float InDamage, float InDistance)
+{
+	GameplayTags.AppendTags(TagContainer);
+	DamagePayload = InDamage;
+	TravelDistance = InDistance;
 }

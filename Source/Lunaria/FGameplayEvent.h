@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "GameplayTagAssetInterface.h"
 #include "FGameplayEvent.generated.h"
 
 UENUM(BlueprintType)
@@ -28,14 +30,21 @@ struct FGameplayEvent
 public:
 	FGameplayEvent() = default;
 
-	FGameplayEvent(AActor* InAgent, const FString& InType, AActor* InSubject)
-		: Agent(InAgent), EventType(InType), Subject(InSubject) {}
-
 	FGameplayEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject)
-		: Agent(InAgent), Action(InAction), Subject(InSubject) {}
+		: Agent(InAgent), Action(InAction), Subject(InSubject) {
+		if (auto Tagged = Cast<IGameplayTagAssetInterface>(Agent)) {
+			Tagged->GetOwnedGameplayTags(AgentTags);
+		}
+		if (auto Tagged = Cast<IGameplayTagAssetInterface>(Subject)) {
+			Tagged->GetOwnedGameplayTags(SubjectTags);
+		}
+	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* Agent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FGameplayTagContainer AgentTags;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString EventType;
@@ -47,6 +56,9 @@ public:
 		AActor* Subject;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FGameplayTagContainer SubjectTags;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<FString, FString> Tags;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -54,4 +66,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<FString, FVector> Vectors;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FGameplayTagContainer EventTags;
 };
