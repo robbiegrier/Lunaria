@@ -35,7 +35,7 @@ void UHealthComponent::ApplyDamage(float Scale)
 {
 	if (Attributes)
 	{
-		auto ReductionPercent = Attributes->Get("DamageReduction", 0.f) * 0.01f;
+		auto ReductionPercent = Attributes->Get("Reduction.Damage", 0.f) * 0.01f;
 		auto ReductionAmount = Scale * ReductionPercent;
 		Scale = Scale - ReductionAmount;
 	}
@@ -56,5 +56,5 @@ bool UHealthComponent::IsHealthDepleted() const
 
 float UHealthComponent::GetMaxHealth() const
 {
-	return Attributes->Get("MaxHealth", MaxHealthSeed);
+	return Attributes->Get("Health.Total", MaxHealthSeed);
 }

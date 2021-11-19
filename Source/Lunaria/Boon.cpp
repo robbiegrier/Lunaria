@@ -6,6 +6,8 @@
 #include "GameplayEventManager.h"
 #include "Components/SceneComponent.h"
 
+FAttributeModifier ABoon::NullModifier = FAttributeModifier();
+
 ABoon::ABoon()
 {
 	BoonName = "Spaceship Upgrade";
@@ -21,35 +23,29 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes)
 	OnAdded();
 }
 
-FAttributeModifier ABoon::GetAttributeModifier(const FString& Attribute) const
+const FAttributeModifier& ABoon::GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const
 {
-	if (auto Find = AttributeModifiers.Find(Attribute))
+	auto Find = AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
+		return Attribute.HasAll(Element.Attribute);
+	});
+
+	return Find ? *Find : NullModifier;
+}
+
+void ABoon::SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier)
+{
+	auto Find = AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
+		return Attribute.HasAll(Element.Attribute);
+	});
+
+	if (Find)
 	{
-		return *Find;
+		*Find = Modifier;
 	}
 	else
 	{
-		return FAttributeModifier();
+		AttributeModifierList.Add(Modifier);
 	}
-}
-
-void ABoon::SetAttributeModifier(const FString& Attribute, const FAttributeModifier& Modifier)
-{
-	AttributeModifiers.Add(Attribute, Modifier);
-}
-
-void ABoon::SetAttributeModifierAdditive(const FString& Attribute, float Additive)
-{
-	auto Modifier = GetAttributeModifier(Attribute);
-	Modifier.Additive = Additive;
-	SetAttributeModifier(Attribute, Modifier);
-}
-
-void ABoon::SetAttributeModifierMultiplier(const FString& Attribute, float Multiplier)
-{
-	auto Modifier = GetAttributeModifier(Attribute);
-	Modifier.Multiplier = Multiplier;
-	SetAttributeModifier(Attribute, Modifier);
 }
 
 void ABoon::Remove()

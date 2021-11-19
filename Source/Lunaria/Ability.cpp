@@ -31,7 +31,7 @@ void AAbility::BeginPlay()
 	UpdateStrategy(ExecutionType);
 
 	CurrentCharges = GetCooldownCharges();
-	LastUsed = -GetCooldown();
+	LastUsed = -9999.f;
 }
 
 void AAbility::UpdateStrategy(TEnumAsByte<EAbilityExecution> Type)
@@ -85,22 +85,27 @@ UAttributesComponent* AAbility::GetAttributes() const
 
 float AAbility::GetCooldown()
 {
-	return GetAttributeValue("Cooldown", CooldownSeed);
+	return GetAttributeValue("Attribute.Cooldown.Ability", CooldownSeed);
 }
 
 int32 AAbility::GetCooldownCharges()
 {
-	return GetAttributeValue("Charges", CooldownChargesSeed);
+	return GetAttributeValue("Attribute.Charges.Ability", CooldownChargesSeed);
 }
 
 float AAbility::GetAttributeValue(const FString& Attribute, float Seed) const
 {
+	return GetAttributeValueFromTag(FGameplayTag::RequestGameplayTag(*Attribute), Seed);
+}
+
+float AAbility::GetAttributeValueFromTag(const FGameplayTag& Attribute, float Seed) const
+{
 	if (MyOwner)
 	{
-		return GetAttributes()->Get(AbilityType + Attribute, Seed);
+		return GetAttributes()->GetForAbilityType(AbilityTag, Attribute, Seed);
 	}
 
-	return CooldownChargesSeed;
+	return 0.f;
 }
 
 void AAbility::ExecuteContext()

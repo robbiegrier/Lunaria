@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameplayEventObserver.h"
+#include "GameplayTagContainer.h"
 #include "Boon.generated.h"
 
 USTRUCT(BlueprintType)
@@ -13,7 +14,11 @@ struct FAttributeModifier
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
+		FGameplayTagContainer Attribute;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
 		float Additive = 0.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
 		float Multiplier = 0.f;
 };
@@ -27,6 +32,7 @@ class LUNARIA_API ABoon : public AActor, public IGameplayEventObserver
 	GENERATED_BODY()
 
 public:
+
 	ABoon();
 	void NativeOnAdded(class UAttributesComponent* Attributes);
 
@@ -34,16 +40,10 @@ public:
 		const FString& GetBoonName() const { return BoonName; }
 
 	UFUNCTION(BlueprintCallable)
-		FAttributeModifier GetAttributeModifier(const FString& Attribute) const;
+		const FAttributeModifier& GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const;
 
 	UFUNCTION(BlueprintCallable)
-		void SetAttributeModifier(const FString& Attribute, const FAttributeModifier& Modifier);
-
-	UFUNCTION(BlueprintCallable)
-		void SetAttributeModifierAdditive(const FString& Attribute, float Additive);
-
-	UFUNCTION(BlueprintCallable)
-		void SetAttributeModifierMultiplier(const FString& Attribute, float Multiplier);
+		void SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier);
 
 	UFUNCTION(BlueprintCallable)
 		void Remove();
@@ -59,7 +59,7 @@ private:
 		FString BoonName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Testing, meta = (AllowPrivateAccess = "true"))
-		TMap<FString, FAttributeModifier> AttributeModifiers;
+		TArray<FAttributeModifier> AttributeModifierList;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		AActor* MyOwner;
@@ -76,9 +76,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Scene, meta = (AllowPrivateAccess = "true"))
 		class USceneComponent* SceneComponent;
 
+	static FAttributeModifier NullModifier;
+
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
-		void BeforeAttributeQueried(const FString& Attribute);
+		void BeforeAttributeQueried(const FGameplayTagContainer& Attribute);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnAdded();

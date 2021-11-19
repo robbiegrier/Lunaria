@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "Ability.generated.h"
 
 UENUM()
@@ -59,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float GetAttributeValue(const FString& Attribute, float Seed) const;
 
+	UFUNCTION(BlueprintCallable)
+		float GetAttributeValueFromTag(const FGameplayTag& Attribute, float Seed) const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -107,6 +111,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
 		int32 CurrentCharges = CooldownChargesSeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
+		FGameplayTag AbilityTag;
 
 	TSharedPtr<class FAbilityStrategy> AbilityStrategy;
 

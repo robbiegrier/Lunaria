@@ -163,13 +163,23 @@ void UAttributesComponent::ClearStatusEffects()
 
 float UAttributesComponent::Get(const FString& Attribute, float Seed)
 {
+	return GetTagged(FGameplayTag::RequestGameplayTag(*("Attribute." + Attribute)), Seed);
+}
+
+float UAttributesComponent::GetTagged(const FGameplayTag& Attribute, float Seed)
+{
+	return GetFromTagContainer(FGameplayTagContainer(Attribute), Seed);
+}
+
+float UAttributesComponent::GetFromTagContainer(const FGameplayTagContainer& Attribute, float Seed)
+{
 	auto Base = Seed;
 	auto Multiplier = 1.f;
 
 	for (auto Boon : Boons)
 	{
 		Boon->BeforeAttributeQueried(Attribute);
-		auto Modifier = Boon->GetAttributeModifier(Attribute);
+		auto Modifier = Boon->GetModifierForTagContainer(Attribute);
 
 		Base += Modifier.Additive;
 		Multiplier += Modifier.Multiplier / 100.f;
@@ -180,7 +190,7 @@ float UAttributesComponent::Get(const FString& Attribute, float Seed)
 		for (auto Boon : EffectRegister.Value->GetStatuses())
 		{
 			Boon->BeforeAttributeQueried(Attribute);
-			auto Modifier = Boon->GetAttributeModifier(Attribute);
+			auto Modifier = Boon->GetModifierForTagContainer(Attribute);
 
 			Base += Modifier.Additive;
 			Multiplier += Modifier.Multiplier / 100.f;
@@ -188,4 +198,11 @@ float UAttributesComponent::Get(const FString& Attribute, float Seed)
 	}
 
 	return Base * Multiplier;
+}
+
+float UAttributesComponent::GetForAbilityType(const FGameplayTag& Ability, const FGameplayTag& Attribute, float Seed)
+{
+	auto Container = FGameplayTagContainer(Ability);
+	Container.AddTag(Attribute);
+	return GetFromTagContainer(Container, Seed);
 }

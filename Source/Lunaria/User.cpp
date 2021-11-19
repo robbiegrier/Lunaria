@@ -189,18 +189,18 @@ void AUser::HandleDebugAction()
 	//	GameMode->GetMap()->OpenCurrentDoors();
 	//}
 
-	//if (!BoonSpawn || BoonSpawn->IsActorBeingDestroyed())
-	//{
-	//	BoonSpawn = GetWorld()->SpawnActor<ABoon>(BoonClass);
-	//	Spaceship->GetAttributesComponent()->AddBoon(BoonSpawn);
-	//}
-	//else
-	//{
-	//	Spaceship->GetAttributesComponent()->RemoveAndDestroyBoon(BoonSpawn);
-	//}
+	if (!BoonSpawn || BoonSpawn->IsActorBeingDestroyed())
+	{
+		BoonSpawn = GetWorld()->SpawnActor<ABoon>(BoonClass);
+		Spaceship->GetAttributesComponent()->AddBoon(BoonSpawn);
+	}
+	else
+	{
+		Spaceship->GetAttributesComponent()->RemoveAndDestroyBoon(BoonSpawn);
+	}
 
 	//BoonSpawn = GetWorld()->SpawnActor<ABoon>(BoonClass);
-	Spaceship->GetAttributesComponent()->AddStatusEffectFromClass(BoonClass);
+	//Spaceship->GetAttributesComponent()->AddStatusEffectFromClass(BoonClass);
 }
 
 void AUser::HandleInteractActionPressed()

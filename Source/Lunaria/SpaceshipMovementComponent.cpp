@@ -44,7 +44,7 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 	{
 		if (auto Pawn = Cast<APawn>(GetOwner()))
 		{
-			auto FrameThrust = Helpers::Dilate(Scale * FMath::Max(Attributes->Get("MoveSpeed", MoveSpeedSeed), 0.f), GetWorld());
+			auto FrameThrust = Helpers::Dilate(Scale * FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f), GetWorld());
 			Pawn->AddActorWorldOffset(Pawn->GetTransform().GetRotation().GetForwardVector() * FrameThrust);
 		}
 	}
@@ -52,7 +52,7 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 
 void USpaceshipMovementComponent::Turn(float Scale)
 {
-	ExecuteTurning(Scale, FMath::Max(Attributes->Get("TurnSpeed", TurnSpeedSeed), 0.f));
+	ExecuteTurning(Scale, FMath::Max(Attributes->Get("Speed.Turn", TurnSpeedSeed), 0.f));
 }
 
 void USpaceshipMovementComponent::ExecuteTurning(float Scale, float Speed)

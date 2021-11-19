@@ -118,7 +118,7 @@ void USpaceObjectMovementComponent::UpdateOrbit(float DeltaTime)
 	if (OrbitalParent)
 	{
 		GetOwner()->SetActorLocation(FMath::Lerp(GetOwner()->GetActorLocation(), GetTargetLocation(), 0.2f));
-		auto MoveSpeed = Attributes ? Attributes->Get("MoveSpeed", OrbitalSpeed) : OrbitalSpeed;
+		auto MoveSpeed = Attributes ? Attributes->Get("Speed.Move", OrbitalSpeed) : OrbitalSpeed;
 		CurrentOrbitalRotation = FMath::Fmod(CurrentOrbitalRotation - (MoveSpeed * DeltaTime), 360.f);
 		Velocity = GetOwner()->GetActorLocation() - LocationLastFrame;
 		LocationLastFrame = GetOwner()->GetActorLocation();
@@ -127,7 +127,7 @@ void USpaceObjectMovementComponent::UpdateOrbit(float DeltaTime)
 	{
 		auto Scale = Velocity.Size();
 		auto Direction = Velocity.GetSafeNormal();
-		Scale = Attributes ? Attributes->Get("MoveSpeed", Scale) : Scale;
+		Scale = Attributes ? Attributes->Get("Speed.Move", Scale) : Scale;
 		GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + (Direction * Scale));
 	}
 }

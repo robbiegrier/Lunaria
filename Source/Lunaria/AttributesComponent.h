@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GameplayEventObserver.h"
 #include "Boon.h"
+#include "GameplayTagContainer.h"
 #include "AttributesComponent.generated.h"
 
 /*
@@ -25,6 +26,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		float Get(const FString& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
+		float GetTagged(const FGameplayTag& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
+		float GetFromTagContainer(const FGameplayTagContainer& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
+		float GetForAbilityType(const FGameplayTag& Ability, const FGameplayTag& Attribute, float Seed);
 
 	UFUNCTION(BlueprintCallable)
 		void AddBoon(ABoon* NewBoon);
