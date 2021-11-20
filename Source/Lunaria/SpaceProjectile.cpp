@@ -29,13 +29,16 @@ ASpaceProjectile::ASpaceProjectile()
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
 
 	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
+
+	Mesh->SetCollisionProfileName("NoCollision");
+	ProjectileShell->SetCollisionProfileName("NoCollision");
 }
 
 void ASpaceProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(Handle, [this]() {
-		if (this && this->IsValidLowLevel()) this->ConditionalBeginDestroy();
+		if (this && this->IsValidLowLevel()) Die();
 	}, SecondsUntilDespawn, false);
 
 	StartingPoint = GetActorLocation();
@@ -72,7 +75,7 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 void ASpaceProjectile::Die()
 {
 	Handle.Invalidate();
-	ConditionalBeginDestroy();
+	Destroy();
 }
 
 void ASpaceProjectile::Tick(float DeltaTime)
@@ -90,4 +93,5 @@ void ASpaceProjectile::SetPayloadProperties(const FGameplayTagContainer& TagCont
 	GameplayTags.AppendTags(TagContainer);
 	DamagePayload = InDamage;
 	TravelDistance = InDistance;
+	ProjectileShell->SetCollisionProfileName("OverlapAllDynamic");
 }

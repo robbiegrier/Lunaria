@@ -68,5 +68,8 @@ public:
 		TMap<FString, FVector> Vectors;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<FString, UClass*> Classes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FGameplayTagContainer EventTags;
 };

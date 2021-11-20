@@ -88,3 +88,8 @@ void Helpers::BindHealthBar(AActor* Actor, UWidgetComponent* HealthBarWidgetComp
 		}
 	}
 }
+
+void Helpers::SafelyKillMyself(AActor* Actor)
+{
+	Actor->SetLifeSpan(Actor->GetWorld()->GetDeltaSeconds() * 2.f);
+}

@@ -37,6 +37,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		static void WhenClassSubjectOf(ENativeEventType Action, UClass* Class, AActor* ClientObject, FGameplayEventDynamicDelegate ClientFunction);
 
+	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "InTags,InValues,InVectors,InClasses,InEventTags"))
+		static void CreateEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject, const TMap<FString, FString>& InTags,
+			const TMap<FString, float>& InValues, const TMap<FString, FVector>& InVectors, const TMap<FString, UClass*>& InClasses, const FGameplayTagContainer& InEventTags);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
@@ -51,6 +55,7 @@ private:
 	void TriggerSubjectOfClassDelegates(const FGameplayEvent& Event);
 	void ProcessHitEvent(const FGameplayEvent& Event);
 	void ProcessKillEvent(const FGameplayEvent& Event);
+	void ProcessApplyStatusEvent(const FGameplayEvent& Event);
 	void CullHangingDelegates(ClassDelegateMapType& Map);
 	FString PrintDelegateMap(const ClassDelegateMapType& Map);
 	void DebugMaps();

@@ -75,4 +75,6 @@ public:
 	static bool AreSameTeam(class AActor* Left, class AActor* Right);
 
 	static void BindHealthBar(class AActor* Actor, class UWidgetComponent* HealthBarWidgetComponent);
+
+	static void SafelyKillMyself(AActor* Actor);
 };

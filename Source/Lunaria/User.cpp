@@ -18,6 +18,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DetailTogglable.h"
 #include "AbilitiesComponent.h"
+#include "AreaOfEffect.h"
 
 AUser::AUser()
 {
@@ -201,6 +202,10 @@ void AUser::HandleDebugAction()
 
 	//BoonSpawn = GetWorld()->SpawnActor<ABoon>(BoonClass);
 	//Spaceship->GetAttributesComponent()->AddStatusEffectFromClass(BoonClass);
+
+	//auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode());
+	//auto Aoe = GetWorld()->SpawnActor<AAreaOfEffect>(GameMode->GetAreaOfEffectClass());
+	//Aoe->Launch(FGameplayTagContainer(), TArray<TSubclassOf<ABoon>>(), 20.f, 150.f, 0.5f);
 }
 
 void AUser::HandleInteractActionPressed()

@@ -106,6 +106,18 @@ void AGameplayEventManager::Submit(AActor* ClientObject, const FGameplayEvent& E
 	Instance->SubmitEvent(Event);
 }
 
+void AGameplayEventManager::CreateEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject, const TMap<FString, FString>& InTags,
+	const TMap<FString, float>& InValues, const TMap<FString, FVector>& InVectors, const TMap<FString, UClass*>& InClasses, const FGameplayTagContainer& InEventTags)
+{
+	auto Event = FGameplayEvent(InAgent, InAction, InSubject);
+	Event.Tags = InTags;
+	Event.Values = InValues;
+	Event.Vectors = InVectors;
+	Event.Classes = InClasses;
+	Event.EventTags = InEventTags;
+	Submit(InAgent, Event);
+}
+
 void AGameplayEventManager::ProcessGameplayEvents()
 {
 	while (Events.Num() > 0)
@@ -124,6 +136,10 @@ void AGameplayEventManager::ProcessGameplayEvents()
 		else if (Event.Action == ENativeEventType::Kill)
 		{
 			ProcessKillEvent(Event);
+		}
+		else if (Event.Action == ENativeEventType::ApplyStatus)
+		{
+			ProcessApplyStatusEvent(Event);
 		}
 	}
 }
@@ -181,6 +197,19 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 void AGameplayEventManager::ProcessKillEvent(const FGameplayEvent& Event)
 {
 	Event.Subject->Destroy();
+}
+
+void AGameplayEventManager::ProcessApplyStatusEvent(const FGameplayEvent& Event)
+{
+	if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
+	{
+		auto Find = Event.Classes.Find("StatusEffectClass");
+
+		if (Find)
+		{
+			Attributes->AddStatusEffectFromClass(*Find);
+		}
+	}
 }
 
 void AGameplayEventManager::WhenClassAgentOf(ENativeEventType Action, UClass* Class, AActor* ClientObject, FGameplayEventDynamicDelegate ClientFunction)

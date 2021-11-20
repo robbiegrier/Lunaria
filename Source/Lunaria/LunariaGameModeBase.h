@@ -8,6 +8,7 @@
 #include "DebugWidget.h"
 #include "MapManager.h"
 #include "LevelTask.h"
+#include "AreaOfEffect.h"
 #include "LunariaGameModeBase.generated.h"
 
 /**
@@ -36,6 +37,7 @@ public:
 
 	UClass* GetDebugWidgetClass() const { return DebugWidgetClass; }
 	UClass* GetHealthBarClass() const { return HealthBarClass; }
+	UClass* GetAreaOfEffectClass() const { return AreaOfEffectClass; }
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnEventManagerSpawned(class AGameplayEventManager* Manager);
@@ -65,6 +67,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Map, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UCpuHealthBar> HealthBarClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effects, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class AAreaOfEffect> AreaOfEffectClass;
 
 	class AMapManager* MapManager;
 	class AGameplayEventManager* EventManager;
