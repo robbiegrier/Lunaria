@@ -118,6 +118,20 @@ void AGameplayEventManager::CreateEvent(AActor* InAgent, ENativeEventType InActi
 	Submit(InAgent, Event);
 }
 
+void AGameplayEventManager::CreateHit(AActor* InAgent, AActor* InSubject, float Damage, const FGameplayTagContainer& InEventTags)
+{
+	auto Values = TMap<FString, float>();
+	Values.Add("Damage", Damage);
+	CreateEvent(InAgent, ENativeEventType::Hit, InSubject, TMap<FString, FString>(), Values, TMap<FString, FVector>(), TMap<FString, UClass*>(), InEventTags);
+}
+
+void AGameplayEventManager::ApplyStatusEffect(AActor* InAgent, AActor* InSubject, TSubclassOf<ABoon> InEffect, const FGameplayTagContainer& InEventTags)
+{
+	auto Classes = TMap<FString, UClass*>();
+	Classes.Add("StatusEffectClass", InEffect);
+	CreateEvent(InAgent, ENativeEventType::ApplyStatus, InSubject, TMap<FString, FString>(), TMap<FString, float>(), TMap<FString, FVector>(), Classes, InEventTags);
+}
+
 void AGameplayEventManager::ProcessGameplayEvents()
 {
 	while (Events.Num() > 0)
@@ -178,36 +192,43 @@ void AGameplayEventManager::TriggerAgentObservation(const FGameplayEvent& Event)
 
 void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 {
-	if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
+	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
 	{
-		auto FindDamage = Event.Values.Find("Damage");
-		auto Damage = FindDamage ? *FindDamage : 0.f;
-
-		HealthComp->ApplyDamage(Damage);
-
-		if (HealthComp->IsHealthDepleted())
+		if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
 		{
-			auto KillEvent = Event;
-			KillEvent.Action = ENativeEventType::Kill;
-			SubmitEvent(KillEvent);
+			auto FindDamage = Event.Values.Find("Damage");
+			auto Damage = FindDamage ? *FindDamage : 0.f;
+
+			HealthComp->ApplyDamage(Damage);
+
+			if (HealthComp->IsHealthDepleted())
+			{
+				auto KillEvent = Event;
+				KillEvent.Action = ENativeEventType::Kill;
+				SubmitEvent(KillEvent);
+			}
 		}
 	}
 }
 
 void AGameplayEventManager::ProcessKillEvent(const FGameplayEvent& Event)
 {
-	Event.Subject->Destroy();
+	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
+	{
+		Event.Subject->Destroy();
+	}
 }
 
 void AGameplayEventManager::ProcessApplyStatusEvent(const FGameplayEvent& Event)
 {
-	if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
+	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
 	{
-		auto Find = Event.Classes.Find("StatusEffectClass");
-
-		if (Find)
+		if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
 		{
-			Attributes->AddStatusEffectFromClass(*Find);
+			if (auto Find = Event.Classes.Find("StatusEffectClass"))
+			{
+				Attributes->AddStatusEffectFromClass(*Find);
+			}
 		}
 	}
 }

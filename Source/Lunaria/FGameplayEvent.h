@@ -12,14 +12,8 @@ enum class ENativeEventType : uint8
 {
 	Hit,
 	Kill,
-	MovementStart,
-	MovementEnd,
-	DefenseStart,
-	DefenseEnd,
-	DefenseBlock,
-	Summon,
-	Heal,
-	ApplyStatus
+	ApplyStatus,
+	AbilityUsed
 };
 
 USTRUCT(BlueprintType)

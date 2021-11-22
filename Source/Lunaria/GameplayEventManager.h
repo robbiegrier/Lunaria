@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "FGameplayEvent.h"
 #include "DetailTogglable.h"
+#include "Boon.h"
 #include "GameplayEventManager.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FGameplayEventDynamicDelegate, const FGameplayEvent&, Event);
@@ -40,6 +41,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "InTags,InValues,InVectors,InClasses,InEventTags"))
 		static void CreateEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject, const TMap<FString, FString>& InTags,
 			const TMap<FString, float>& InValues, const TMap<FString, FVector>& InVectors, const TMap<FString, UClass*>& InClasses, const FGameplayTagContainer& InEventTags);
+
+	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "InEventTags"))
+		static void CreateHit(AActor* InAgent, AActor* InSubject, float Damage, const FGameplayTagContainer& InEventTags);
+
+	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "InEventTags"))
+		static void ApplyStatusEffect(AActor* InAgent, AActor* InSubject, TSubclassOf<ABoon> InEffect, const FGameplayTagContainer& InEventTags);
 
 protected:
 	virtual void BeginPlay() override;

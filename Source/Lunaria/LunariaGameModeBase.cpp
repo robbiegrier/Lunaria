@@ -35,7 +35,7 @@ void ALunariaGameModeBase::BeginPlay()
 
 void ALunariaGameModeBase::StartNewArea()
 {
-	static auto TestScale = 500.f;
+	static auto TestScale = 1000.f;
 	static auto TestEntDir = FVector(1.f, 1.f, 0.f);
 	MapManager->LoadNewMap(TestScale, TestEntDir, 1);
 
