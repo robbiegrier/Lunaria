@@ -33,9 +33,19 @@ void ALunariaGameModeBase::BeginPlay()
 	OnEventManagerSpawned(EventManager);
 }
 
+FLinearColor ALunariaGameModeBase::GetArchetypeColor(EArchetype Archetype)
+{
+	if (auto Find = ArchetypeColorMap.Find(Archetype))
+	{
+		return *Find;
+	}
+
+	return FLinearColor::Gray;
+}
+
 void ALunariaGameModeBase::StartNewArea()
 {
-	static auto TestScale = 1000.f;
+	static auto TestScale = 1500.f;
 	static auto TestEntDir = FVector(1.f, 1.f, 0.f);
 	MapManager->LoadNewMap(TestScale, TestEntDir, 1);
 
@@ -49,7 +59,7 @@ void ALunariaGameModeBase::StartNewArea()
 void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 {
 	auto ExitDirection = (Door->GetActorLocation() - MapManager->GetCenter()).GetSafeNormal();
-	MapManager->LoadNewMap(FMath::RandRange(1000.f, 1400.f), ExitDirection, FMath::RandRange(1, 8));
+	MapManager->LoadNewMap(FMath::RandRange(1400.f, 1800.f), ExitDirection, FMath::RandRange(1, 8));
 
 	if (auto Spaceship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn()))
 	{
@@ -66,7 +76,7 @@ void ALunariaGameModeBase::StartTasks()
 	LevelTaskList.Empty();
 
 	LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
-	LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
+	//LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
 
 	CurrentTaskIndex = 0;
 	StartTask(GetCurrentLevelTaskClass());

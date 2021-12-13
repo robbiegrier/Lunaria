@@ -12,6 +12,8 @@
 #include "TimerManager.h"
 #include "User.h"
 
+static bool DebugEvents = false;
+
 AGameplayEventManager::AGameplayEventManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -155,6 +157,10 @@ void AGameplayEventManager::ProcessGameplayEvents()
 		{
 			ProcessApplyStatusEvent(Event);
 		}
+		else if (Event.Action == ENativeEventType::AbilityUsed)
+		{
+			if (DebugEvents) Print(Event.Agent->GetName() + " used " + Event.EventTags.ToStringSimple());
+		}
 	}
 }
 
@@ -204,9 +210,12 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 			if (HealthComp->IsHealthDepleted())
 			{
 				auto KillEvent = Event;
+				//KillEvent.EventTags = Event.EventTags;
 				KillEvent.Action = ENativeEventType::Kill;
 				SubmitEvent(KillEvent);
 			}
+
+			if (DebugEvents) Print(Event.Agent->GetName() + " did " + FString::FromInt((int)Damage) + " damage to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
 		}
 	}
 }
@@ -216,6 +225,8 @@ void AGameplayEventManager::ProcessKillEvent(const FGameplayEvent& Event)
 	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
 	{
 		Event.Subject->Destroy();
+
+		if (DebugEvents) Print(Event.Agent->GetName() + " killed " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
 	}
 }
 
@@ -228,6 +239,7 @@ void AGameplayEventManager::ProcessApplyStatusEvent(const FGameplayEvent& Event)
 			if (auto Find = Event.Classes.Find("StatusEffectClass"))
 			{
 				Attributes->AddStatusEffectFromClass(*Find);
+				if (DebugEvents) Print(Event.Agent->GetName() + " applied " + (*Find)->GetName() + " to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
 			}
 		}
 	}

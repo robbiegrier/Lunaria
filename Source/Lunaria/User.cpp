@@ -53,6 +53,10 @@ void AUser::BeginPlay()
 	ButtonTooltipWidget->AddToViewport();
 	ButtonTooltipWidget->SetVisibility(ESlateVisibility::Hidden);
 	ButtonTooltipWidget->SetText("Enter...");
+
+	PickupSelectionWidget = NewObject<UPickupSelectionWidget>(GetWorld(), ALunariaGameModeBase::Get(GetWorld())->GetPickupSelectionWidgetClass());
+	PickupSelectionWidget->AddToViewport();
+	PickupSelectionWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AUser::OnPossess(APawn* InPawn)
@@ -65,6 +69,12 @@ void AUser::OnPossess(APawn* InPawn)
 void AUser::OnUnPossess()
 {
 	Super::OnUnPossess();
+}
+
+void AUser::MakeSelectionFromPickup(APickup* Pickup)
+{
+	PickupSelectionWidget->MakeSelectionFromPickup(Pickup);
+	bShowMouseCursor = true;
 }
 
 void AUser::PlayerTick(float DeltaTime)

@@ -18,6 +18,8 @@ public:
 	AUser();
 	bool IsDetailOn() const { return GlobalDetailFlag; }
 
+	void MakeSelectionFromPickup(class APickup* Pickup);
+
 protected:
 	void PlayerTick(float DeltaTime) override;
 	void SetupInputComponent() override;
@@ -59,6 +61,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		bool GlobalDetailFlag = false;
+
+	UPROPERTY()
+		class UPickupSelectionWidget* PickupSelectionWidget;
 
 	float UpDownImpulse{ 0.f };
 	float RightLeftImpulse{ 0.f };

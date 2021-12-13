@@ -46,6 +46,8 @@ void ASpaceProjectile::BeginPlay()
 
 void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	Super::NotifyActorBeginOverlap(OtherActor);
+
 	if (!(GetOwner() == OtherActor) && !Cast<ASpaceProjectile>(OtherActor))
 	{
 		if (auto OtherAsHittable = Cast<IHittable>(OtherActor))

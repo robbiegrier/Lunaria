@@ -9,6 +9,9 @@
 #include "MapManager.h"
 #include "LevelTask.h"
 #include "AreaOfEffect.h"
+#include "Archetype.h"
+#include "PickupSelectionWidget.h"
+#include "PickupChoiceWidget.h"
 #include "LunariaGameModeBase.generated.h"
 
 /**
@@ -30,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		class AGameplayEventManager* GetEventManager() const { return EventManager; }
 
+	UFUNCTION(BlueprintCallable)
+		FLinearColor GetArchetypeColor(EArchetype Archetype);
+
 	void SetEventManager(AGameplayEventManager* InMananger) { EventManager = InMananger; }
 
 	void StartNewArea();
@@ -38,6 +44,8 @@ public:
 	UClass* GetDebugWidgetClass() const { return DebugWidgetClass; }
 	UClass* GetHealthBarClass() const { return HealthBarClass; }
 	UClass* GetAreaOfEffectClass() const { return AreaOfEffectClass; }
+	UClass* GetPickupSelectionWidgetClass() const { return PickupSelectionWidgetClass; }
+	UClass* GetPickupChoiceWidgetClass() const { return PickupChoiceWidgetClass; }
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnEventManagerSpawned(class AGameplayEventManager* Manager);
@@ -70,6 +78,15 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effects, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AAreaOfEffect> AreaOfEffectClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class UPickupSelectionWidget> PickupSelectionWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class UPickupChoiceWidget> PickupChoiceWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
+		TMap<EArchetype, FLinearColor> ArchetypeColorMap;
 
 	class AMapManager* MapManager;
 	class AGameplayEventManager* EventManager;
