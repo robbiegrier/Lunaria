@@ -53,10 +53,12 @@ void AUser::BeginPlay()
 	ButtonTooltipWidget->AddToViewport();
 	ButtonTooltipWidget->SetVisibility(ESlateVisibility::Hidden);
 	ButtonTooltipWidget->SetText("Enter...");
+	ButtonTooltipWidget->SetOwningPlayer(this);
 
 	PickupSelectionWidget = NewObject<UPickupSelectionWidget>(GetWorld(), ALunariaGameModeBase::Get(GetWorld())->GetPickupSelectionWidgetClass());
 	PickupSelectionWidget->AddToViewport();
 	PickupSelectionWidget->SetVisibility(ESlateVisibility::Hidden);
+	PickupSelectionWidget->SetOwningPlayer(this);
 }
 
 void AUser::OnPossess(APawn* InPawn)
@@ -74,7 +76,6 @@ void AUser::OnUnPossess()
 void AUser::MakeSelectionFromPickup(APickup* Pickup)
 {
 	PickupSelectionWidget->MakeSelectionFromPickup(Pickup);
-	bShowMouseCursor = true;
 }
 
 void AUser::PlayerTick(float DeltaTime)
@@ -178,6 +179,20 @@ void AUser::HandleYPressed()
 void AUser::HandleYReleased()
 {
 	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::Y);
+}
+
+void AUser::ToggleUIControl(bool IsUIOn)
+{
+	bShowMouseCursor = IsUIOn;
+
+	if (IsUIOn)
+	{
+		SetInputMode(FInputModeUIOnly());
+	}
+	else
+	{
+		SetInputMode(FInputModeGameOnly());
+	}
 }
 
 void AUser::HandleDebugAction()

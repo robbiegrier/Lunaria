@@ -11,6 +11,7 @@
 #include "AreaOfEffect.h"
 #include "Archetype.h"
 #include "PickupSelectionWidget.h"
+#include "UpgradeManager.h"
 #include "PickupChoiceWidget.h"
 #include "LunariaGameModeBase.generated.h"
 
@@ -34,9 +35,10 @@ public:
 		class AGameplayEventManager* GetEventManager() const { return EventManager; }
 
 	UFUNCTION(BlueprintCallable)
-		FLinearColor GetArchetypeColor(EArchetype Archetype);
+		class AUpgradeManager* GetUpgradeManager() const { return UpgradeManager; }
 
-	void SetEventManager(AGameplayEventManager* InMananger) { EventManager = InMananger; }
+	UFUNCTION(BlueprintCallable)
+		FLinearColor GetArchetypeColor(EArchetype Archetype);
 
 	void StartNewArea();
 	void StartNewAreaFromDoor(class ADoor* Door);
@@ -46,6 +48,8 @@ public:
 	UClass* GetAreaOfEffectClass() const { return AreaOfEffectClass; }
 	UClass* GetPickupSelectionWidgetClass() const { return PickupSelectionWidgetClass; }
 	UClass* GetPickupChoiceWidgetClass() const { return PickupChoiceWidgetClass; }
+
+	void SetEventManager(AGameplayEventManager* InMananger) { EventManager = InMananger; }
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnEventManagerSpawned(class AGameplayEventManager* Manager);
@@ -67,14 +71,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks, meta = (AllowPrivateAccess = "true"))
 		TArray<TSubclassOf<ALevelTask>> CombatTaskClasses;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Map, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Managers, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AMapManager> MapManagerClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Map, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UDebugWidget> DebugWidgetClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Map, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UCpuHealthBar> HealthBarClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Managers, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class AUpgradeManager> UpgradeManagerClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effects, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AAreaOfEffect> AreaOfEffectClass;
@@ -90,4 +97,5 @@ private:
 
 	class AMapManager* MapManager;
 	class AGameplayEventManager* EventManager;
+	class AUpgradeManager* UpgradeManager;
 };

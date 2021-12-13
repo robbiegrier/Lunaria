@@ -19,6 +19,7 @@ public:
 	bool IsDetailOn() const { return GlobalDetailFlag; }
 
 	void MakeSelectionFromPickup(class APickup* Pickup);
+	void ToggleUIControl(bool IsUIOn);
 
 protected:
 	void PlayerTick(float DeltaTime) override;

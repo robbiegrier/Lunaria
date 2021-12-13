@@ -23,6 +23,16 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes)
 	OnAdded();
 }
 
+FString ABoon::GetChoiceName()
+{
+	return BoonName;
+}
+
+FString ABoon::GetChoiceDescription()
+{
+	return BoonDescription;
+}
+
 const FAttributeModifier& ABoon::GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const
 {
 	auto Find = FindModifier(Attribute);

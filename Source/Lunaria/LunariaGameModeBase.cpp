@@ -31,6 +31,8 @@ void ALunariaGameModeBase::BeginPlay()
 	MapManager = Cast<AMapManager>(GetWorld()->SpawnActor(MapManagerClass));
 	EventManager = GetWorld()->SpawnActor<AGameplayEventManager>();
 	OnEventManagerSpawned(EventManager);
+
+	UpgradeManager = GetWorld()->SpawnActor<AUpgradeManager>(UpgradeManagerClass);
 }
 
 FLinearColor ALunariaGameModeBase::GetArchetypeColor(EArchetype Archetype)

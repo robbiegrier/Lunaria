@@ -22,6 +22,8 @@ public:
 	void SetTitle(const FString& InTitle);
 	void SetColor(const FLinearColor& Color);
 
+	void SignalChoiceMade(class UPickupChoiceWidget* ChoiceWidget);
+
 private:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 		class UTextBlock* TitleText;
@@ -31,4 +33,6 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 		class UScrollBox* ChoicesScrollBox;
+
+	TArray<AActor*> TransientChoiceActors;
 };

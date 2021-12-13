@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameplayEventObserver.h"
 #include "GameplayTagContainer.h"
+#include "Choosable.h"
 #include "Boon.generated.h"
 
 USTRUCT(BlueprintType)
@@ -27,7 +28,7 @@ public:
  *
  */
 UCLASS()
-class LUNARIA_API ABoon : public AActor, public IGameplayEventObserver
+class LUNARIA_API ABoon : public AActor, public IGameplayEventObserver, public IChoosable
 {
 	GENERATED_BODY()
 
@@ -35,6 +36,8 @@ public:
 
 	ABoon();
 	void NativeOnAdded(class UAttributesComponent* Attributes);
+	virtual FString GetChoiceName() override;
+	virtual FString GetChoiceDescription() override;
 
 	UFUNCTION(BlueprintCallable)
 		const FString& GetBoonName() const { return BoonName; }
@@ -59,6 +62,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
+		FString BoonDescription;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Testing, meta = (AllowPrivateAccess = "true"))
 		TArray<FAttributeModifier> AttributeModifierList;
