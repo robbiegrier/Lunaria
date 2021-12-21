@@ -19,11 +19,16 @@ public:
 	virtual FString GetInteractionText();
 	virtual void Interact();
 
+	void SignalInteractionComplete();
+
 	UFUNCTION(BlueprintCallable)
 		EArchetype GetArchetype() const { return Archetype; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetArchetype(EArchetype InArchetype);
+
+	UFUNCTION(BlueprintCallable)
+		void SetTask(class ALevelTask* InTask) { Task = InTask; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -37,4 +42,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Model, meta = (AllowPrivateAccess = "true"))
 		class UStaticMeshComponent* Mesh;
+
+	class ALevelTask* Task;
+
+public:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnPickedUp();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnInteractionComplete();
 };

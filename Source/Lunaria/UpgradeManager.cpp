@@ -9,6 +9,7 @@
 AUpgradeManager::AUpgradeManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	CurrentRoomArchetype = EArchetype::Epsilon;
 }
 
 void AUpgradeManager::BeginPlay()

@@ -18,6 +18,7 @@
 UPickupSelectionWidget::UPickupSelectionWidget(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
 {
+	CurrentPickup = nullptr;
 }
 
 void UPickupSelectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -29,6 +30,7 @@ void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 {
 	if (SelectionInProgress) return;
 	SelectionInProgress = true;
+	CurrentPickup = Pickup;
 
 	if (auto User = Cast<AUser>(GetOwningPlayer()))
 	{
@@ -45,7 +47,6 @@ void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 	{
 		auto Choices = UpgradeManager->GetChoicesFromPickup(Pickup);
 
-		PrintFloat((float)Choices.Num());
 		for (auto Choice : Choices)
 		{
 			auto ChoiceActor = GetWorld()->SpawnActor(Choice);
@@ -103,12 +104,15 @@ void UPickupSelectionWidget::SignalChoiceMade(UPickupChoiceWidget* ChoiceWidget)
 
 	SetVisibility(ESlateVisibility::Hidden);
 
+	SelectionInProgress = false;
+
 	if (auto User = Cast<AUser>(GetOwningPlayer()))
 	{
 		User->ToggleUIControl(false);
 	}
 
-	SelectionInProgress = false;
+	CurrentPickup->SignalInteractionComplete();
+	CurrentPickup = nullptr;
 }
 
 void UPickupSelectionWidget::SetTitle(const FString& InTitle)

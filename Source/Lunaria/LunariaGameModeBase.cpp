@@ -62,6 +62,7 @@ void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 {
 	auto ExitDirection = (Door->GetActorLocation() - MapManager->GetCenter()).GetSafeNormal();
 	MapManager->LoadNewMap(FMath::RandRange(1400.f, 1800.f), ExitDirection, FMath::RandRange(1, 8));
+	UpgradeManager->SetCurrentRoomArchetype(/*Door->GetArchetype()*/ EArchetype::Epsilon);
 
 	if (auto Spaceship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn()))
 	{
@@ -79,6 +80,13 @@ void ALunariaGameModeBase::StartTasks()
 
 	//LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
 	//LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
+
+	for (auto Task : TestTasks)
+	{
+		LevelTaskList.Add(Task);
+	}
+
+	LevelTaskList.Add(RoomFinishedTask);
 
 	if (LevelTaskList.Num() < 1)
 	{

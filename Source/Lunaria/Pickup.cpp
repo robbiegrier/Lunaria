@@ -43,6 +43,20 @@ void APickup::Interact()
 	{
 		User->MakeSelectionFromPickup(this);
 	}
+
+	OnPickedUp();
+}
+
+void APickup::SignalInteractionComplete()
+{
+	OnInteractionComplete();
+
+	if (Task)
+	{
+		Task->SignalTaskComplete();
+	}
+
+	Destroy();
 }
 
 void APickup::SetArchetype(EArchetype InArchetype)

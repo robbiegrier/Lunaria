@@ -37,4 +37,5 @@ private:
 	TArray<AActor*> TransientChoiceActors;
 
 	bool SelectionInProgress = false;
+	class APickup* CurrentPickup;
 };

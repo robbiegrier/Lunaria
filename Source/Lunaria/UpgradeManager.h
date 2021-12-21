@@ -14,7 +14,15 @@ class LUNARIA_API AUpgradeManager : public AActor
 public:
 	AUpgradeManager();
 	virtual void Tick(float DeltaTime) override;
-	TArray<UClass*> GetChoicesFromPickup(class APickup* Pickup);
+
+	UFUNCTION(BlueprintCallable)
+		TArray<UClass*> GetChoicesFromPickup(class APickup* Pickup);
+
+	UFUNCTION(BlueprintCallable)
+		EArchetype GetCurrentRoomArchetype() const { return CurrentRoomArchetype; };
+
+	UFUNCTION(BlueprintCallable)
+		void SetCurrentRoomArchetype(EArchetype Archetype) { CurrentRoomArchetype = Archetype; };
 
 protected:
 	virtual void BeginPlay() override;
@@ -22,4 +30,6 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks, meta = (AllowPrivateAccess = "true"))
 		TArray<TSubclassOf<AActor>> PotentialChoices;
+
+	EArchetype CurrentRoomArchetype;
 };

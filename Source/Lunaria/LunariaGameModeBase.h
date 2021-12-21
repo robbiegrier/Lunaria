@@ -75,6 +75,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks, meta = (AllowPrivateAccess = "true"))
 		TArray<TSubclassOf<ALevelTask>> CombatTaskClasses;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks, meta = (AllowPrivateAccess = "true"))
+		TArray<TSubclassOf<ALevelTask>> TestTasks;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<ALevelTask> RoomFinishedTask;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Managers, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AMapManager> MapManagerClass;
 
