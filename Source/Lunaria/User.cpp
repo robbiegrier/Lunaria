@@ -86,8 +86,8 @@ void AUser::PlayerTick(float DeltaTime)
 	auto MovementDirection = FVector(UpDownImpulse, RightLeftImpulse, 0.f).GetSafeNormal();
 	auto MovementScale = FMath::Clamp(FMath::Abs(UpDownImpulse) + FMath::Abs(RightLeftImpulse), 0.f, 1.f);
 
-	Spaceship->HandleThrottleInput(MovementScale);
-	Spaceship->TurnToFaceDirection(MovementDirection);
+	if (InGame) Spaceship->HandleThrottleInput(MovementScale);
+	if (InGame) Spaceship->TurnToFaceDirection(MovementDirection);
 }
 
 void AUser::TickInteractions()
@@ -143,51 +143,52 @@ void AUser::HandleToggleDetail()
 
 void AUser::HandleXPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::X);
+	if (InGame) Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::X);
 }
 
 void AUser::HandleXReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::X);
+	if (InGame) Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::X);
 }
 
 void AUser::HandleBPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::B);
+	if (InGame) Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::B);
 }
 
 void AUser::HandleBReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::B);
+	if (InGame) Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::B);
 }
 
 void AUser::HandleAPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::A);
+	if (InGame) Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::A);
 }
 
 void AUser::HandleAReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::A);
+	if (InGame) Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::A);
 }
 
 void AUser::HandleYPressed()
 {
-	Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::Y);
+	if (InGame) Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::Y);
 }
 
 void AUser::HandleYReleased()
 {
-	Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::Y);
+	if (InGame) Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::Y);
 }
 
 void AUser::ToggleUIControl(bool IsUIOn)
 {
-	bShowMouseCursor = IsUIOn;
+	bShowMouseCursor = false;
+	InGame = !IsUIOn;
 
 	if (IsUIOn)
 	{
-		SetInputMode(FInputModeUIOnly());
+		SetInputMode(FInputModeGameAndUI());
 	}
 	else
 	{

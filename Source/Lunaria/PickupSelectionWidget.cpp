@@ -12,6 +12,8 @@
 #include "AttributesComponent.h"
 #include "User.h"
 #include "TimerManager.h"
+#include "Components/Button.h"
+#include "Components/VerticalBox.h"
 
 UPickupSelectionWidget::UPickupSelectionWidget(const FObjectInitializer& ObjectInitializer)
 	: UUserWidget(ObjectInitializer)
@@ -25,13 +27,16 @@ void UPickupSelectionWidget::NativeTick(const FGeometry& MyGeometry, float InDel
 
 void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 {
+	if (SelectionInProgress) return;
+	SelectionInProgress = true;
+
 	if (auto User = Cast<AUser>(GetOwningPlayer()))
 	{
 		User->ToggleUIControl(true);
 	}
 
 	SetVisibility(ESlateVisibility::Visible);
-	ChoicesScrollBox->ClearChildren();
+	ChoicesVerticalBox->ClearChildren();
 
 	auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(Pickup->GetArchetype());
 	SetColor(Color);
@@ -49,14 +54,12 @@ void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 			if (auto Choosable = Cast<IChoosable>(ChoiceActor))
 			{
 				auto ChoiceWidget = NewObject<UPickupChoiceWidget>(GetWorld(), ALunariaGameModeBase::Get(GetWorld())->GetPickupChoiceWidgetClass());
-				ChoicesScrollBox->AddChild(ChoiceWidget);
+				ChoicesVerticalBox->AddChild(ChoiceWidget);
 
 				ChoiceWidget->SetName(Choosable->GetChoiceName());
 				ChoiceWidget->SetDescription(Choosable->GetChoiceDescription());
-
 				ChoiceWidget->SetPadding(FMargin(20.f));
 				ChoiceWidget->SetColor(Color);
-
 				ChoiceWidget->SetChoiceActor(ChoiceActor);
 				ChoiceWidget->SetSelectionWidget(this);
 				ChoiceWidget->SetOwningPlayer(GetOwningPlayer());
@@ -64,10 +67,12 @@ void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 		}
 	}
 
-	if (auto First = ChoicesScrollBox->GetAllChildren()[0])
+	if (auto First = ChoicesVerticalBox->GetChildAt(0))
 	{
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [First]() { First->SetFocus(); }, 0.1f, false);
+		auto TimerHandle = FTimerHandle();
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [First, this]() {
+			Cast<UPickupChoiceWidget>(First)->GetChoiceButton()->SetKeyboardFocus();
+		}, 0.1f, false);
 	}
 }
 
@@ -75,7 +80,7 @@ void UPickupSelectionWidget::SignalChoiceMade(UPickupChoiceWidget* ChoiceWidget)
 {
 	Print(ChoiceWidget->GetChoiceActor()->GetName());
 
-	ChoicesScrollBox->ClearChildren();
+	ChoicesVerticalBox->ClearChildren();
 
 	for (auto TransientChoiceActor : TransientChoiceActors)
 	{
@@ -84,6 +89,7 @@ void UPickupSelectionWidget::SignalChoiceMade(UPickupChoiceWidget* ChoiceWidget)
 			TransientChoiceActor->Destroy();
 		}
 	}
+	TransientChoiceActors.Empty();
 
 	auto Player = GetOwningPlayerPawn();
 
@@ -101,6 +107,8 @@ void UPickupSelectionWidget::SignalChoiceMade(UPickupChoiceWidget* ChoiceWidget)
 	{
 		User->ToggleUIControl(false);
 	}
+
+	SelectionInProgress = false;
 }
 
 void UPickupSelectionWidget::SetTitle(const FString& InTitle)

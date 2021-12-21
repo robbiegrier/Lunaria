@@ -32,7 +32,9 @@ private:
 		class UBorder* ColoredBorder;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
-		class UScrollBox* ChoicesScrollBox;
+		class UVerticalBox* ChoicesVerticalBox;
 
 	TArray<AActor*> TransientChoiceActors;
+
+	bool SelectionInProgress = false;
 };

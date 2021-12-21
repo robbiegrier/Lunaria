@@ -25,6 +25,8 @@ public:
 	AActor* GetChoiceActor() const { return ChoiceActor; }
 	void SetSelectionWidget(class UPickupSelectionWidget* Widget) { SelectionWidget = Widget; }
 
+	class UButton* GetChoiceButton() const { return ChoiceButton; }
+
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)

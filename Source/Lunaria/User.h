@@ -71,4 +71,6 @@ private:
 	class ASpaceship* Spaceship;
 
 	class ABoon* BoonSpawn;
+
+	bool InGame = true;
 };

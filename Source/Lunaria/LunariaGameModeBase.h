@@ -13,6 +13,7 @@
 #include "PickupSelectionWidget.h"
 #include "UpgradeManager.h"
 #include "PickupChoiceWidget.h"
+#include "Components/Button.h"
 #include "LunariaGameModeBase.generated.h"
 
 /**
@@ -48,6 +49,7 @@ public:
 	UClass* GetAreaOfEffectClass() const { return AreaOfEffectClass; }
 	UClass* GetPickupSelectionWidgetClass() const { return PickupSelectionWidgetClass; }
 	UClass* GetPickupChoiceWidgetClass() const { return PickupChoiceWidgetClass; }
+	UClass* GetPickupChoiceButtonWidgetClass() const { return PickupChoiceButtonWidgetClass; }
 
 	void SetEventManager(AGameplayEventManager* InMananger) { EventManager = InMananger; }
 
@@ -64,6 +66,8 @@ private:
 	void StartTask(TSubclassOf<ALevelTask> TaskClass);
 	void StartNextTask();
 	void OnCurrentTaskComplete();
+	void OnAllTasksComplete();
+
 	TArray<TSubclassOf<ALevelTask>> LevelTaskList;
 	int32 CurrentTaskIndex = 0;
 	ALevelTask* CurrentTask;
@@ -91,6 +95,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UPickupChoiceWidget> PickupChoiceWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class UButton> PickupChoiceButtonWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
 		TMap<EArchetype, FLinearColor> ArchetypeColorMap;

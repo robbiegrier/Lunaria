@@ -77,11 +77,18 @@ void ALunariaGameModeBase::StartTasks()
 
 	LevelTaskList.Empty();
 
-	LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
+	//LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
 	//LevelTaskList.Add(Helpers::GetRandomArrayElement(CombatTaskClasses));
 
-	CurrentTaskIndex = 0;
-	StartTask(GetCurrentLevelTaskClass());
+	if (LevelTaskList.Num() < 1)
+	{
+		OnAllTasksComplete();
+	}
+	else
+	{
+		CurrentTaskIndex = 0;
+		StartTask(GetCurrentLevelTaskClass());
+	}
 }
 
 TSubclassOf<ALevelTask> ALunariaGameModeBase::GetCurrentLevelTaskClass() const
@@ -121,7 +128,12 @@ void ALunariaGameModeBase::OnCurrentTaskComplete()
 	}
 	else
 	{
-		Print("All Tasks Complete", FColor::Green);
-		MapManager->OpenCurrentDoors();
+		OnAllTasksComplete();
 	}
+}
+
+void ALunariaGameModeBase::OnAllTasksComplete()
+{
+	Print("All Tasks Complete", FColor::Green);
+	MapManager->OpenCurrentDoors();
 }
