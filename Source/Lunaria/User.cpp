@@ -19,6 +19,7 @@
 #include "DetailTogglable.h"
 #include "AbilitiesComponent.h"
 #include "AreaOfEffect.h"
+#include "LunariaGameInstance.h"
 
 AUser::AUser()
 {
@@ -88,6 +89,9 @@ void AUser::PlayerTick(float DeltaTime)
 
 	if (InGame) Spaceship->HandleThrottleInput(MovementScale);
 	if (InGame) Spaceship->TurnToFaceDirection(MovementDirection);
+
+	auto Instance = Cast<ULunariaGameInstance>(GetGameInstance());
+	bShowMouseCursor = !(InGame || Instance->LastInputWasGamePad());
 }
 
 void AUser::TickInteractions()
@@ -183,7 +187,6 @@ void AUser::HandleYReleased()
 
 void AUser::ToggleUIControl(bool IsUIOn)
 {
-	bShowMouseCursor = false;
 	InGame = !IsUIOn;
 
 	if (IsUIOn)

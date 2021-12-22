@@ -8,7 +8,7 @@ public class Lunaria : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GameplayTags" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GameplayTags", "Slate", "SlateCore", "UMG" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 

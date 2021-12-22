@@ -72,5 +72,6 @@ private:
 
 	class ABoon* BoonSpawn;
 
-	bool InGame = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
+		bool InGame = true;
 };
