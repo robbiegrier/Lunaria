@@ -16,7 +16,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void NativeOnAdded(class UAttributesComponent* Attributes);
 
-	void AddStack();
+	void AddStack(AActor* Creator = nullptr);
 
 	UClass* GetBoonClass() const { return BoonClass; }
 	int32 GetCurrentStacks() const { return Statuses.Num(); }

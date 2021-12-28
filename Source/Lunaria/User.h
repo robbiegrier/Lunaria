@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "UserHud.h"
 #include "User.generated.h"
 
 /**
@@ -57,8 +58,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UButtonTooltip> ButtonTooltipClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class UUserHud> UserHudClass;
+
 	UPROPERTY()
 		class UButtonTooltip* ButtonTooltipWidget;
+
+	UPROPERTY()
+		class UUserHud* UserHudWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		bool GlobalDetailFlag = false;

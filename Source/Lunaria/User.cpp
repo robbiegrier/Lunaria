@@ -57,9 +57,14 @@ void AUser::BeginPlay()
 	ButtonTooltipWidget->SetOwningPlayer(this);
 
 	PickupSelectionWidget = NewObject<UPickupSelectionWidget>(GetWorld(), ALunariaGameModeBase::Get(GetWorld())->GetPickupSelectionWidgetClass());
-	PickupSelectionWidget->AddToViewport();
+	PickupSelectionWidget->AddToViewport(100);
 	PickupSelectionWidget->SetVisibility(ESlateVisibility::Hidden);
 	PickupSelectionWidget->SetOwningPlayer(this);
+
+	UserHudWidget = NewObject<UUserHud>(GetWorld(), UserHudClass);
+	UserHudWidget->AddToViewport();
+	UserHudWidget->SetVisibility(ESlateVisibility::Visible);
+	UserHudWidget->SetOwningPlayer(this);
 }
 
 void AUser::OnPossess(APawn* InPawn)

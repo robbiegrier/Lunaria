@@ -43,7 +43,7 @@ public:
 		void AddBoonFromClass(TSubclassOf<ABoon> NewBoonClass);
 
 	UFUNCTION(BlueprintCallable)
-		void AddStatusEffectFromClass(TSubclassOf<ABoon> NewEffectClass);
+		void AddStatusEffectFromClass(TSubclassOf<ABoon> NewEffectClass, AActor* Creator = nullptr);
 
 	UFUNCTION(BlueprintCallable)
 		void RemoveAndDestroyBoon(ABoon* TheBoon);

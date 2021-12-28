@@ -35,7 +35,7 @@ class LUNARIA_API ABoon : public AActor, public IGameplayEventObserver, public I
 public:
 
 	ABoon();
-	void NativeOnAdded(class UAttributesComponent* Attributes);
+	void NativeOnAdded(class UAttributesComponent* Attributes, AActor* InCreator = nullptr);
 	virtual FString GetChoiceName() override;
 	virtual FString GetChoiceDescription() override;
 
@@ -71,6 +71,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		AActor* MyOwner;
+
+	// Creator is the actor who applied this boon and acts as the agent of event generated from the boon.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Agent, meta = (AllowPrivateAccess = "true"))
+		AActor* Creator;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		class UAttributesComponent* MyOwnerAttributes;

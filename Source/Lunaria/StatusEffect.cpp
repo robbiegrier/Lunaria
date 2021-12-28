@@ -14,7 +14,7 @@ AStatusEffect::AStatusEffect()
 	RootComponent = SceneComponent;
 }
 
-void AStatusEffect::AddStack()
+void AStatusEffect::AddStack(AActor* Creator)
 {
 	if (BoonClass)
 	{
@@ -24,7 +24,7 @@ void AStatusEffect::AddStack()
 			Statuses.Add(AddedBoon);
 			SetDuration(AddedBoon->GetDurationAsStatusEffect());
 			SetMaxStacks(AddedBoon->GetMaxStacksAsStatusEffect());
-			AddedBoon->NativeOnAdded(MyOwnerAttributes);
+			AddedBoon->NativeOnAdded(MyOwnerAttributes, Creator);
 		}
 
 		LastStackTime = GetWorld()->GetTimeSeconds();

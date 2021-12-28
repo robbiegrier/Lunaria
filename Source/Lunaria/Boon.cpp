@@ -16,10 +16,11 @@ ABoon::ABoon()
 	RootComponent = SceneComponent;
 }
 
-void ABoon::NativeOnAdded(UAttributesComponent* Attributes)
+void ABoon::NativeOnAdded(UAttributesComponent* Attributes, AActor* InCreator)
 {
 	MyOwner = Attributes->GetOwner();
 	MyOwnerAttributes = Attributes;
+	Creator = InCreator ? InCreator : MyOwner;
 	OnAdded();
 }
 

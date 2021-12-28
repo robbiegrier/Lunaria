@@ -75,7 +75,7 @@ void UAttributesComponent::AddBoonFromClass(TSubclassOf<ABoon> NewBoonClass)
 	}
 }
 
-void UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> NewEffectClass)
+void UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> NewEffectClass, AActor* Creator)
 {
 	if (NewEffectClass)
 	{
@@ -94,7 +94,7 @@ void UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> New
 			AddedEffect = *Find;
 		}
 
-		AddedEffect->AddStack();
+		AddedEffect->AddStack(Creator);
 	}
 }
 

@@ -238,7 +238,7 @@ void AGameplayEventManager::ProcessApplyStatusEvent(const FGameplayEvent& Event)
 		{
 			if (auto Find = Event.Classes.Find("StatusEffectClass"))
 			{
-				Attributes->AddStatusEffectFromClass(*Find);
+				Attributes->AddStatusEffectFromClass(*Find, Event.Agent);
 				if (DebugEvents) Print(Event.Agent->GetName() + " applied " + (*Find)->GetName() + " to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
 			}
 		}
