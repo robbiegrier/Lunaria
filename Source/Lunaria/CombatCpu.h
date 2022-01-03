@@ -20,6 +20,9 @@ public:
 
 	void Tick(float DeltaTime) override;
 
+	void EnterSpawningState();
+	void EnterCombatState();
+
 private:
 	void HandleShipDeath(class UHealthComponent* HealthComponent, int32 KillingBlow);
 
@@ -35,4 +38,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		class UCombatComponent* CombatComponent;
+
+	class ASpaceship* Spaceship;
 };

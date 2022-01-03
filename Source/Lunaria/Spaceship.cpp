@@ -117,6 +117,21 @@ void ASpaceship::NativeWhenAgentOf(const FGameplayEvent& Event)
 	//Print("Was agent of " + Event.EventType);
 }
 
+void ASpaceship::EnterSpawningState()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode());
+	auto SpawnColor = GameMode->GetGameColor("Spawning Tint");
+	GetMesh()->SetVectorParameterValueOnMaterials(TEXT("Tint"), Helpers::GetVectorFromLinearColor(SpawnColor));
+}
+
+void ASpaceship::EnterCombatState()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetVectorParameterValueOnMaterials(TEXT("Tint"), Helpers::GetVectorFromLinearColor(FLinearColor::White));
+}
+
 void ASpaceship::HandleThrottleInput(float Scale)
 {
 	if (SpaceshipMovementComponent)

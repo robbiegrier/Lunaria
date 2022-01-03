@@ -96,6 +96,6 @@ void FInputModeDetector::SetMode(int PlayerIndex, EInputMode NewMode)
 
 		LastInputModeByPlayer[PlayerIndex] = NewMode;
 		OnInputModeChanged.ExecuteIfBound(PlayerIndex, NewMode);
-		UE_LOG(LogTemp, Warning, TEXT("Input mode for player %d changed: %s"), PlayerIndex, *UEnum::GetValueAsString(NewMode));
+		//UE_LOG(LogTemp, Warning, TEXT("Input mode for player %d changed: %s"), PlayerIndex, *UEnum::GetValueAsString(NewMode));
 	}
 }

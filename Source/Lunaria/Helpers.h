@@ -77,4 +77,10 @@ public:
 	static void BindHealthBar(class AActor* Actor, class UWidgetComponent* HealthBarWidgetComponent);
 
 	static void SafelyKillMyself(AActor* Actor);
+
+	template <typename T>
+	static FVector GetVectorFromLinearColor(const T Color)
+	{
+		return FVector(Color.R, Color.G, Color.B);
+	}
 };

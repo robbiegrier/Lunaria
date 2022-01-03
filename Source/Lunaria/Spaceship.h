@@ -23,6 +23,9 @@ public:
 	virtual void NativeWhenAgentOf(const FGameplayEvent& Event) override;
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
 
+	void EnterSpawningState();
+	void EnterCombatState();
+
 	UFUNCTION()
 		void HandleThrottleInput(float Scale);
 

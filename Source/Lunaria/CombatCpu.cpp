@@ -8,6 +8,10 @@
 #include "CombatComponent.h"
 #include "HealthComponent.h"
 #include "Printer.h"
+#include "SpawnIndicator.h"
+#include "LunariaGameModeBase.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 
 ACombatCpu::ACombatCpu()
 {
@@ -20,35 +24,60 @@ void ACombatCpu::OnPossess(APawn* MyPawn)
 {
 	Super::OnPossess(MyPawn);
 
-	if (auto Spaceship = Cast<ASpaceship>(GetPawn()))
-	{
-		//Spaceship->GetHealthComponent()->GetHealthDepletedEvent().AddUObject(this, &ACombatCpu::HandleShipDeath);
-	}
+	Spaceship = Cast<ASpaceship>(MyPawn);
+	checkf(Spaceship, TEXT("%s pawn is not a ASpaceship"), *GetFullName());
 
-	if (BehaviorTree)
-	{
-		BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-		BehaviorComponent->StartTree(*BehaviorTree);
-	}
+	//if (BehaviorTree)
+	//{
+	//	BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	//	BehaviorComponent->StartTree(*BehaviorTree);
+	//}
+
+	EnterSpawningState();
 }
 
 void ACombatCpu::MoveShipTo(AActor* Target)
 {
 	if (!Target) return;
 
-	if (auto Spaceship = Cast<ASpaceship>(GetPawn()))
-	{
-		auto PointToMoveTo = Target->GetActorLocation();
-		auto MovementDirection = (Target->GetActorLocation() - GetPawn()->GetActorLocation()).GetSafeNormal();
+	auto PointToMoveTo = Target->GetActorLocation();
+	auto MovementDirection = (Target->GetActorLocation() - GetPawn()->GetActorLocation()).GetSafeNormal();
 
-		Spaceship->HandleThrottleInput(1.f);
-		Spaceship->TurnToFaceDirection(MovementDirection);
-	}
+	Spaceship->HandleThrottleInput(1.f);
+	Spaceship->TurnToFaceDirection(MovementDirection);
 }
 
 void ACombatCpu::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ACombatCpu::EnterSpawningState()
+{
+	if (BehaviorTree)
+	{
+		BehaviorComponent->StopTree();
+	}
+
+	Spaceship->EnterSpawningState();
+	auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	auto SpawnIndicatorTransform = FTransform();
+	SpawnIndicatorTransform.SetLocation(Spaceship->GetMesh()->GetComponentLocation() + FVector(0.f, 0.f, Spaceship->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
+	SpawnIndicatorTransform.SetScale3D(FVector(Spaceship->GetCapsuleComponent()->GetScaledCapsuleRadius() / 40.f));
+	auto SpawnIndicator = GetWorld()->SpawnActor<ASpawnIndicator>(GameMode->UnitSpawnIndicatorClass, SpawnIndicatorTransform);
+	SpawnIndicator->Completion.AddUObject(this, &ACombatCpu::EnterCombatState);
+}
+
+void ACombatCpu::EnterCombatState()
+{
+	if (BehaviorTree)
+	{
+		BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		BehaviorComponent->StartTree(*BehaviorTree);
+	}
+
+	Spaceship->EnterCombatState();
 }
 
 void ACombatCpu::HandleShipDeath(UHealthComponent* HealthComponent, int32 KillingBlow)

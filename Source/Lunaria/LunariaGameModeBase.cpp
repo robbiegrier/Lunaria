@@ -45,6 +45,16 @@ FLinearColor ALunariaGameModeBase::GetArchetypeColor(EArchetype Archetype)
 	return FLinearColor::Gray;
 }
 
+FLinearColor ALunariaGameModeBase::GetGameColor(const FString& String)
+{
+	if (auto Find = StringColorMap.Find(String))
+	{
+		return *Find;
+	}
+
+	return FLinearColor::Gray;
+}
+
 void ALunariaGameModeBase::StartNewArea()
 {
 	static auto TestScale = 1500.f;

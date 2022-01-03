@@ -14,6 +14,7 @@
 #include "UpgradeManager.h"
 #include "PickupChoiceWidget.h"
 #include "Components/Button.h"
+#include "SpawnIndicator.h"
 #include "LunariaGameModeBase.generated.h"
 
 /**
@@ -40,6 +41,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FLinearColor GetArchetypeColor(EArchetype Archetype);
+
+	UFUNCTION(BlueprintCallable)
+		FLinearColor GetGameColor(const FString& String);
 
 	void StartNewArea();
 	void StartNewAreaFromDoor(class ADoor* Door);
@@ -108,7 +112,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
 		TMap<EArchetype, FLinearColor> ArchetypeColorMap;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
+		TMap<FString, FLinearColor> StringColorMap;
+
 	class AMapManager* MapManager;
 	class AGameplayEventManager* EventManager;
 	class AUpgradeManager* UpgradeManager;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Actors, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<ASpawnIndicator> UnitSpawnIndicatorClass;
 };
