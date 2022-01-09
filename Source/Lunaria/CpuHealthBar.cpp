@@ -37,6 +37,8 @@ void UCpuHealthBar::UpdateHealth()
 
 void UCpuHealthBar::SetMyOwner(AActor* InOwner)
 {
+	MyOwner = InOwner;
+
 	if (InOwner)
 	{
 		MyOwnerHealth = InOwner->FindComponentByClass<UHealthComponent>();

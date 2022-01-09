@@ -34,6 +34,9 @@ public:
 		class AMapManager* GetMap() const { return MapManager; }
 
 	UFUNCTION(BlueprintCallable)
+		static class AMapManager* LocateMap(class AActor* Source) { return Get(Source->GetWorld())->GetMap(); }
+
+	UFUNCTION(BlueprintCallable)
 		class AGameplayEventManager* GetEventManager() const { return EventManager; }
 
 	UFUNCTION(BlueprintCallable)

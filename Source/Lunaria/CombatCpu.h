@@ -36,8 +36,5 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behaviors", meta = (AllowPrivateAccess = "true"))
 		class UBehaviorTreeComponent* BehaviorComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-		class UCombatComponent* CombatComponent;
-
 	class ASpaceship* Spaceship;
 };

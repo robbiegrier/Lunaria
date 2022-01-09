@@ -17,7 +17,6 @@ ACombatCpu::ACombatCpu()
 {
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
 	BehaviorComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComponent"));
-	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 }
 
 void ACombatCpu::OnPossess(APawn* MyPawn)
@@ -64,7 +63,7 @@ void ACombatCpu::EnterSpawningState()
 
 	auto SpawnIndicatorTransform = FTransform();
 	SpawnIndicatorTransform.SetLocation(Spaceship->GetMesh()->GetComponentLocation() + FVector(0.f, 0.f, Spaceship->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
-	SpawnIndicatorTransform.SetScale3D(FVector(Spaceship->GetCapsuleComponent()->GetScaledCapsuleRadius() / 40.f));
+	SpawnIndicatorTransform.SetScale3D(FVector(Spaceship->GetCapsuleComponent()->GetScaledCapsuleRadius() / 30.f));
 	auto SpawnIndicator = GetWorld()->SpawnActor<ASpawnIndicator>(GameMode->UnitSpawnIndicatorClass, SpawnIndicatorTransform);
 	SpawnIndicator->Completion.AddUObject(this, &ACombatCpu::EnterCombatState);
 }

@@ -45,5 +45,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior", meta = (AllowPrivateAccess = "true"))
 		float BackgroundInterpolateSpeed = 0.1f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Owner Actor", meta = (AllowPrivateAccess = "true"))
+		AActor* MyOwner;
+
 	class UHealthComponent* MyOwnerHealth;
 };

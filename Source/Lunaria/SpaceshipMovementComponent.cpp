@@ -69,7 +69,7 @@ void USpaceshipMovementComponent::ExecuteTurning(float Scale, float Speed)
 			}
 			else
 			{
-				Pawn->SetActorRotation(Pawn->GetActorRotation().Add(0.f, FrameTorc * CpuTurnCompensation, 0.f));
+				Pawn->SetActorRotation(Pawn->GetActorRotation().Add(0.f, FrameTorc, 0.f));
 			}
 
 			CurrentBankValue += Helpers::Dilate(Scale * BankAmount, GetWorld());

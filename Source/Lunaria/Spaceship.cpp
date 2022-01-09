@@ -82,8 +82,18 @@ ASpaceship::ASpaceship()
 void ASpaceship::BeginPlay()
 {
 	Super::BeginPlay();
-	CombatComponent->SetTeam(IsPlayerControlled() ? UCombatComponent::PlayerTeam : UCombatComponent::EnemyTeam);
+
+	if (IsPlayerControlled())
+	{
+		CombatComponent->SetTeam(UCombatComponent::PlayerTeam);
+	}
+
 	Helpers::BindHealthBar(this, HealthBarComponent);
+
+	if (IsPlayerControlled())
+	{
+		HealthBarComponent->SetVisibility(false);
+	}
 }
 
 void ASpaceship::Tick(float DeltaTime)
@@ -124,12 +134,14 @@ void ASpaceship::EnterSpawningState()
 	auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode());
 	auto SpawnColor = GameMode->GetGameColor("Spawning Tint");
 	GetMesh()->SetVectorParameterValueOnMaterials(TEXT("Tint"), Helpers::GetVectorFromLinearColor(SpawnColor));
+	HealthBarComponent->SetVisibility(false);
 }
 
 void ASpaceship::EnterCombatState()
 {
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetVectorParameterValueOnMaterials(TEXT("Tint"), Helpers::GetVectorFromLinearColor(FLinearColor::White));
+	HealthBarComponent->SetVisibility(true);
 }
 
 void ASpaceship::HandleThrottleInput(float Scale)
@@ -155,6 +167,6 @@ void ASpaceship::TurnToFaceDirection(const FVector& Direction, float MinDeltaAng
 	if (FMath::Abs(CosAngle) < MinDeltaAngle || CosAngle < -MinDeltaAngle)
 	{
 		auto DotFromRight = FVector::DotProduct(GetActorRightVector(), Direction);
-		HandleRutterInput(DotFromRight > 0.0f ? 1.f : DotFromRight < -0.0f ? -1.f : 0.0f);
+		HandleRutterInput(DotFromRight > 0.01f ? 1.f : DotFromRight < -0.001f ? -1.f : 0.0f);
 	}
 }
