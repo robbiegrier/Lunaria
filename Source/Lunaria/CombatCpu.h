@@ -23,6 +23,12 @@ public:
 	void EnterSpawningState();
 	void EnterCombatState();
 
+	UFUNCTION(BlueprintCallable)
+		class ASpaceship* GetSpaceshipPawn() const { return Spaceship; }
+
+	UFUNCTION(BlueprintCallable)
+		FVector GetMoveFocus() const;
+
 private:
 	void HandleShipDeath(class UHealthComponent* HealthComponent, int32 KillingBlow);
 
@@ -35,6 +41,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behaviors", meta = (AllowPrivateAccess = "true"))
 		class UBehaviorTreeComponent* BehaviorComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behaviors", meta = (AllowPrivateAccess = "true"))
+		float SpawnIndicatorOffset = -30.f;
 
 	class ASpaceship* Spaceship;
 };

@@ -156,8 +156,18 @@ void ASpaceship::HandleRutterInput(float Scale)
 {
 	if (SpaceshipMovementComponent)
 	{
-		SpaceshipMovementComponent->Turn(Scale);
+		SpaceshipMovementComponent->Turn(Scale * RutterScaleModifier);
 	}
+}
+
+void ASpaceship::TurnToFaceActor(AActor* InActor, float MinDeltaAngle)
+{
+	TurnToFaceLocation(InActor->GetActorLocation(), MinDeltaAngle);
+}
+
+void ASpaceship::TurnToFaceLocation(FVector InLocation, float MinDeltaAngle)
+{
+	TurnToFaceDirection((InLocation - GetActorLocation()).GetSafeNormal(), MinDeltaAngle);
 }
 
 void ASpaceship::TurnToFaceDirection(const FVector& Direction, float MinDeltaAngle)

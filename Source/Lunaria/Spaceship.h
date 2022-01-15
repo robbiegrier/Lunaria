@@ -22,6 +22,7 @@ public:
 	void RespawnOnMap(class AMapManager* MapManager);
 	virtual void NativeWhenAgentOf(const FGameplayEvent& Event) override;
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
+	void SetRutterScaleModifier(float InModifier) { RutterScaleModifier = InModifier; }
 
 	void EnterSpawningState();
 	void EnterCombatState();
@@ -32,7 +33,13 @@ public:
 	UFUNCTION()
 		void HandleRutterInput(float Scale);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
+		void TurnToFaceActor(AActor* InActor, float MinDeltaAngle = 0.98f);
+
+	UFUNCTION(BlueprintCallable)
+		void TurnToFaceLocation(FVector InLocation, float MinDeltaAngle = 0.98f);
+
+	UFUNCTION(BlueprintCallable)
 		void TurnToFaceDirection(const FVector& Direction, float MinDeltaAngle = 0.98f);
 
 	UFUNCTION(BlueprintCallable)
@@ -89,4 +96,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		class UWidgetComponent* HealthBarComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		float RutterScaleModifier = 1.f;
 };

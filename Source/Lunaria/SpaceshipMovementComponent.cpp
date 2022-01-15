@@ -26,6 +26,7 @@ void USpaceshipMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Attributes = Helpers::GetSister<UAttributesComponent>(this);
+	CharacterMovement = Helpers::GetSister<UCharacterMovementComponent>(this);
 }
 
 void USpaceshipMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -36,6 +37,8 @@ void USpaceshipMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	auto Location = GetOwner()->GetActorLocation();
 	Location.Z = 100.f;
 	GetOwner()->SetActorLocation(Location);
+
+	CharacterMovement->MaxWalkSpeed = FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
 }
 
 void USpaceshipMovementComponent::Accelerate(float Scale)

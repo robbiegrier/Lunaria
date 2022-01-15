@@ -32,6 +32,8 @@ void ACombatCpu::OnPossess(APawn* MyPawn)
 	//	BehaviorComponent->StartTree(*BehaviorTree);
 	//}
 
+	Spaceship->SetRutterScaleModifier(2.f);
+
 	EnterSpawningState();
 }
 
@@ -62,7 +64,7 @@ void ACombatCpu::EnterSpawningState()
 	auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	auto SpawnIndicatorTransform = FTransform();
-	SpawnIndicatorTransform.SetLocation(Spaceship->GetMesh()->GetComponentLocation() + FVector(0.f, 0.f, Spaceship->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
+	SpawnIndicatorTransform.SetLocation(Spaceship->GetActorLocation() + FVector(0.f, 0.f, SpawnIndicatorOffset));
 	SpawnIndicatorTransform.SetScale3D(FVector(Spaceship->GetCapsuleComponent()->GetScaledCapsuleRadius() / 30.f));
 	auto SpawnIndicator = GetWorld()->SpawnActor<ASpawnIndicator>(GameMode->UnitSpawnIndicatorClass, SpawnIndicatorTransform);
 	SpawnIndicator->Completion.AddUObject(this, &ACombatCpu::EnterCombatState);
@@ -77,6 +79,11 @@ void ACombatCpu::EnterCombatState()
 	}
 
 	Spaceship->EnterCombatState();
+}
+
+FVector ACombatCpu::GetMoveFocus() const
+{
+	return GetPathFollowingComponent()->GetMoveFocus(false);
 }
 
 void ACombatCpu::HandleShipDeath(UHealthComponent* HealthComponent, int32 KillingBlow)

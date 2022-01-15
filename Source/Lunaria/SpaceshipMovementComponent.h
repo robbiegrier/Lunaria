@@ -51,5 +51,6 @@ private:
 		float MoveSpeedSeed{ 400.f };
 
 	class UAttributesComponent* Attributes;
+	class UCharacterMovementComponent* CharacterMovement;
 	float CurrentBankValue{ 0.f };
 };
