@@ -112,6 +112,16 @@ float AAbility::GetAttributeValueFromTag(const FGameplayTag& Attribute, float Se
 	return 0.f;
 }
 
+FLinearColor AAbility::GetAbilityColor() const
+{
+	if (MyOwner)
+	{
+		return GetAttributes()->GetColor(AbilityTag);
+	}
+
+	return FLinearColor();
+}
+
 void AAbility::ExecuteContext()
 {
 	OnExecute();

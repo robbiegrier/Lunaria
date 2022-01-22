@@ -31,8 +31,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 		class UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
 
+	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "TagContainer,InDamage,InDistance,InColor"))
+		void SetPayloadProperties(const FGameplayTagContainer& TagContainer, float InDamage, float InDistance = 9999999.f, const FLinearColor& InColor = FLinearColor::White);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnHitBeforeDestroy(AActor* OtherActor);
+
 	UFUNCTION(BlueprintCallable)
-		void SetPayloadProperties(const FGameplayTagContainer& TagContainer, float InDamage, float InDistance = 9999999.f);
+		void SetColor(const FLinearColor& InColor);
+
+	UFUNCTION(BlueprintCallable)
+		const FLinearColor& GetColor() const { return Color; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -55,6 +64,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
 		FGameplayTagContainer GameplayTags;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Model, meta = (AllowPrivateAccess = "true"))
+		FLinearColor Color;
 
 	UPROPERTY()
 		FTimerHandle Handle;

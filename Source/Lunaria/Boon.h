@@ -22,6 +22,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
 		float Multiplier = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visual)
+		FLinearColor Color = FLinearColor::White;
 };
 
 /**

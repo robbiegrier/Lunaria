@@ -44,4 +44,16 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void WhenKilledBySomething(const FGameplayEvent& Event);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
+		void WhenAttackUsed(const FGameplayEvent& Event);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
+		void WhenSpecialUsed(const FGameplayEvent& Event);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
+		void WhenMovementUsed(const FGameplayEvent& Event);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
+		void WhenDefensiveUsed(const FGameplayEvent& Event);
 };

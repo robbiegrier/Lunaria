@@ -34,6 +34,13 @@ ASpaceProjectile::ASpaceProjectile()
 	ProjectileShell->SetCollisionProfileName("NoCollision");
 }
 
+void ASpaceProjectile::SetColor(const FLinearColor& InColor)
+{
+	Color = InColor;
+	Mesh->SetVectorParameterValueOnMaterials(TEXT("Tint"), Helpers::GetVectorFromLinearColor(Color));
+	Mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), Helpers::GetVectorFromLinearColor(Color));
+}
+
 void ASpaceProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -50,9 +57,9 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if (!(GetOwner() == OtherActor) && !Cast<ASpaceProjectile>(OtherActor))
 	{
-		if (auto OtherAsHittable = Cast<IHittable>(OtherActor))
+		if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
 		{
-			if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
+			if (OtherActor->FindComponentByClass<UCombatComponent>())
 			{
 				auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, OtherActor);
 				Event.Values.Add("Damage", DamagePayload);
@@ -60,16 +67,19 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 				Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
 				Event.EventTags.AppendTags(GameplayTags);
 				AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
-				Die();
 			}
-			else
+
+			if (OtherActor->Implements<UHittable>())
 			{
-				// When hit a friendly, do not die
+				IHittable::Execute_OnHitByProjectile(OtherActor, this);
 			}
+
+			OnHitBeforeDestroy(OtherActor);
+			Die();
 		}
 		else
 		{
-			Die();
+			// When hit a friendly, do not die
 		}
 	}
 }
@@ -90,10 +100,11 @@ void ASpaceProjectile::Tick(float DeltaTime)
 	}
 }
 
-void ASpaceProjectile::SetPayloadProperties(const FGameplayTagContainer& TagContainer, float InDamage, float InDistance)
+void ASpaceProjectile::SetPayloadProperties(const FGameplayTagContainer& TagContainer, float InDamage, float InDistance, const FLinearColor& InColor)
 {
 	GameplayTags.AppendTags(TagContainer);
 	DamagePayload = InDamage;
 	TravelDistance = InDistance;
 	ProjectileShell->SetCollisionProfileName("OverlapAllDynamic");
+	SetColor(InColor);
 }

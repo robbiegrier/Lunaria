@@ -62,6 +62,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float GetAttributeValueFromTag(const FGameplayTag& Attribute, float Seed) const;
 
+	UFUNCTION(BlueprintCallable)
+		FLinearColor GetAbilityColor() const;
+
 protected:
 	virtual void BeginPlay() override;
 

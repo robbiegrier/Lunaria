@@ -173,16 +173,28 @@ float UAttributesComponent::GetTagged(const FGameplayTag& Attribute, float Seed)
 
 float UAttributesComponent::GetFromTagContainer(const FGameplayTagContainer& Attribute, float Seed)
 {
-	auto Base = Seed;
-	auto Multiplier = 1.f;
+	auto Modifier = GetModifierFromTagContainer(Attribute, Seed);
+	return Modifier.Additive * Modifier.Multiplier;
+}
+
+FAttributeModifier UAttributesComponent::GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed)
+{
+	auto Output = FAttributeModifier();
+	Output.Additive = Seed;
+	Output.Multiplier = 1.f;
 
 	for (auto Boon : Boons)
 	{
 		Boon->BeforeAttributeQueried(Attribute);
 		auto Modifier = Boon->GetModifierForTagContainer(Attribute);
 
-		Base += Modifier.Additive;
-		Multiplier += Modifier.Multiplier / 100.f;
+		Output.Additive += Modifier.Additive;
+		Output.Multiplier += Modifier.Multiplier / 100.f;
+
+		if (!Modifier.Color.Equals(FLinearColor::White))
+		{
+			Output.Color = Modifier.Color;
+		}
 	}
 
 	for (auto& EffectRegister : StatusEffects)
@@ -192,12 +204,27 @@ float UAttributesComponent::GetFromTagContainer(const FGameplayTagContainer& Att
 			Boon->BeforeAttributeQueried(Attribute);
 			auto Modifier = Boon->GetModifierForTagContainer(Attribute);
 
-			Base += Modifier.Additive;
-			Multiplier += Modifier.Multiplier / 100.f;
+			Output.Additive += Modifier.Additive;
+			Output.Multiplier += Modifier.Multiplier / 100.f;
+
+			if (!Modifier.Color.Equals(FLinearColor::White))
+			{
+				Output.Color = Modifier.Color;
+			}
 		}
 	}
 
-	return Base * Multiplier;
+	return Output;
+}
+
+FLinearColor UAttributesComponent::GetColor(const FGameplayTag& Attribute)
+{
+	return GetColorFromTagContainer(FGameplayTagContainer(Attribute));
+}
+
+FLinearColor UAttributesComponent::GetColorFromTagContainer(const FGameplayTagContainer& Attribute)
+{
+	return GetModifierFromTagContainer(Attribute, 0.f).Color;
 }
 
 float UAttributesComponent::GetForAbilityType(const FGameplayTag& Ability, const FGameplayTag& Attribute, float Seed)

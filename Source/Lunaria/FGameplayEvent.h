@@ -13,7 +13,8 @@ enum class ENativeEventType : uint8
 	Hit,
 	Kill,
 	ApplyStatus,
-	AbilityUsed
+	AbilityUsed,
+	Block
 };
 
 USTRUCT(BlueprintType)

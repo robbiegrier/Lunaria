@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "GameplayTagContainer.h"
 #include "LunariaLib.generated.h"
 
 /**
@@ -17,4 +18,7 @@ class LUNARIA_API ULunariaLib : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable)
 		static void Test() {}
+
+	UFUNCTION(BlueprintCallable)
+		static FGameplayTagContainer AddTagContainers(const FGameplayTagContainer& A, const FGameplayTagContainer& B);
 };

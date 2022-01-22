@@ -19,4 +19,7 @@ class LUNARIA_API IHittable
 public:
 	UFUNCTION()
 		virtual void TakeHit(int32 DamageToApply, class AActor* Other);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Projectile")
+		void OnHitByProjectile(class ASpaceProjectile* Projectile);
 };

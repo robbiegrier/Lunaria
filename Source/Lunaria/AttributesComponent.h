@@ -34,6 +34,9 @@ public:
 		float GetFromTagContainer(const FGameplayTagContainer& Attribute, float Seed);
 
 	UFUNCTION(BlueprintCallable)
+		FAttributeModifier GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
 		float GetForAbilityType(const FGameplayTag& Ability, const FGameplayTag& Attribute, float Seed);
 
 	UFUNCTION(BlueprintCallable)
@@ -59,6 +62,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		const TArray<ABoon*>& GetCurrentBoons() const { return Boons; }
+
+	UFUNCTION(BlueprintCallable)
+		FLinearColor GetColor(const FGameplayTag& Attribute);
+
+	UFUNCTION(BlueprintCallable)
+		FLinearColor GetColorFromTagContainer(const FGameplayTagContainer& Attribute);
 
 protected:
 	virtual void BeginPlay() override;
