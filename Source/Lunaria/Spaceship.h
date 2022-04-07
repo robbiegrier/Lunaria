@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		class UCombatComponent* GetCombatComponent() const { return CombatComponent; }
 
+	UFUNCTION(BlueprintCallable)
+		float GetCurrentTurnSpeed() const;
+
 protected:
 	void BeginPlay() override;
 

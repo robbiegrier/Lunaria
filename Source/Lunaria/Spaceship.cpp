@@ -79,6 +79,11 @@ ASpaceship::ASpaceship()
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("Combat Component"));
 }
 
+float ASpaceship::GetCurrentTurnSpeed() const
+{
+	return SpaceshipMovementComponent->GetCurrentTurnSpeed();
+}
+
 void ASpaceship::BeginPlay()
 {
 	Super::BeginPlay();

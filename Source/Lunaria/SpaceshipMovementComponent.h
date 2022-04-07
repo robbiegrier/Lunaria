@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Turn(float Scale);
 
+	UFUNCTION(BlueprintCallable)
+		float GetCurrentTurnSpeed() const;
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -55,7 +55,12 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 
 void USpaceshipMovementComponent::Turn(float Scale)
 {
-	ExecuteTurning(Scale, FMath::Max(Attributes->Get("Speed.Turn", TurnSpeedSeed), 0.f));
+	ExecuteTurning(Scale, GetCurrentTurnSpeed());
+}
+
+float USpaceshipMovementComponent::GetCurrentTurnSpeed() const
+{
+	return FMath::Max(Attributes->Get("Speed.Turn", TurnSpeedSeed), 0.f);
 }
 
 void USpaceshipMovementComponent::ExecuteTurning(float Scale, float Speed)
