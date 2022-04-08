@@ -41,8 +41,10 @@ public:
 
 	virtual void ExecuteContext();
 
-	virtual bool IsOffCooldown();
 	virtual void UpdateCooldownOnExecute();
+
+	UFUNCTION(BlueprintCallable)
+		virtual bool IsOffCooldown() const;
 
 	UFUNCTION(BlueprintCallable)
 		bool IsToggled() const { return Toggled; }

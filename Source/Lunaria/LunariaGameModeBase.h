@@ -15,6 +15,7 @@
 #include "PickupChoiceWidget.h"
 #include "Components/Button.h"
 #include "SpawnIndicator.h"
+#include "Boon.h"
 #include "LunariaGameModeBase.generated.h"
 
 /**
@@ -48,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FLinearColor GetGameColor(const FString& String);
 
+	UFUNCTION(BlueprintCallable)
+		const TArray<TSubclassOf<ABoon>>& GetEnemySpawnBoons() const { return EnemySpawnBoons; }
+
 	void StartNewArea();
 	void StartNewAreaFromDoor(class ADoor* Door);
 
@@ -78,6 +82,9 @@ private:
 	TArray<TSubclassOf<ALevelTask>> LevelTaskList;
 	int32 CurrentTaskIndex = 0;
 	ALevelTask* CurrentTask;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Boons, meta = (AllowPrivateAccess = "true"))
+		TArray<TSubclassOf<ABoon>> EnemySpawnBoons;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks, meta = (AllowPrivateAccess = "true"))
 		TArray<TSubclassOf<ALevelTask>> CombatTaskClasses;

@@ -1,6 +1,7 @@
 // Robbie Grier
 
 #include "LunariaLib.h"
+#include "Helpers.h"
 
 FGameplayTagContainer ULunariaLib::AddTagContainers(const FGameplayTagContainer& A, const FGameplayTagContainer& B)
 {
@@ -8,4 +9,14 @@ FGameplayTagContainer ULunariaLib::AddTagContainers(const FGameplayTagContainer&
 	Output.AppendTags(A);
 	Output.AppendTags(B);
 	return Output;
+}
+
+bool ULunariaLib::AreDifferentTeams(AActor* Left, AActor* Right)
+{
+	return Helpers::AreDifferentTeams(Left, Right);
+}
+
+bool ULunariaLib::AreSameTeam(AActor* Left, AActor* Right)
+{
+	return !AreDifferentTeams(Left, Right);
 }

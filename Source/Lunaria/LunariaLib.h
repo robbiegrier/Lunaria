@@ -21,4 +21,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		static FGameplayTagContainer AddTagContainers(const FGameplayTagContainer& A, const FGameplayTagContainer& B);
+
+	UFUNCTION(BlueprintCallable)
+		static bool AreDifferentTeams(class AActor* Left, class AActor* Right);
+
+	UFUNCTION(BlueprintCallable)
+		static bool AreSameTeam(class AActor* Left, class AActor* Right);
 };

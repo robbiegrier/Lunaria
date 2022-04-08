@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float GetCurrentTurnSpeed() const;
 
+	UFUNCTION(BlueprintCallable)
+		void InitializeEnemy();
+
 protected:
 	void BeginPlay() override;
 

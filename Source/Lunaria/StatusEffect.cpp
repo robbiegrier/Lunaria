@@ -84,4 +84,5 @@ void AStatusEffect::Tick(float DeltaTime)
 void AStatusEffect::NativeOnAdded(UAttributesComponent* Attributes)
 {
 	MyOwnerAttributes = Attributes;
+	SetActorTransform(MyOwnerAttributes->GetOwner()->GetActorTransform());
 }

@@ -84,6 +84,16 @@ float ASpaceship::GetCurrentTurnSpeed() const
 	return SpaceshipMovementComponent->GetCurrentTurnSpeed();
 }
 
+void ASpaceship::InitializeEnemy()
+{
+	CombatComponent->SetTeam(UCombatComponent::EnemyTeam);
+
+	for (const auto& BoonClass : Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode())->GetEnemySpawnBoons())
+	{
+		Attributes->AddBoonFromClass(BoonClass);
+	}
+}
+
 void ASpaceship::BeginPlay()
 {
 	Super::BeginPlay();

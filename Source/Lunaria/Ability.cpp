@@ -61,6 +61,13 @@ void AAbility::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	auto Now = GetWorld()->GetTimeSeconds();
+
+	if (Now - LastUsed > GetCooldown())
+	{
+		CurrentCharges = GetCooldownCharges();
+	}
+
 	if (Toggled)
 	{
 		TickOn(DeltaTime);
@@ -171,15 +178,8 @@ void AAbility::StopSound(UAudioComponent* Player)
 	Player->Stop();
 }
 
-bool AAbility::IsOffCooldown()
+bool AAbility::IsOffCooldown() const
 {
-	auto Now = GetWorld()->GetTimeSeconds();
-
-	if (Now - LastUsed > GetCooldown())
-	{
-		CurrentCharges = GetCooldownCharges();
-	}
-
 	return CurrentCharges > 0;
 }
 
