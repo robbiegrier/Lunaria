@@ -78,6 +78,6 @@ void UAbilitiesComponent::SetAbility(EAbilityKey Key, AAbility* Ability)
 	if (Ability)
 	{
 		Abilities.Add(Key, Ability);
-		Ability->Attach(GetOwner());
+		Ability->Attach(GetOwner(), Key);
 	}
 }

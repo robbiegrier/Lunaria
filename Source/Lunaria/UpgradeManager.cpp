@@ -36,10 +36,8 @@ TArray<UClass*> AUpgradeManager::GetChoicesFromPickup(APickup* Pickup)
 
 	for (auto i = 0; i < NumberOfChoices; i++)
 	{
-		if (i < PotentialChoices.Num())
-		{
-			Output.Add(PotentialChoices[i]);
-		}
+		auto Rand = FMath::RandRange(0, PotentialChoices.Num() - 1);
+		Output.Add(PotentialChoices[Rand]);
 	}
 
 	return Output;

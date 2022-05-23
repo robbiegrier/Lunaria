@@ -66,6 +66,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void InitializeEnemy();
 
+	UFUNCTION(BlueprintCallable)
+		void InitializeAlly();
+
+	UFUNCTION(BlueprintCallable)
+		void SetSpawnTime(float Time);
+
 protected:
 	void BeginPlay() override;
 

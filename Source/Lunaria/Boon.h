@@ -25,6 +25,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visual)
 		FLinearColor Color = FLinearColor::White;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visual)
+		TArray<TSubclassOf<class ABoon>> StatusEffects;
 };
 
 /**

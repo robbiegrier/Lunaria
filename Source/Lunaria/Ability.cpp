@@ -6,6 +6,8 @@
 #include "Components/AudioComponent.h"
 #include "Sound/SoundBase.h"
 #include "AttributesComponent.h"
+#include "GameplayEventManager.h"
+#include "LunariaLib.h"
 
 AAbility::AAbility()
 {
@@ -84,9 +86,27 @@ void AAbility::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 	TagContainer.AddTag(AbilityTag);
 }
 
-void AAbility::Attach(AActor* InOwner)
+void AAbility::Attach(AActor* InOwner, EAbilityKey Key)
 {
 	MyOwner = InOwner;
+
+	switch (Key)
+	{
+	case EAbilityKey::A:
+		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Movement"));
+		break;
+	case EAbilityKey::B:
+		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Defensive"));
+		break;
+	case EAbilityKey::X:
+		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Attack"));
+		break;
+	case EAbilityKey::Y:
+		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Special"));
+		break;
+	default:
+		break;
+	}
 }
 
 UAttributesComponent* AAbility::GetAttributes() const
@@ -134,6 +154,15 @@ void AAbility::ExecuteContext()
 	OnExecute();
 	UpdateCooldownOnExecute();
 	PlaySound(AbilityUsedSounds, AudioPlayer);
+
+	if (AutoGenerateEvent)
+	{
+		auto Event = FGameplayEvent();
+		Event.Agent = MyOwner;
+		Event.Action = ENativeEventType::AbilityUsed;
+		Event.EventTags = ULunariaLib::GetTags(this);
+		AGameplayEventManager::Submit(this, Event);
+	}
 }
 
 void AAbility::Queue()
@@ -178,6 +207,25 @@ void AAbility::StopSound(UAudioComponent* Player)
 	Player->Stop();
 }
 
+ASpaceProjectile* AAbility::CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float Damage, float Distance)
+{
+	return CreateAbilityProjectileWithTransform(SpawnClass, GetTransform(), Damage, Distance);
+}
+
+ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage, float Distance)
+{
+	auto Params = FActorSpawnParameters();
+	Params.Owner = MyOwner;
+	auto Projectile = GetWorld()->SpawnActor<ASpaceProjectile>(SpawnClass, Transform, Params);
+
+	if (Projectile)
+	{
+		Projectile->SetPayloadProperties(ULunariaLib::GetTags(this), Damage, Distance, GetAbilityColor());
+	}
+
+	return Projectile;
+}
+
 bool AAbility::IsOffCooldown() const
 {
 	return CurrentCharges > 0;
@@ -187,6 +235,11 @@ void AAbility::UpdateCooldownOnExecute()
 {
 	--CurrentCharges;
 	LastUsed = GetWorld()->GetTimeSeconds();
+}
+
+bool AAbility::ShouldAiUse() const
+{
+	return IsOffCooldown() && ShouldBeUsed();
 }
 
 void AAbility::Press()

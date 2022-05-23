@@ -7,12 +7,6 @@
 #include "Ability.h"
 #include "AbilitiesComponent.generated.h"
 
-UENUM()
-enum class EAbilityKey : uint8
-{
-	A, B, X, Y
-};
-
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class LUNARIA_API UAbilitiesComponent : public UActorComponent
 {

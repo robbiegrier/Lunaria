@@ -12,7 +12,7 @@
 #include "TimerManager.h"
 #include "User.h"
 
-static bool DebugEvents = false;
+static bool DebugEvents = true;
 
 AGameplayEventManager::AGameplayEventManager()
 {
@@ -149,6 +149,10 @@ void AGameplayEventManager::ProcessGameplayEvents()
 		{
 			ProcessHitEvent(Event);
 		}
+		if (Event.Action == ENativeEventType::Heal)
+		{
+			ProcessHealEvent(Event);
+		}
 		else if (Event.Action == ENativeEventType::Kill)
 		{
 			ProcessKillEvent(Event);
@@ -202,20 +206,65 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 	{
 		if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
 		{
-			auto FindDamage = Event.Values.Find("Damage");
-			auto Damage = FindDamage ? *FindDamage : 0.f;
+			auto FindScale = Event.Values.Find("Damage");
+			auto Scale = FindScale ? *FindScale : 0.f;
 
-			HealthComp->ApplyDamage(Damage);
+			// Any tags attached to this hit event should potentially modify the damage scale
+			if (auto Attributes = Event.Agent->FindComponentByClass<UAttributesComponent>())
+			{
+				auto DamageTags = Event.EventTags;
+				DamageTags.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Damage"));
+				Scale = Attributes->GetFromTagContainer(DamageTags, Scale);
+			}
+
+			if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
+			{
+				auto ReductionPercent = Attributes->Get("Reduction.Damage", 0.f) * 0.01f;
+				auto ReductionAmount = Scale * ReductionPercent;
+				Scale -= ReductionAmount;
+
+				auto AmpPercent = Attributes->Get("Amplify.Damage", 0.f) * 0.01f;
+				auto AmpAmount = Scale * AmpPercent;
+				Scale += AmpAmount;
+			}
+
+			HealthComp->ApplyDamage(Scale);
 
 			if (HealthComp->IsHealthDepleted())
 			{
 				auto KillEvent = Event;
-				//KillEvent.EventTags = Event.EventTags;
 				KillEvent.Action = ENativeEventType::Kill;
 				SubmitEvent(KillEvent);
 			}
 
-			if (DebugEvents) Print(Event.Agent->GetName() + " did " + FString::FromInt((int)Damage) + " damage to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+			if (DebugEvents) Print(Event.Agent->GetName() + " did " + FString::FromInt((int)Scale) + " damage to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+		}
+	}
+}
+
+void AGameplayEventManager::ProcessHealEvent(const FGameplayEvent& Event)
+{
+	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
+	{
+		if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
+		{
+			auto FindScale = Event.Values.Find("Healing");
+			auto Scale = FindScale ? *FindScale : 0.f;
+
+			if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
+			{
+				auto ReductionPercent = Attributes->Get("Reduction.Healing", 0.f) * 0.01f;
+				auto ReductionAmount = Scale * ReductionPercent;
+				Scale -= ReductionAmount;
+
+				auto AmpPercent = Attributes->Get("Amplify.Healing", 0.f) * 0.01f;
+				auto AmpAmount = Scale * AmpPercent;
+				Scale += AmpAmount;
+			}
+
+			HealthComp->ApplyHealing(Scale);
+
+			Print(Event.Agent->GetName() + " provided " + FString::FromInt((int)Scale) + " healing to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
 		}
 	}
 }
@@ -238,8 +287,11 @@ void AGameplayEventManager::ProcessApplyStatusEvent(const FGameplayEvent& Event)
 		{
 			if (auto Find = Event.Classes.Find("StatusEffectClass"))
 			{
-				Attributes->AddStatusEffectFromClass(*Find, Event.Agent);
-				if (DebugEvents) Print(Event.Agent->GetName() + " applied " + (*Find)->GetName() + " to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+				if (*Find)
+				{
+					Attributes->AddStatusEffectFromClass(*Find, Event.Agent);
+					if (DebugEvents) Print(Event.Agent->GetName() + " applied " + (*Find)->GetName() + " to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+				}
 			}
 		}
 	}

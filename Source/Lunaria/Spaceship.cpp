@@ -23,6 +23,8 @@
 #include "AbilitiesComponent.h"
 #include "CombatComponent.h"
 #include "Components/WidgetComponent.h"
+#include "CombatCpu.h"
+#include "CpuHealthBar.h"
 
 ASpaceship::ASpaceship()
 {
@@ -94,6 +96,19 @@ void ASpaceship::InitializeEnemy()
 	}
 }
 
+void ASpaceship::InitializeAlly()
+{
+	CombatComponent->SetTeam(UCombatComponent::PlayerTeam);
+}
+
+void ASpaceship::SetSpawnTime(float Time)
+{
+	if (auto Cpu = Cast<ACombatCpu>(GetOwner()))
+	{
+		Cpu->SetSpawnTime(Time);
+	}
+}
+
 void ASpaceship::BeginPlay()
 {
 	Super::BeginPlay();
@@ -107,7 +122,11 @@ void ASpaceship::BeginPlay()
 
 	if (IsPlayerControlled())
 	{
-		HealthBarComponent->SetVisibility(false);
+		//HealthBarComponent->SetVisibility(false);
+		if (auto HealthBar = Cast<UCpuHealthBar>(HealthBarComponent->GetUserWidgetObject()))
+		{
+			HealthBar->HideHealthBar();
+		}
 	}
 }
 

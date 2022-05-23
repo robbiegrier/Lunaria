@@ -27,4 +27,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		static bool AreSameTeam(class AActor* Left, class AActor* Right);
+
+	UFUNCTION(BlueprintCallable)
+		static FGameplayTagContainer GetTags(UObject* Asset);
 };

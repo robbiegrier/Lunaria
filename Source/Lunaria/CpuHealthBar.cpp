@@ -32,6 +32,13 @@ void UCpuHealthBar::UpdateHealth()
 		auto MaxHealth = MyOwnerHealth->GetMaxHealth();
 		auto CurrentHealth = MyOwnerHealth->GetCurrentHealthFast(MaxHealth);
 		SetHealthValues(CurrentHealth, MaxHealth);
+
+		if (PreviousHealthValue >= 0.f && !FMath::IsNearlyEqual(CurrentHealth, PreviousHealthValue, 0.0001f))
+		{
+			OnHealthChanged(CurrentHealth - PreviousHealthValue);
+		}
+
+		PreviousHealthValue = CurrentHealth;
 	}
 }
 
@@ -43,6 +50,14 @@ void UCpuHealthBar::SetMyOwner(AActor* InOwner)
 	{
 		MyOwnerHealth = InOwner->FindComponentByClass<UHealthComponent>();
 	}
+}
+
+void UCpuHealthBar::HideHealthBar()
+{
+	HealthBar->SetVisibility(ESlateVisibility::Hidden);
+	HealthBarBackground->SetVisibility(ESlateVisibility::Hidden);
+	HealthText->SetVisibility(ESlateVisibility::Hidden);
+	HealthBarBorder->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UCpuHealthBar::SetHealthValues(float Current, float Max)

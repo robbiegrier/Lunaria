@@ -14,6 +14,7 @@
 #include "Printer.h"
 #include "CombatComponent.h"
 #include "Helpers.h"
+#include "GameplayEventManager.h"
 
 AObstacle::AObstacle()
 {
@@ -41,17 +42,22 @@ void AObstacle::BeginPlay()
 
 void AObstacle::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	if (OtherActor && OtherActor->GetClass() == GetClass()) return;
-
-	if (OtherActor)
+	if (OtherActor && OtherActor->GetClass() != GetClass())
 	{
-		if (auto Hittable = Cast<IHittable>(OtherActor))
-		{
-			Hittable->TakeHit(CollisionDamage, this);
-		}
-	}
+		auto Event = FGameplayEvent(this, ENativeEventType::Hit, OtherActor);
+		Event.Values.Add("Damage", CollisionDamage);
+		Event.Vectors.Add("Location", GetActorLocation());
+		//Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
+		Event.EventTags.AppendTags(GameplayTags);
+		AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
 
-	TakeHit(SelfDamageOnCollision, this);
+		auto SelfEvent = FGameplayEvent(this, ENativeEventType::Hit, this);
+		SelfEvent.Values.Add("Damage", SelfDamageOnCollision);
+		SelfEvent.Vectors.Add("Location", GetActorLocation());
+		//Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
+		Event.EventTags.AppendTags(GameplayTags);
+		AGameplayEventManager::Get(GetWorld())->SubmitEvent(SelfEvent);
+	}
 }
 
 void AObstacle::HandleObstacleDestroyed(UHealthComponent* HealthComp, int KillingBlow)

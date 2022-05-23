@@ -16,6 +16,8 @@ public:
 	ASpawnIndicator();
 	virtual void Tick(float DeltaTime) override;
 
+	void Launch(float InDuration);
+
 	FSpawnIndicatorComplete Completion;
 
 protected:

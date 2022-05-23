@@ -24,12 +24,17 @@ public:
 	void EnterCombatState();
 
 	UFUNCTION(BlueprintCallable)
+		void SetSpawnTime(float Time);
+
+	UFUNCTION(BlueprintCallable)
 		class ASpaceship* GetSpaceshipPawn() const { return Spaceship; }
 
 	UFUNCTION(BlueprintCallable)
 		FVector GetMoveFocus() const;
 
 private:
+	void InitializeBeforeStartingTree();
+	void FindLeader();
 	void HandleShipDeath(class UHealthComponent* HealthComponent, int32 KillingBlow);
 
 	// Dropdown selector for behavior tree in blueprint
@@ -44,6 +49,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behaviors", meta = (AllowPrivateAccess = "true"))
 		float SpawnIndicatorOffset = -30.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behaviors", meta = (AllowPrivateAccess = "true"))
+		float SpawnTime = 3.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behaviors", meta = (AllowPrivateAccess = "true"))
+		class ASpawnIndicator* SpawnIndicator;
 
 	class ASpaceship* Spaceship;
 };

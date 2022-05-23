@@ -26,6 +26,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetMyOwner(class AActor* InOwner);
 
+	UFUNCTION(BlueprintCallable)
+		void HideHealthBar();
+
 private:
 	void InterpolateBackground(float InDeltaTime);
 	void UpdateHealth();
@@ -49,4 +52,9 @@ private:
 		AActor* MyOwner;
 
 	class UHealthComponent* MyOwnerHealth;
+	float PreviousHealthValue = -1.f;
+
+public:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void OnHealthChanged(float HealthChange);
 };

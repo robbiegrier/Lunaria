@@ -62,6 +62,7 @@ private:
 	void TriggerSubjectOfClassDelegates(const FGameplayEvent& Event);
 	void ProcessHitEvent(const FGameplayEvent& Event);
 	void ProcessKillEvent(const FGameplayEvent& Event);
+	void ProcessHealEvent(const FGameplayEvent& Event);
 	void ProcessApplyStatusEvent(const FGameplayEvent& Event);
 	void CullHangingDelegates(ClassDelegateMapType& Map);
 	FString PrintDelegateMap(const ClassDelegateMapType& Map);

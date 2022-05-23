@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameplayTagContainer.h"
 #include "GameplayTagAssetInterface.h"
+#include "SpaceProjectile.h"
 #include "Ability.generated.h"
 
 UENUM()
@@ -18,6 +19,12 @@ enum class EAbilityExecution : uint8
 	Passive = 4
 };
 
+UENUM()
+enum class EAbilityKey : uint8
+{
+	A, B, X, Y
+};
+
 UCLASS()
 class LUNARIA_API AAbility : public AActor, public IGameplayTagAssetInterface
 {
@@ -28,7 +35,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
-	void Attach(AActor* InOwner);
+	void Attach(AActor* InOwner, EAbilityKey Key);
 
 	virtual void Press();
 	virtual void Release();
@@ -42,6 +49,9 @@ public:
 	virtual void ExecuteContext();
 
 	virtual void UpdateCooldownOnExecute();
+
+	UFUNCTION(BlueprintCallable)
+		virtual bool ShouldAiUse() const;
 
 	UFUNCTION(BlueprintCallable)
 		virtual bool IsOffCooldown() const;
@@ -73,6 +83,12 @@ protected:
 	void PlaySound(const TArray<class USoundBase*>& Sounds, class UAudioComponent* Player);
 	void StopSound(class UAudioComponent* Player);
 
+	UFUNCTION(BlueprintCallable)
+		class ASpaceProjectile* CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float Damage = 50.f, float Distance = 3000.f);
+
+	UFUNCTION(BlueprintCallable)
+		class ASpaceProjectile* CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage = 50.f, float Distance = 3000.f);
+
 private:
 	void UpdateStrategy(TEnumAsByte<EAbilityExecution> Type);
 
@@ -81,6 +97,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		AActor* MyOwner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Event, meta = (AllowPrivateAccess = "true"))
+		bool AutoGenerateEvent = true;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
 		bool Toggled = false;
@@ -110,10 +129,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
 		float LastUsed = -CooldownSeed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Cooldown, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
 		int32 CurrentCharges = CooldownChargesSeed;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
 		FGameplayTag AbilityTag;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
@@ -142,6 +161,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Tick Events")
 		void TickOff(float DeltaTime);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Ai Checks")
+		bool ShouldBeUsed() const;
+	bool ShouldBeUsed_Implementation() const {
+		return true;
+	}
 };
 
 class FAbilityStrategy

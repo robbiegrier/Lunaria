@@ -14,7 +14,8 @@ enum class ENativeEventType : uint8
 	Kill,
 	ApplyStatus,
 	AbilityUsed,
-	Block
+	Block,
+	Heal
 };
 
 USTRUCT(BlueprintType)
@@ -27,11 +28,15 @@ public:
 
 	FGameplayEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject)
 		: Agent(InAgent), Action(InAction), Subject(InSubject) {
-		if (auto Tagged = Cast<IGameplayTagAssetInterface>(Agent)) {
-			Tagged->GetOwnedGameplayTags(AgentTags);
+		if (Agent) {
+			if (auto Tagged = Cast<IGameplayTagAssetInterface>(Agent)) {
+				Tagged->GetOwnedGameplayTags(AgentTags);
+			}
 		}
-		if (auto Tagged = Cast<IGameplayTagAssetInterface>(Subject)) {
-			Tagged->GetOwnedGameplayTags(SubjectTags);
+		if (Subject) {
+			if (auto Tagged = Cast<IGameplayTagAssetInterface>(Subject)) {
+				Tagged->GetOwnedGameplayTags(SubjectTags);
+			}
 		}
 	}
 

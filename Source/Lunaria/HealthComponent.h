@@ -31,6 +31,9 @@ public:
 		void ApplyDamage(float Scale);
 
 	UFUNCTION(BlueprintCallable)
+		void ApplyHealing(float Scale);
+
+	UFUNCTION(BlueprintCallable)
 		void BindHealthBar(class UCpuHealthBar* Widget);
 
 	UFUNCTION(BlueprintCallable)

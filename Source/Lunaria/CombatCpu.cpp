@@ -26,14 +26,7 @@ void ACombatCpu::OnPossess(APawn* MyPawn)
 	Spaceship = Cast<ASpaceship>(MyPawn);
 	checkf(Spaceship, TEXT("%s pawn is not a ASpaceship"), *GetFullName());
 
-	//if (BehaviorTree)
-	//{
-	//	BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-	//	BehaviorComponent->StartTree(*BehaviorTree);
-	//}
-
 	Spaceship->SetRutterScaleModifier(2.f);
-
 	EnterSpawningState();
 }
 
@@ -66,7 +59,8 @@ void ACombatCpu::EnterSpawningState()
 	auto SpawnIndicatorTransform = FTransform();
 	SpawnIndicatorTransform.SetLocation(Spaceship->GetActorLocation() + FVector(0.f, 0.f, SpawnIndicatorOffset));
 	SpawnIndicatorTransform.SetScale3D(FVector(Spaceship->GetCapsuleComponent()->GetScaledCapsuleRadius() / 30.f));
-	auto SpawnIndicator = GetWorld()->SpawnActor<ASpawnIndicator>(GameMode->UnitSpawnIndicatorClass, SpawnIndicatorTransform);
+	SpawnIndicator = GetWorld()->SpawnActor<ASpawnIndicator>(GameMode->UnitSpawnIndicatorClass, SpawnIndicatorTransform);
+	SpawnIndicator->Launch(SpawnTime);
 	SpawnIndicator->Completion.AddUObject(this, &ACombatCpu::EnterCombatState);
 }
 
@@ -75,10 +69,34 @@ void ACombatCpu::EnterCombatState()
 	if (BehaviorTree)
 	{
 		BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		InitializeBeforeStartingTree();
 		BehaviorComponent->StartTree(*BehaviorTree);
 	}
 
 	Spaceship->EnterCombatState();
+}
+
+void ACombatCpu::SetSpawnTime(float Time)
+{
+	SpawnTime = Time;
+
+	if (SpawnIndicator && !SpawnIndicator->IsActorBeingDestroyed())
+	{
+		SpawnIndicator->Launch(SpawnTime);
+	}
+}
+
+void ACombatCpu::InitializeBeforeStartingTree()
+{
+	FindLeader();
+}
+
+void ACombatCpu::FindLeader()
+{
+	if (Spaceship->GetCombatComponent()->GetTeam() == UCombatComponent::PlayerTeam)
+	{
+		BlackboardComponent->SetValueAsObject(TEXT("Leader"), GetWorld()->GetFirstPlayerController()->GetPawn());
+	}
 }
 
 FVector ACombatCpu::GetMoveFocus() const
@@ -88,6 +106,6 @@ FVector ACombatCpu::GetMoveFocus() const
 
 void ACombatCpu::HandleShipDeath(UHealthComponent* HealthComponent, int32 KillingBlow)
 {
-	Print(GetName() + " died with Killing Blow: " + FString::FromInt(KillingBlow));
+	//Print(GetName() + " died with Killing Blow: " + FString::FromInt(KillingBlow));
 	GetPawn()->Destroy();
 }
