@@ -34,10 +34,9 @@ FString ABoon::GetChoiceDescription()
 	return BoonDescription;
 }
 
-const FAttributeModifier& ABoon::GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const
+FAttributeModifier ABoon::GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const
 {
-	auto Find = FindModifier(Attribute);
-	return Find ? *Find : NullModifier;
+	return CalculateModifier(Attribute);
 }
 
 void ABoon::SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier)
@@ -63,6 +62,24 @@ void ABoon::Remove()
 FAttributeModifier* ABoon::FindModifier(const FGameplayTagContainer& Attribute) const
 {
 	return const_cast<FAttributeModifier*>(AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
-		return Attribute.HasAll(Element.Attribute);
+		return Attribute == Element.Attribute;
 	}));
+}
+
+FAttributeModifier ABoon::CalculateModifier(const FGameplayTagContainer& Attribute) const
+{
+	auto Output = NullModifier;
+
+	for (const auto& Element : AttributeModifierList)
+	{
+		if (Attribute.HasAll(Element.Attribute))
+		{
+			Output.Additive += Element.Additive;
+			Output.Multiplier += Element.Multiplier;
+			Output.Color = Element.Color;
+			Output.Attribute.AppendTags(Element.Attribute);
+		}
+	}
+
+	return Output;
 }

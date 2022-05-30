@@ -10,6 +10,14 @@ void IGameplayEventObserver::ExecuteAgentOf(const FGameplayEvent& Event)
 	switch (Event.Action)
 	{
 	case ENativeEventType::Hit:
+		if (Event.EventTags.HasTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Attack"))))
+			Execute_WhenHitSomethingWithAttack(Cast<UObject>(this), Event);
+		if (Event.EventTags.HasTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Special"))))
+			Execute_WhenHitSomethingWithSpecial(Cast<UObject>(this), Event);
+		if (Event.EventTags.HasTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Movement"))))
+			Execute_WhenHitSomethingWithMovement(Cast<UObject>(this), Event);
+		if (Event.EventTags.HasTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Defensive"))))
+			Execute_WhenHitSomethingWithDefensive(Cast<UObject>(this), Event);
 		Execute_WhenHitSomething(Cast<UObject>(this), Event);
 		break;
 	case ENativeEventType::Kill:

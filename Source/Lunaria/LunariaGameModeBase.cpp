@@ -84,6 +84,8 @@ void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 
 void ALunariaGameModeBase::StartTasks()
 {
+	CurrentLevel += 1;
+
 	MapManager->CloseCurrentDoors();
 
 	LevelTaskList.Empty();

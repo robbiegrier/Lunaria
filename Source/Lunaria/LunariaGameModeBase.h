@@ -125,6 +125,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
 		TMap<FString, FLinearColor> StringColorMap;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level, meta = (AllowPrivateAccess = "true"))
+		int32 CurrentLevel = 0;
+
 	class AMapManager* MapManager;
 	class AGameplayEventManager* EventManager;
 	class AUpgradeManager* UpgradeManager;

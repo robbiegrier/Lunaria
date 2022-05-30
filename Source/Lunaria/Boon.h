@@ -25,9 +25,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visual)
 		FLinearColor Color = FLinearColor::White;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visual)
-		TArray<TSubclassOf<class ABoon>> StatusEffects;
 };
 
 /**
@@ -49,7 +46,7 @@ public:
 		const FString& GetBoonName() const { return BoonName; }
 
 	UFUNCTION(BlueprintCallable)
-		const FAttributeModifier& GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const;
+		FAttributeModifier GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const;
 
 	UFUNCTION(BlueprintCallable)
 		void SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier);
@@ -65,6 +62,7 @@ public:
 
 private:
 	FAttributeModifier* FindModifier(const FGameplayTagContainer& Attribute) const;
+	FAttributeModifier CalculateModifier(const FGameplayTagContainer& Attribute) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;
