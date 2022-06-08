@@ -154,6 +154,7 @@ void ASpaceship::RespawnOnMap(AMapManager* MapManager)
 {
 	SetActorLocation(MapManager->GetNearestPointInsideMap(MapManager->GetEntrance()->GetActorLocation(), 100.f));
 	SetActorRotation(UKismetMathLibrary::MakeRotFromX(MapManager->GetEntryDirection()));
+	OnRespawn();
 }
 
 void ASpaceship::NativeWhenAgentOf(const FGameplayEvent& Event)

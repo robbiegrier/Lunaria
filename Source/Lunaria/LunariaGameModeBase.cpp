@@ -15,12 +15,14 @@ ALunariaGameModeBase::ALunariaGameModeBase()
 {
 	PlayerControllerClass = AUser::StaticClass();
 	DefaultPawnClass = ASpaceship::StaticClass();
+	ValidArchetypes = TArray<EArchetype>({ EArchetype::Alpha, EArchetype::Omega });
 }
 
 void ALunariaGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
+	UpgradeManager->SetCurrentRoomArchetype(GetRandomArchetype());
 	StartNewArea();
 }
 
@@ -55,31 +57,24 @@ FLinearColor ALunariaGameModeBase::GetGameColor(const FString& String)
 	return FLinearColor::Gray;
 }
 
-void ALunariaGameModeBase::StartNewArea()
+EArchetype ALunariaGameModeBase::GetRandomArchetype()
 {
-	static auto TestScale = 1500.f;
-	static auto TestEntDir = FVector(1.f, 1.f, 0.f);
-	MapManager->LoadNewMap(TestScale, TestEntDir, 1);
+	auto Random = FMath::RandRange(0, ValidArchetypes.Num() - 1);
+	return ValidArchetypes[Random];
+}
 
-	auto Nearest = Helpers::NearestPointInsideSphere(MapManager->GetEntrance()->GetActorLocation(), MapManager->GetCenter(), MapManager->GetRadius() - 100.f);
-	GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorLocation(Nearest);
-	GetWorld()->GetFirstPlayerController()->GetPawn()->SetActorRotation(UKismetMathLibrary::MakeRotFromX(TestEntDir));
-
+void ALunariaGameModeBase::StartNewArea(const FVector& EntryDirection)
+{
+	MapManager->LoadNewMap(FMath::RandRange(MinMapRadius, MaxMapRadius), EntryDirection, FMath::RandRange(1, 8));
+	RespawnPlayer();
 	StartTasks();
 }
 
 void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 {
 	auto ExitDirection = (Door->GetActorLocation() - MapManager->GetCenter()).GetSafeNormal();
-	MapManager->LoadNewMap(FMath::RandRange(1400.f, 1800.f), ExitDirection, FMath::RandRange(1, 8));
-	UpgradeManager->SetCurrentRoomArchetype(/*Door->GetArchetype()*/ EArchetype::Epsilon);
-
-	if (auto Spaceship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn()))
-	{
-		Spaceship->RespawnOnMap(MapManager);
-	}
-
-	StartTasks();
+	UpgradeManager->SetCurrentRoomArchetype(GetRandomArchetype());
+	StartNewArea(ExitDirection);
 }
 
 void ALunariaGameModeBase::StartTasks()
@@ -139,7 +134,7 @@ void ALunariaGameModeBase::StartNextTask()
 
 void ALunariaGameModeBase::OnCurrentTaskComplete()
 {
-	Print("Completed a Task", FColor::Blue);
+	//Print("Completed a Task", FColor::Blue);
 	CurrentTask->Destroy();
 
 	if (CurrentTaskIndex < LevelTaskList.Num() - 1)
@@ -154,6 +149,14 @@ void ALunariaGameModeBase::OnCurrentTaskComplete()
 
 void ALunariaGameModeBase::OnAllTasksComplete()
 {
-	Print("All Tasks Complete", FColor::Green);
+	//Print("All Tasks Complete", FColor::Green);
 	MapManager->OpenCurrentDoors();
+}
+
+void ALunariaGameModeBase::RespawnPlayer()
+{
+	if (auto Spaceship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	{
+		Spaceship->RespawnOnMap(MapManager);
+	}
 }

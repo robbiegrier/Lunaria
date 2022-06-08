@@ -43,11 +43,20 @@ void USpaceshipMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void USpaceshipMovementComponent::Accelerate(float Scale)
 {
-	if (!FMath::IsNearlyZero(Scale))
+	if (Drifting)
 	{
 		if (auto Pawn = Cast<APawn>(GetOwner()))
 		{
-			auto FrameThrust = Helpers::Dilate(Scale * FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f), GetWorld());
+			auto FrameThrust = Helpers::Dilate(LastAccelValue * DriftSpeedMultiplier, GetWorld());
+			Pawn->AddActorWorldOffset(DriftDirection * FrameThrust);
+		}
+	}
+	else if (!FMath::IsNearlyZero(Scale))
+	{
+		if (auto Pawn = Cast<APawn>(GetOwner()))
+		{
+			LastAccelValue = Scale * FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
+			auto FrameThrust = Helpers::Dilate(LastAccelValue, GetWorld());
 			Pawn->AddActorWorldOffset(Pawn->GetTransform().GetRotation().GetForwardVector() * FrameThrust);
 		}
 	}
@@ -61,6 +70,17 @@ void USpaceshipMovementComponent::Turn(float Scale)
 float USpaceshipMovementComponent::GetCurrentTurnSpeed() const
 {
 	return FMath::Max(Attributes->Get("Speed.Turn", TurnSpeedSeed), 0.f);
+}
+
+void USpaceshipMovementComponent::Drift()
+{
+	DriftDirection = GetOwner()->GetTransform().GetRotation().GetForwardVector();
+	Drifting = true;
+}
+
+void USpaceshipMovementComponent::StopDrifting()
+{
+	Drifting = false;
 }
 
 void USpaceshipMovementComponent::ExecuteTurning(float Scale, float Speed)

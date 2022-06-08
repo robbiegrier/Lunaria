@@ -32,10 +32,8 @@ void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 	SelectionInProgress = true;
 	CurrentPickup = Pickup;
 
-	if (auto User = Cast<AUser>(GetOwningPlayer()))
-	{
-		User->ToggleUIControl(true);
-	}
+	auto User = Cast<AUser>(GetOwningPlayer());
+	User->ToggleUIControl(true);
 
 	SetVisibility(ESlateVisibility::Visible);
 	ChoicesVerticalBox->ClearChildren();
@@ -47,9 +45,9 @@ void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 	{
 		auto Choices = UpgradeManager->GetChoicesFromPickup(Pickup);
 
-		for (auto Choice : Choices)
+		for (auto ChoiceActor : Choices)
 		{
-			auto ChoiceActor = GetWorld()->SpawnActor(Choice);
+			//auto ChoiceActor = GetWorld()->SpawnActor(Choice);
 			TransientChoiceActors.Add(ChoiceActor);
 
 			if (auto Choosable = Cast<IChoosable>(ChoiceActor))
@@ -92,15 +90,18 @@ void UPickupSelectionWidget::SignalChoiceMade(UPickupChoiceWidget* ChoiceWidget)
 	}
 	TransientChoiceActors.Empty();
 
-	auto Player = GetOwningPlayerPawn();
-
-	if (auto Boon = Cast<ABoon>(ChoiceWidget->GetChoiceActor()))
+	if (auto Choosable = Cast<IChoosable>(ChoiceWidget->GetChoiceActor()))
 	{
-		if (auto Attributes = Player->FindComponentByClass<UAttributesComponent>())
-		{
-			Attributes->AddBoon(Boon);
-		}
+		Choosable->Choose(GetOwningPlayerPawn());
 	}
+
+	//if (auto Boon = Cast<ABoon>(ChoiceWidget->GetChoiceActor()))
+	//{
+	//	if (auto Attributes = Player->FindComponentByClass<UAttributesComponent>())
+	//	{
+	//		Attributes->AddBoon(Boon);
+	//	}
+	//}
 
 	SetVisibility(ESlateVisibility::Hidden);
 

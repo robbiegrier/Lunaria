@@ -111,4 +111,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		float RutterScaleModifier = 1.f;
+
+public:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")
+		void OnRespawn();
 };

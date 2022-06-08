@@ -40,6 +40,8 @@ void AUser::SetupInputComponent()
 	InputComponent->BindAction("Ability A", IE_Released, this, &AUser::HandleAReleased);
 	InputComponent->BindAction("Ability Y", IE_Pressed, this, &AUser::HandleYPressed);
 	InputComponent->BindAction("Ability Y", IE_Released, this, &AUser::HandleYReleased);
+	InputComponent->BindAction("Ability LT", IE_Pressed, this, &AUser::HandleLTPressed);
+	InputComponent->BindAction("Ability LT", IE_Released, this, &AUser::HandleLTReleased);
 
 	InputComponent->BindAction("Debug Action", IE_Pressed, this, &AUser::HandleDebugAction);
 	InputComponent->BindAction("Interact", IE_Pressed, this, &AUser::HandleInteractActionPressed);
@@ -188,6 +190,16 @@ void AUser::HandleYPressed()
 void AUser::HandleYReleased()
 {
 	if (InGame) Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::Y);
+}
+
+void AUser::HandleLTPressed()
+{
+	if (InGame) Spaceship->GetAbilitiesComponent()->PressAbility(EAbilityKey::LT);
+}
+
+void AUser::HandleLTReleased()
+{
+	if (InGame) Spaceship->GetAbilitiesComponent()->ReleaseAbility(EAbilityKey::LT);
 }
 
 void AUser::ToggleUIControl(bool IsUIOn)

@@ -113,6 +113,9 @@ void AAbility::Attach(AActor* InOwner, EAbilityKey Key)
 	case EAbilityKey::Y:
 		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Special"));
 		break;
+	case EAbilityKey::LT:
+		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Other"));
+		break;
 	default:
 		break;
 	}

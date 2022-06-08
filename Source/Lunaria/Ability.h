@@ -22,7 +22,7 @@ enum class EAbilityExecution : uint8
 UENUM()
 enum class EAbilityKey : uint8
 {
-	A, B, X, Y
+	A, B, X, Y, LT
 };
 
 UCLASS()

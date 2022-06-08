@@ -12,7 +12,7 @@
 #include "TimerManager.h"
 #include "User.h"
 
-static bool DebugEvents = true;
+static bool DebugEvents = false;
 
 AGameplayEventManager::AGameplayEventManager()
 {

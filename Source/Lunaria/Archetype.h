@@ -11,5 +11,8 @@ enum class EArchetype : uint8
 	Alpha,
 	Beta,
 	Gamma,
-	Epsilon
+	Epsilon,
+	Omega,
+
+	NativeMax
 };

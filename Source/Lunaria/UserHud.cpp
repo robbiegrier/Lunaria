@@ -49,7 +49,7 @@ void UUserHud::SetBoonList(const TArray<ABoon*>& ActiveBoons)
 
 	for (auto Boon : ActiveBoons)
 	{
-		BoonListTextString += Boon->GetBoonName() + FString("\n");
+		BoonListTextString += FString::Printf(TEXT("%s (Lvl %d)\n"), *Boon->GetBoonName(), Boon->GetBoonLevel());
 	}
 
 	BoonListText->SetText(FText::FromString(BoonListTextString));

@@ -7,6 +7,7 @@
 #include "GameplayEventObserver.h"
 #include "GameplayTagContainer.h"
 #include "Choosable.h"
+#include "Archetype.h"
 #include "Boon.generated.h"
 
 USTRUCT(BlueprintType)
@@ -25,6 +26,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visual)
 		FLinearColor Color = FLinearColor::White;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ModifiersPerLevel)
+		float AdditiveGainPerLevel = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ModifiersPerLevel)
+		float MultiplierGainPerLevel = 0.f;
 };
 
 /**
@@ -39,8 +46,10 @@ public:
 
 	ABoon();
 	void NativeOnAdded(class UAttributesComponent* Attributes, AActor* InCreator = nullptr);
+	void NativeLevelUp();
 	virtual FString GetChoiceName() override;
 	virtual FString GetChoiceDescription() override;
+	void Choose(class AActor* Chooser) override;
 
 	UFUNCTION(BlueprintCallable)
 		const FString& GetBoonName() const { return BoonName; }
@@ -60,6 +69,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 		int32 GetMaxStacksAsStatusEffect() const { return MaxStacksAsStatusEffect; }
 
+	UFUNCTION(BlueprintCallable)
+		int32 GetBoonLevel() const { return BoonLevel; }
+
+	UFUNCTION(BlueprintCallable)
+		const FString& GetLevelUpDescription() const { return BoonLevelUpDescription; }
+
+	UFUNCTION(BlueprintCallable)
+		EArchetype GetArchetype() const { return Archetype; }
+
+	UFUNCTION(BlueprintCallable)
+		void SetArchetype(EArchetype InArchetype) { Archetype = InArchetype; }
+
 private:
 	FAttributeModifier* FindModifier(const FGameplayTagContainer& Attribute) const;
 	FAttributeModifier CalculateModifier(const FGameplayTagContainer& Attribute) const;
@@ -69,6 +90,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonDescription;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
+		FString BoonLevelUpDescription;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Testing, meta = (AllowPrivateAccess = "true"))
 		TArray<FAttributeModifier> AttributeModifierList;
@@ -92,6 +116,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Scene, meta = (AllowPrivateAccess = "true"))
 		class USceneComponent* SceneComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Scene, meta = (AllowPrivateAccess = "true"))
+		int32 BoonLevel = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
+		EArchetype Archetype;
+
 	static FAttributeModifier NullModifier;
 
 public:
@@ -103,4 +133,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnRemoved();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Level Up Events")
+		void OnLeveledUp();
 };

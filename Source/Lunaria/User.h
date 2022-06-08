@@ -47,6 +47,8 @@ protected:
 	void HandleAReleased();
 	void HandleYPressed();
 	void HandleYReleased();
+	void HandleLTPressed();
+	void HandleLTReleased();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))

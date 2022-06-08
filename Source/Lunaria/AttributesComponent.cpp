@@ -233,3 +233,23 @@ float UAttributesComponent::GetForAbilityType(const FGameplayTag& Ability, const
 	Container.AddTag(Attribute);
 	return GetFromTagContainer(Container, Seed);
 }
+
+bool UAttributesComponent::IsNodeViable(const FUpgradeNode& Node)
+{
+	bool Viable = Node.Enablers.Num() == 0;
+
+	for (auto Boon : GetCurrentBoons())
+	{
+		if (Boon->GetClass() == Node.BoonClass)
+		{
+			return false;
+		}
+
+		if (Node.Enablers.Contains(Boon->GetClass()))
+		{
+			Viable = true;
+		}
+	}
+
+	return Viable;
+}

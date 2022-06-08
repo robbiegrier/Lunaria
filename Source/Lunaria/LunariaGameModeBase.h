@@ -52,7 +52,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		const TArray<TSubclassOf<ABoon>>& GetEnemySpawnBoons() const { return EnemySpawnBoons; }
 
-	void StartNewArea();
+	UFUNCTION(BlueprintCallable)
+		EArchetype GetRandomArchetype();
+
+	void StartNewArea(const FVector& EntryDirection = FVector(1.f, 1.f, 0.f));
 	void StartNewAreaFromDoor(class ADoor* Door);
 
 	UClass* GetDebugWidgetClass() const { return DebugWidgetClass; }
@@ -78,6 +81,8 @@ private:
 	void StartNextTask();
 	void OnCurrentTaskComplete();
 	void OnAllTasksComplete();
+
+	void RespawnPlayer();
 
 	TArray<TSubclassOf<ALevelTask>> LevelTaskList;
 	int32 CurrentTaskIndex = 0;
@@ -127,6 +132,15 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level, meta = (AllowPrivateAccess = "true"))
 		int32 CurrentLevel = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MapConfig, meta = (AllowPrivateAccess = "true"))
+		float MinMapRadius = 1500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MapConfig, meta = (AllowPrivateAccess = "true"))
+		float MaxMapRadius = 2500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MapConfig, meta = (AllowPrivateAccess = "true"))
+		TArray<EArchetype> ValidArchetypes;
 
 	class AMapManager* MapManager;
 	class AGameplayEventManager* EventManager;

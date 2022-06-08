@@ -24,6 +24,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		float GetCurrentTurnSpeed() const;
 
+	UFUNCTION(BlueprintCallable)
+		void Drift();
+
+	UFUNCTION(BlueprintCallable)
+		void StopDrifting();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -53,7 +59,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		float MoveSpeedSeed{ 400.f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		float DriftSpeedMultiplier{ 0.8f };
+
 	class UAttributesComponent* Attributes;
 	class UCharacterMovementComponent* CharacterMovement;
 	float CurrentBankValue{ 0.f };
+	FVector DriftDirection;
+	bool Drifting = false;
+	float LastAccelValue = 0.f;
 };

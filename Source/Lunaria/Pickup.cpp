@@ -19,7 +19,7 @@ APickup::APickup()
 
 	Shell->SetCollisionProfileName(TEXT("Interactable"));
 
-	Archetype = EArchetype::Epsilon;
+	Archetype = EArchetype::Beta;
 }
 
 void APickup::BeginPlay()

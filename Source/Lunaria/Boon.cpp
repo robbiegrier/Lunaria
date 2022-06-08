@@ -24,6 +24,19 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes, AActor* InCreator)
 	OnAdded();
 }
 
+void ABoon::NativeLevelUp()
+{
+	BoonLevel++;
+
+	for (auto& Modifier : AttributeModifierList)
+	{
+		Modifier.Additive += Modifier.AdditiveGainPerLevel;
+		Modifier.Multiplier += Modifier.MultiplierGainPerLevel;
+	}
+
+	OnLeveledUp();
+}
+
 FString ABoon::GetChoiceName()
 {
 	return BoonName;
@@ -32,6 +45,14 @@ FString ABoon::GetChoiceName()
 FString ABoon::GetChoiceDescription()
 {
 	return BoonDescription;
+}
+
+void ABoon::Choose(AActor* Chooser)
+{
+	if (auto Attributes = Chooser->FindComponentByClass<UAttributesComponent>())
+	{
+		Attributes->AddBoon(this);
+	}
 }
 
 FAttributeModifier ABoon::GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const

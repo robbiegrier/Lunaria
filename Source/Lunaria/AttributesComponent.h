@@ -7,6 +7,7 @@
 #include "GameplayEventObserver.h"
 #include "Boon.h"
 #include "GameplayTagContainer.h"
+#include "UpgradeNode.h"
 #include "AttributesComponent.generated.h"
 
 /*
@@ -68,6 +69,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FLinearColor GetColorFromTagContainer(const FGameplayTagContainer& Attribute);
+
+	bool IsNodeViable(const FUpgradeNode& Node);
 
 protected:
 	virtual void BeginPlay() override;
