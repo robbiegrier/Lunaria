@@ -72,40 +72,44 @@ void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 Nu
 	SpawnRandomDoors(NumberOfDoors);
 	InitializeCircleVisualization();
 	SetRandomCosmicSoup();
+	SpawnWalls();
 
 	for (auto i = 0; i < 1; i++)
 	{
 		auto ScaleMax = 2.5f;
 		auto ScaleMin = 1.5f;
 
-		auto SpawnLocation = GetRandomPointInsideMap();
-		auto Spawn = SpawnEnvironmentActor(SpawnLocation);
-		auto Scale = FMath::RandRange(1.5f, 2.5f);
-		Spawn->SetActorScale3D(FVector(Scale));
+		auto SpawnLocation = Center; //GetRandomPointInsideMap();
+		auto Spawn = SpawnRootEnvironmentActor(SpawnLocation);
+		auto Scale1 = FMath::RandRange(1.1f, 2.1f);
+		Spawn->SetActorScale3D(FVector(Scale1));
 
 		auto ClockwiseSecondary = FMath::RandBool();
-		auto NumSecondaryObjects = FMath::RandRange(1, 12);
+		auto NumSecondaryObjects = FMath::RandRange(1, 10);
 		for (auto j = 0; j < NumSecondaryObjects; j++)
 		{
-			auto SpawnRadius2 = FMath::RandRange(300.f, 1300.f);
+			auto SpawnRadius2 = FMath::RandRange(400.f, FMath::Max(400.f, Radius - 50.f));
 			auto SpawnLocation2 = SpawnLocation + Helpers::GetRandomDirection2D() * SpawnRadius2;
 			auto Spawn2 = SpawnEnvironmentActor(SpawnLocation2);
-			auto Scale2 = FMath::RandRange(Scale / ScaleMax, Scale / ScaleMin);
+			auto Scale2 = FMath::RandRange(Scale1 / ScaleMax, Scale1 / ScaleMin);
 			Spawn2->SetActorScale3D(FVector(Scale2));
 
 			if (auto MovementComponent = Spawn2->FindComponentByClass<USpaceObjectMovementComponent>())
 			{
 				MovementComponent->InitializeOrbitalParent(Spawn);
 				MovementComponent->SetOrbitalDirection(ClockwiseSecondary);
+				auto Distance = FVector::Dist(Spawn2->GetActorLocation(), Spawn->GetActorLocation());
+				auto InverseDistance = Radius - Distance;
+				MovementComponent->SetOrbitalSpeed(InverseDistance / 100.f);
 			}
 
 			auto ClockwiseTertiary = FMath::RandBool();
 			auto NumTertiaryObjects = FMath::RandRange(1, 3);
 			for (auto k = 0; k < NumTertiaryObjects; k++)
 			{
-				auto SpawnRadius3 = FMath::RandRange(50.f, 120.f);
+				auto SpawnRadius3 = FMath::RandRange(100.f, 200.f);
 				auto SpawnLocation3 = SpawnLocation2 + Helpers::GetRandomDirection2D() * SpawnRadius3;
-				auto Spawn3 = SpawnEnvironmentActor(SpawnLocation3);
+				auto Spawn3 = SpawnObstacleEnvironmentActor(SpawnLocation3);
 				auto Scale3 = FMath::RandRange(Scale2 / ScaleMax, Scale2 / ScaleMin);
 				Spawn3->SetActorScale3D(FVector(Scale3));
 
@@ -113,7 +117,7 @@ void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 Nu
 				{
 					MovementComponent->InitializeOrbitalParent(Spawn2);
 					MovementComponent->SetOrbitalDirection(ClockwiseTertiary);
-					MovementComponent->SetOrbitalSpeed(MovementComponent->GetOrbitalSpeed() * 3.f);
+					MovementComponent->SetOrbitalSpeed(MovementComponent->GetOrbitalSpeed() * 8.f);
 				}
 			}
 		}
@@ -123,6 +127,24 @@ void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 Nu
 AActor* AMapManager::SpawnEnvironmentActor(const FVector& Location)
 {
 	auto SpawnClass = GetRandomEnvironmentActorClass();
+	auto SpawnRotation = FRotator();
+	auto Spawn = GetWorld()->SpawnActor(SpawnClass, &Location, &SpawnRotation);
+	CurrentEnvironmentActors.Add(Spawn);
+	return Spawn;
+}
+
+AActor* AMapManager::SpawnRootEnvironmentActor(const FVector& Location)
+{
+	auto SpawnClass = Helpers::GetRandomArrayElement(RootEnvironmentActorClasses);
+	auto SpawnRotation = FRotator();
+	auto Spawn = GetWorld()->SpawnActor(SpawnClass, &Location, &SpawnRotation);
+	CurrentEnvironmentActors.Add(Spawn);
+	return Spawn;
+}
+
+AActor* AMapManager::SpawnObstacleEnvironmentActor(const FVector& Location)
+{
+	auto SpawnClass = Helpers::GetRandomArrayElement(ObstacleEnvironmentActorClasses);
 	auto SpawnRotation = FRotator();
 	auto Spawn = GetWorld()->SpawnActor(SpawnClass, &Location, &SpawnRotation);
 	CurrentEnvironmentActors.Add(Spawn);
@@ -184,6 +206,33 @@ void AMapManager::CleanupPreviousMap()
 	ClearCurrentEnvironmentActors();
 }
 
+void AMapManager::SpawnWalls()
+{
+	auto NumIslands = FMath::RandRange(MinIslands, MaxIslands);
+	for (auto j = 0; j < NumIslands; j++)
+	{
+		auto WallLocation = GetRandomPointInsideMap() + (FVector::DownVector * 100.f);
+		auto Wall = static_cast<AHexWall*>(nullptr);
+
+		auto IslandSize = FMath::RandRange(MinIslandSize, MaxIslandSize);
+		for (auto i = 0; i < IslandSize; i++)
+		{
+			auto Last = Wall;
+
+			if (Last)
+			{
+				WallLocation = Last->GetAdjecentSlot(FMath::RandRange(0, 6));
+			}
+
+			if (IsLocationInsideMap(WallLocation) && FVector::DistSquared(WallLocation, Center) > (MinWallRange * MinWallRange))
+			{
+				Wall = GetWorld()->SpawnActor<AHexWall>(HexWallClass, WallLocation, FRotator());
+				WallMatrix.Add(Wall->GetActorLocation(), Wall);
+			}
+		}
+	}
+}
+
 UClass* AMapManager::GetRandomEnvironmentActorClass()
 {
 	return Helpers::GetRandomArrayElement(EnvironmentActorClasses);
@@ -242,6 +291,11 @@ FVector AMapManager::GetRandomPointInsideMap()
 	return Center + FVector(LocationXY.X, LocationXY.Y, CharacterHeight);
 }
 
+bool AMapManager::IsLocationInsideMap(const FVector& Location)
+{
+	return FVector::DistSquared(Location, Center) < Radius * Radius;
+}
+
 void AMapManager::ClearCurrentEnvironmentActors()
 {
 	for (auto Actor : CurrentEnvironmentActors)
@@ -253,4 +307,11 @@ void AMapManager::ClearCurrentEnvironmentActors()
 	}
 
 	CurrentEnvironmentActors.Empty();
+
+	for (const auto& Entry : WallMatrix)
+	{
+		Entry.Value->Destroy();
+	}
+
+	WallMatrix.Empty();
 }

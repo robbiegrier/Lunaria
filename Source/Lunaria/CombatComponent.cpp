@@ -12,6 +12,17 @@ UCombatComponent::UCombatComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UCombatComponent::AddSummon(AActor* InSummon)
+{
+	Summons.Add(InSummon);
+
+	if (auto Combat = InSummon->FindComponentByClass<UCombatComponent>())
+	{
+		auto SelfSummoner = Summoner ? Summoner : GetOwner();
+		Combat->SetSummoner(SelfSummoner);
+	}
+}
+
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();

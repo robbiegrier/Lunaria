@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "DetailTogglable.h"
+#include "HexWall.h"
 #include "MapManager.generated.h"
 
 UCLASS()
@@ -59,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FVector GetRandomPointInsideMap();
 
+	UFUNCTION(BlueprintCallable)
+		bool IsLocationInsideMap(const FVector& Location);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -85,9 +89,13 @@ private:
 
 	void CleanupPreviousMap();
 
+	void SpawnWalls();
+
 	UClass* GetRandomEnvironmentActorClass();
 
 	AActor* SpawnEnvironmentActor(const FVector& Location);
+	AActor* SpawnRootEnvironmentActor(const FVector& Location);
+	AActor* SpawnObstacleEnvironmentActor(const FVector& Location);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dimensions, meta = (AllowPrivateAccess = "true"))
 		FVector Center;
@@ -134,8 +142,35 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Environment Actors", meta = (AllowPrivateAccess = "true"))
 		TArray<TSubclassOf<class AActor>> EnvironmentActorClasses;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Environment Actors", meta = (AllowPrivateAccess = "true"))
+		TArray<TSubclassOf<class AActor>> RootEnvironmentActorClasses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Environment Actors", meta = (AllowPrivateAccess = "true"))
+		TArray<TSubclassOf<class AActor>> ObstacleEnvironmentActorClasses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Environment Actors", meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class AHexWall> HexWallClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Walls, meta = (AllowPrivateAccess = "true"))
+		float MinWallRange = 600.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Walls, meta = (AllowPrivateAccess = "true"))
+		int32 MinIslands = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Walls, meta = (AllowPrivateAccess = "true"))
+		int32 MaxIslands = 6;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Walls, meta = (AllowPrivateAccess = "true"))
+		int32 MinIslandSize = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Walls, meta = (AllowPrivateAccess = "true"))
+		int32 MaxIslandSize = 12;
+
 	UPROPERTY()
 		TArray<class AActor*> CurrentEnvironmentActors;
+
+	UPROPERTY()
+		TMap<FVector, class AHexWall*> WallMatrix;
 
 	FVector EntryDirection;
 };

@@ -3,6 +3,8 @@
 #include "LunariaLib.h"
 #include "Helpers.h"
 #include "GameplayTagAssetInterface.h"
+#include "Engine/World.h"
+#include "CombatComponent.h"
 
 FGameplayTagContainer ULunariaLib::AddTagContainers(const FGameplayTagContainer& A, const FGameplayTagContainer& B)
 {
@@ -32,4 +34,23 @@ FGameplayTagContainer ULunariaLib::GetTags(UObject* Asset)
 	}
 
 	return Output;
+}
+
+ASpaceship* ULunariaLib::Summon(AActor* Summoner, TSubclassOf<ASpaceship> SummonClass, const FTransform& Transform)
+{
+	if (Summoner)
+	{
+		auto Summon = Summoner->GetWorld()->SpawnActor<ASpaceship>(SummonClass, Transform);
+
+		Summon->InitializeAlly();
+
+		if (auto Combat = Summoner->FindComponentByClass<UCombatComponent>())
+		{
+			Combat->AddSummon(Summon);
+		}
+
+		return Summon;
+	}
+
+	return nullptr;
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GameplayTagContainer.h"
+#include "Spaceship.h"
 #include "LunariaLib.generated.h"
 
 /**
@@ -30,4 +31,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		static FGameplayTagContainer GetTags(UObject* Asset);
+
+	UFUNCTION(BlueprintCallable)
+		static class ASpaceship* Summon(AActor* Summoner, TSubclassOf<ASpaceship> SummonClass, const FTransform& Transform);
 };

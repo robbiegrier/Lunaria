@@ -19,6 +19,9 @@ public:
 		FGameplayTagContainer Attribute;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
+		UClass* Class;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
 		float Additive = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
@@ -55,7 +58,7 @@ public:
 		const FString& GetBoonName() const { return BoonName; }
 
 	UFUNCTION(BlueprintCallable)
-		FAttributeModifier GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const;
+		FAttributeModifier GetModifierForTagContainer(UClass* InClass, const FGameplayTagContainer& Attribute) const;
 
 	UFUNCTION(BlueprintCallable)
 		void SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier);
@@ -64,7 +67,7 @@ public:
 		void Remove();
 
 	UFUNCTION(BlueprintCallable)
-		float GetDurationAsStatusEffect() const { return DurationAsStatusEffect; }
+		float GetDurationAsStatusEffect() const;
 
 	UFUNCTION(BlueprintCallable)
 		int32 GetMaxStacksAsStatusEffect() const { return MaxStacksAsStatusEffect; }
@@ -83,7 +86,7 @@ public:
 
 private:
 	FAttributeModifier* FindModifier(const FGameplayTagContainer& Attribute) const;
-	FAttributeModifier CalculateModifier(const FGameplayTagContainer& Attribute) const;
+	FAttributeModifier CalculateModifier(UClass* InClass, const FGameplayTagContainer& Attribute) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;

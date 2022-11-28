@@ -46,6 +46,9 @@ public:
 		static void CreateHit(AActor* InAgent, AActor* InSubject, float Damage, const FGameplayTagContainer& InEventTags);
 
 	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "InEventTags"))
+		static void CreateHeal(AActor* InAgent, AActor* InSubject, float Scale, const FGameplayTagContainer& InEventTags);
+
+	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "InEventTags"))
 		static void ApplyStatusEffect(AActor* InAgent, AActor* InSubject, TSubclassOf<ABoon> InEffect, const FGameplayTagContainer& InEventTags);
 
 protected:

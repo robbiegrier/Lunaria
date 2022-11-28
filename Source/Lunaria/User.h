@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "UserHud.h"
+#include "GameplayEventObserver.h"
 #include "User.generated.h"
 
 /**
  *
  */
 UCLASS()
-class LUNARIA_API AUser : public APlayerController
+class LUNARIA_API AUser : public APlayerController, public IGameplayEventObserver
 {
 	GENERATED_BODY()
 
@@ -33,6 +34,8 @@ protected:
 
 	// Misc inputs
 	void HandleDebugAction();
+	void HandleDebugAction1();
+	void HandleDebugAction2();
 	void HandleInteractActionPressed();
 	void HandleMovedUpDown(float Scale);
 	void HandleMovedRightLeft(float Scale);
@@ -53,6 +56,12 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class ABoon> BoonClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class ABoon> BoonClass1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class ABoon> BoonClass2;
 
 	UPROPERTY()
 		TArray<AActor*> InteractableActors;
@@ -80,6 +89,8 @@ private:
 	class ASpaceship* Spaceship;
 
 	class ABoon* BoonSpawn;
+	class ABoon* BoonSpawn1;
+	class ABoon* BoonSpawn2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		bool InGame = true;

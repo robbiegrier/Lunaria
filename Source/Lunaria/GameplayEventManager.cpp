@@ -127,6 +127,13 @@ void AGameplayEventManager::CreateHit(AActor* InAgent, AActor* InSubject, float 
 	CreateEvent(InAgent, ENativeEventType::Hit, InSubject, TMap<FString, FString>(), Values, TMap<FString, FVector>(), TMap<FString, UClass*>(), InEventTags);
 }
 
+void AGameplayEventManager::CreateHeal(AActor* InAgent, AActor* InSubject, float Scale, const FGameplayTagContainer& InEventTags)
+{
+	auto Values = TMap<FString, float>();
+	Values.Add("Healing", Scale);
+	CreateEvent(InAgent, ENativeEventType::Heal, InSubject, TMap<FString, FString>(), Values, TMap<FString, FVector>(), TMap<FString, UClass*>(), InEventTags);
+}
+
 void AGameplayEventManager::ApplyStatusEffect(AActor* InAgent, AActor* InSubject, TSubclassOf<ABoon> InEffect, const FGameplayTagContainer& InEventTags)
 {
 	auto Classes = TMap<FString, UClass*>();
@@ -181,6 +188,14 @@ void AGameplayEventManager::TriggerSubjectObservation(const FGameplayEvent& Even
 		{
 			Cast<IGameplayEventObserver>(Component)->ExecuteSubjectOf(Event);
 		}
+
+		if (auto Pawn = Cast<APawn>(Actor))
+		{
+			if (auto Observer = Cast<IGameplayEventObserver>(Pawn->GetController()))
+			{
+				Observer->ExecuteSubjectOf(Event);
+			}
+		}
 	}
 }
 
@@ -196,6 +211,14 @@ void AGameplayEventManager::TriggerAgentObservation(const FGameplayEvent& Event)
 		for (auto Component : Actor->GetComponentsByInterface(UGameplayEventObserver::StaticClass()))
 		{
 			Cast<IGameplayEventObserver>(Component)->ExecuteAgentOf(Event);
+		}
+
+		if (auto Pawn = Cast<APawn>(Actor))
+		{
+			if (auto Observer = Cast<IGameplayEventObserver>(Pawn->GetController()))
+			{
+				Observer->ExecuteAgentOf(Event);
+			}
 		}
 	}
 }

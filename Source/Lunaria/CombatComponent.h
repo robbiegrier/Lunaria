@@ -21,6 +21,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetTeam(int32 InTeam) { Team = InTeam; }
 
+	UFUNCTION(BlueprintCallable)
+		void AddSummon(AActor* InSummon);
+
+	UFUNCTION(BlueprintCallable)
+		const TArray<AActor*>& GetSummons() const { return Summons; }
+
+	void SetSummoner(AActor* InSummoner) { Summoner = InSummoner; }
+
+	UFUNCTION(BlueprintCallable)
+		AActor* GetSummoner() const { return Summoner; }
+
+	UFUNCTION(BlueprintCallable)
+		bool IsSummon() const { return Summoner != nullptr; }
+
 	const static int32 PlayerTeam = 0;
 	const static int32 EnemyTeam = 1;
 	const static int32 NeutralTeam = 2;
@@ -31,4 +45,9 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Team, meta = (AllowPrivateAccess = "true"))
 		int32 Team = EnemyTeam;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team, meta = (AllowPrivateAccess = "true"))
+		TArray<AActor*> Summons;
+
+	AActor* Summoner = nullptr;
 };

@@ -48,7 +48,8 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 		if (auto Pawn = Cast<APawn>(GetOwner()))
 		{
 			auto FrameThrust = Helpers::Dilate(LastAccelValue * DriftSpeedMultiplier, GetWorld());
-			Pawn->AddActorWorldOffset(DriftDirection * FrameThrust);
+			//Pawn->AddActorWorldOffset(DriftDirection * FrameThrust, true, nullptr);
+			Pawn->AddMovementInput(DriftDirection, FrameThrust);
 		}
 	}
 	else if (!FMath::IsNearlyZero(Scale))
@@ -57,7 +58,8 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 		{
 			LastAccelValue = Scale * FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
 			auto FrameThrust = Helpers::Dilate(LastAccelValue, GetWorld());
-			Pawn->AddActorWorldOffset(Pawn->GetTransform().GetRotation().GetForwardVector() * FrameThrust);
+			//Pawn->AddActorWorldOffset(Pawn->GetTransform().GetRotation().GetForwardVector() * FrameThrust, true, nullptr);
+			Pawn->AddMovementInput(Pawn->GetTransform().GetRotation().GetForwardVector(), FrameThrust);
 		}
 	}
 }

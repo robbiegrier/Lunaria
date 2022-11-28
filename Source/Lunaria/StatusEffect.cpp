@@ -75,9 +75,12 @@ void AStatusEffect::Tick(float DeltaTime)
 
 	auto TimePassed = GetWorld()->GetTimeSeconds() - LastStackTime;
 
-	if (TimePassed > MyOwnerAttributes->Get("Duration.StatusEffect", DurationSeed))
+	if (Statuses.Num() > 0)
 	{
-		Remove();
+		if (TimePassed > Statuses[0]->GetDurationAsStatusEffect())
+		{
+			Remove();
+		}
 	}
 }
 

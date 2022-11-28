@@ -46,6 +46,9 @@ void AUser::SetupInputComponent()
 	InputComponent->BindAction("Debug Action", IE_Pressed, this, &AUser::HandleDebugAction);
 	InputComponent->BindAction("Interact", IE_Pressed, this, &AUser::HandleInteractActionPressed);
 	InputComponent->BindAction("Toggle Detail", IE_Pressed, this, &AUser::HandleToggleDetail);
+
+	InputComponent->BindAction("Debug01", IE_Pressed, this, &AUser::HandleDebugAction1);
+	InputComponent->BindAction("Debug02", IE_Pressed, this, &AUser::HandleDebugAction2);
 }
 
 void AUser::BeginPlay()
@@ -209,6 +212,13 @@ void AUser::ToggleUIControl(bool IsUIOn)
 	if (IsUIOn)
 	{
 		SetInputMode(FInputModeGameAndUI());
+
+		auto Instance = Cast<ULunariaGameInstance>(GetGameInstance());
+
+		if (Instance && Instance->LastInputWasGamePad())
+		{
+			SetMouseLocation(0, 0);
+		}
 	}
 	else
 	{
@@ -252,6 +262,36 @@ void AUser::HandleDebugAction()
 	//auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode());
 	//auto Aoe = GetWorld()->SpawnActor<AAreaOfEffect>(GameMode->GetAreaOfEffectClass());
 	//Aoe->Launch(FGameplayTagContainer(), TArray<TSubclassOf<ABoon>>(), 20.f, 150.f, 0.5f);
+}
+
+void AUser::HandleDebugAction1()
+{
+	Print("Debug Action 1");
+
+	if (!BoonSpawn1 || BoonSpawn1->IsActorBeingDestroyed())
+	{
+		BoonSpawn1 = GetWorld()->SpawnActor<ABoon>(BoonClass1);
+		Spaceship->GetAttributesComponent()->AddBoon(BoonSpawn1);
+	}
+	else
+	{
+		Spaceship->GetAttributesComponent()->RemoveAndDestroyBoon(BoonSpawn1);
+	}
+}
+
+void AUser::HandleDebugAction2()
+{
+	Print("Debug Action 2");
+
+	if (!BoonSpawn2 || BoonSpawn2->IsActorBeingDestroyed())
+	{
+		BoonSpawn2 = GetWorld()->SpawnActor<ABoon>(BoonClass2);
+		Spaceship->GetAttributesComponent()->AddBoon(BoonSpawn2);
+	}
+	else
+	{
+		Spaceship->GetAttributesComponent()->RemoveAndDestroyBoon(BoonSpawn2);
+	}
 }
 
 void AUser::HandleInteractActionPressed()

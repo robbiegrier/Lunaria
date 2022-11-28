@@ -21,6 +21,17 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes, AActor* InCreator)
 	MyOwner = Attributes->GetOwner();
 	MyOwnerAttributes = Attributes;
 	Creator = InCreator ? InCreator : MyOwner;
+
+	if (auto Attributes = Creator->FindComponentByClass<UAttributesComponent>())
+	{
+		DurationAsStatusEffect = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsCreated", DurationAsStatusEffect);
+	}
+
+	if (auto Attributes = MyOwner->FindComponentByClass<UAttributesComponent>())
+	{
+		DurationAsStatusEffect = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsOwned", DurationAsStatusEffect);
+	}
+
 	OnAdded();
 }
 
@@ -55,9 +66,9 @@ void ABoon::Choose(AActor* Chooser)
 	}
 }
 
-FAttributeModifier ABoon::GetModifierForTagContainer(const FGameplayTagContainer& Attribute) const
+FAttributeModifier ABoon::GetModifierForTagContainer(UClass* InClass, const FGameplayTagContainer& Attribute) const
 {
-	return CalculateModifier(Attribute);
+	return CalculateModifier(InClass, Attribute);
 }
 
 void ABoon::SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier)
@@ -80,6 +91,29 @@ void ABoon::Remove()
 	}
 }
 
+float ABoon::GetDurationAsStatusEffect() const
+{
+	auto Output = DurationAsStatusEffect;
+
+	if (Creator)
+	{
+		if (auto Attributes = Creator->FindComponentByClass<UAttributesComponent>())
+		{
+			Output = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsCreated", Output);
+		}
+	}
+
+	if (MyOwner)
+	{
+		if (auto Attributes = MyOwner->FindComponentByClass<UAttributesComponent>())
+		{
+			Output = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsOwned", Output);
+		}
+	}
+
+	return Output;
+}
+
 FAttributeModifier* ABoon::FindModifier(const FGameplayTagContainer& Attribute) const
 {
 	return const_cast<FAttributeModifier*>(AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
@@ -87,13 +121,15 @@ FAttributeModifier* ABoon::FindModifier(const FGameplayTagContainer& Attribute) 
 	}));
 }
 
-FAttributeModifier ABoon::CalculateModifier(const FGameplayTagContainer& Attribute) const
+FAttributeModifier ABoon::CalculateModifier(UClass* InClass, const FGameplayTagContainer& Attribute) const
 {
 	auto Output = NullModifier;
 
 	for (const auto& Element : AttributeModifierList)
 	{
-		if (Attribute.HasAll(Element.Attribute))
+		auto IsMatchingClass = InClass == nullptr || Element.Class->IsChildOf(InClass);
+
+		if (IsMatchingClass && Attribute.HasAll(Element.Attribute))
 		{
 			Output.Additive += Element.Additive;
 			Output.Multiplier += Element.Multiplier;

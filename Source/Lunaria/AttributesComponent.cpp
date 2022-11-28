@@ -161,6 +161,22 @@ void UAttributesComponent::ClearStatusEffects()
 	StatusEffects.Empty();
 }
 
+float UAttributesComponent::ClassGet(UClass* Class, const FString& Attribute, float Seed)
+{
+	return ClassGetTagged(Class, FGameplayTag::RequestGameplayTag(*("Attribute." + Attribute)), Seed);
+}
+
+float UAttributesComponent::ClassGetTagged(UClass* Class, const FGameplayTag& Attribute, float Seed)
+{
+	return ClassGetFromTagContainer(Class, FGameplayTagContainer(Attribute), Seed);
+}
+
+float UAttributesComponent::ClassGetFromTagContainer(UClass* Class, const FGameplayTagContainer& Attribute, float Seed)
+{
+	auto Modifier = GetModifierFromTagContainer(Attribute, Seed, Class);
+	return Modifier.Additive * Modifier.Multiplier;
+}
+
 float UAttributesComponent::Get(const FString& Attribute, float Seed)
 {
 	return GetTagged(FGameplayTag::RequestGameplayTag(*("Attribute." + Attribute)), Seed);
@@ -177,7 +193,7 @@ float UAttributesComponent::GetFromTagContainer(const FGameplayTagContainer& Att
 	return Modifier.Additive * Modifier.Multiplier;
 }
 
-FAttributeModifier UAttributesComponent::GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed)
+FAttributeModifier UAttributesComponent::GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed, UClass* Class)
 {
 	auto Output = FAttributeModifier();
 	Output.Additive = Seed;
@@ -186,7 +202,7 @@ FAttributeModifier UAttributesComponent::GetModifierFromTagContainer(const FGame
 	for (auto Boon : Boons)
 	{
 		Boon->BeforeAttributeQueried(Attribute);
-		auto Modifier = Boon->GetModifierForTagContainer(Attribute);
+		auto Modifier = Boon->GetModifierForTagContainer(Class, Attribute);
 
 		Output.Additive += Modifier.Additive;
 		Output.Multiplier += Modifier.Multiplier / 100.f;
@@ -202,7 +218,7 @@ FAttributeModifier UAttributesComponent::GetModifierFromTagContainer(const FGame
 		for (auto Boon : EffectRegister.Value->GetStatuses())
 		{
 			Boon->BeforeAttributeQueried(Attribute);
-			auto Modifier = Boon->GetModifierForTagContainer(Attribute);
+			auto Modifier = Boon->GetModifierForTagContainer(Class, Attribute);
 
 			Output.Additive += Modifier.Additive;
 			Output.Multiplier += Modifier.Multiplier / 100.f;

@@ -15,6 +15,7 @@
 #include "CombatComponent.h"
 #include "Helpers.h"
 #include "GameplayEventManager.h"
+#include "HexWall.h"
 
 AObstacle::AObstacle()
 {
@@ -42,7 +43,7 @@ void AObstacle::BeginPlay()
 
 void AObstacle::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	if (OtherActor && OtherActor->GetClass() != GetClass())
+	if (OtherActor && OtherActor->GetClass() != GetClass() && !Cast<AHexWall>(OtherActor))
 	{
 		auto Event = FGameplayEvent(this, ENativeEventType::Hit, OtherActor);
 		Event.Values.Add("Damage", CollisionDamage);

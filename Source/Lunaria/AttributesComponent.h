@@ -35,7 +35,16 @@ public:
 		float GetFromTagContainer(const FGameplayTagContainer& Attribute, float Seed);
 
 	UFUNCTION(BlueprintCallable)
-		FAttributeModifier GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed);
+		float ClassGet(UClass* Class, const FString& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
+		float ClassGetTagged(UClass* Class, const FGameplayTag& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
+		float ClassGetFromTagContainer(UClass* Class, const FGameplayTagContainer& Attribute, float Seed);
+
+	UFUNCTION(BlueprintCallable)
+		FAttributeModifier GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed, UClass* Class = nullptr);
 
 	UFUNCTION(BlueprintCallable)
 		float GetForAbilityType(const FGameplayTag& Ability, const FGameplayTag& Attribute, float Seed);

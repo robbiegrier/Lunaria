@@ -28,6 +28,8 @@ ASpaceObject::ASpaceObject()
 
 	DebugWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	DebugWidgetComponent->SetDrawAtDesiredSize(true);
+
+	SphereComponent->SetCollisionProfileName("SpaceObject");
 }
 
 void ASpaceObject::ToggleDetailOn()
