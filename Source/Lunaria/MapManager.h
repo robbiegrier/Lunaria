@@ -112,6 +112,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Dimensions, meta = (AllowPrivateAccess = "true"))
 		float MapElementHeight{ 90.f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dimensions, meta = (AllowPrivateAccess = "true"))
+		float GlobalOrbitSpeedMultiplier{ 0.5f };
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visualization, meta = (AllowPrivateAccess = "true"))
 		class USceneComponent* SceneRoot;
 

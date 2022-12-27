@@ -75,8 +75,10 @@ void UAttributesComponent::AddBoonFromClass(TSubclassOf<ABoon> NewBoonClass)
 	}
 }
 
-void UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> NewEffectClass, AActor* Creator)
+ABoon* UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> NewEffectClass, AActor* Creator)
 {
+	auto AddedStack = static_cast<ABoon*>(nullptr);
+
 	if (NewEffectClass)
 	{
 		auto AddedEffect = static_cast<AStatusEffect*>(nullptr);
@@ -94,8 +96,10 @@ void UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> New
 			AddedEffect = *Find;
 		}
 
-		AddedEffect->AddStack(Creator);
+		AddedStack = AddedEffect->AddStack(Creator);
 	}
+
+	return AddedStack;
 }
 
 void UAttributesComponent::RemoveAndDestroyBoon(ABoon* TheBoon)

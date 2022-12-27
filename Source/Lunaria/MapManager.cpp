@@ -100,7 +100,7 @@ void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 Nu
 				MovementComponent->SetOrbitalDirection(ClockwiseSecondary);
 				auto Distance = FVector::Dist(Spawn2->GetActorLocation(), Spawn->GetActorLocation());
 				auto InverseDistance = Radius - Distance;
-				MovementComponent->SetOrbitalSpeed(InverseDistance / 100.f);
+				MovementComponent->SetOrbitalSpeed((InverseDistance / 100.f) * GlobalOrbitSpeedMultiplier);
 			}
 
 			auto ClockwiseTertiary = FMath::RandBool();
@@ -117,7 +117,7 @@ void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 Nu
 				{
 					MovementComponent->InitializeOrbitalParent(Spawn2);
 					MovementComponent->SetOrbitalDirection(ClockwiseTertiary);
-					MovementComponent->SetOrbitalSpeed(MovementComponent->GetOrbitalSpeed() * 8.f);
+					MovementComponent->SetOrbitalSpeed((MovementComponent->GetOrbitalSpeed() * 8.f) * GlobalOrbitSpeedMultiplier);
 				}
 			}
 		}

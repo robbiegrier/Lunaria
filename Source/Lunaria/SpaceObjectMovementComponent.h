@@ -50,7 +50,7 @@ private:
 	void UpdateFlairRotation(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Orbit, meta = (AllowPrivateAccess = "true"))
-		float OrbitalSpeed = 5.f;
+		float OrbitalSpeed = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Orbit, meta = (AllowPrivateAccess = "true"))
 		bool OrbitStuff = true;

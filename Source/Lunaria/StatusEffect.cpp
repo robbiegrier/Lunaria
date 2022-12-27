@@ -14,13 +14,15 @@ AStatusEffect::AStatusEffect()
 	RootComponent = SceneComponent;
 }
 
-void AStatusEffect::AddStack(AActor* Creator)
+ABoon* AStatusEffect::AddStack(AActor* Creator)
 {
+	auto AddedBoon = static_cast<ABoon*>(nullptr);
+
 	if (BoonClass)
 	{
 		if (Statuses.Num() < MyOwnerAttributes->Get("Stacks.StatusEffect", MaxStacksSeed))
 		{
-			auto AddedBoon = GetWorld()->SpawnActor<ABoon>(BoonClass);
+			AddedBoon = GetWorld()->SpawnActor<ABoon>(BoonClass);
 			Statuses.Add(AddedBoon);
 			SetDuration(AddedBoon->GetDurationAsStatusEffect());
 			SetMaxStacks(AddedBoon->GetMaxStacksAsStatusEffect());
@@ -29,6 +31,8 @@ void AStatusEffect::AddStack(AActor* Creator)
 
 		LastStackTime = GetWorld()->GetTimeSeconds();
 	}
+
+	return AddedBoon;
 }
 
 void AStatusEffect::Remove()

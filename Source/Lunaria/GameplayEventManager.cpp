@@ -104,8 +104,11 @@ void AGameplayEventManager::SubmitEvent(const FGameplayEvent& Event)
 
 void AGameplayEventManager::Submit(AActor* ClientObject, const FGameplayEvent& Event)
 {
-	auto Instance = Get(ClientObject);
-	Instance->SubmitEvent(Event);
+	if (ClientObject)
+	{
+		auto Instance = Get(ClientObject);
+		Instance->SubmitEvent(Event);
+	}
 }
 
 void AGameplayEventManager::CreateEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject, const TMap<FString, FString>& InTags,

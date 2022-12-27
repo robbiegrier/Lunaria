@@ -55,6 +55,12 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
+	// Don't execute collision behavior on the first frame
+	if (SecondsUntilDespawn - GetLifeSpan() < GetWorld()->GetDeltaSeconds() * 2.f)
+	{
+		return;
+	}
+
 	if (!(GetOwner() == OtherActor) && !Cast<ASpaceProjectile>(OtherActor))
 	{
 		if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
