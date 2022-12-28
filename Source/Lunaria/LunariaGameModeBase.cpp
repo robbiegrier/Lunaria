@@ -8,8 +8,10 @@
 #include "Helpers.h"
 #include "Printer.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Door.h"
 #include "GameplayEventManager.h"
+#include "TimerManager.h"
 
 ALunariaGameModeBase::ALunariaGameModeBase()
 {
@@ -23,7 +25,7 @@ void ALunariaGameModeBase::StartPlay()
 	Super::StartPlay();
 
 	UpgradeManager->SetCurrentRoomArchetype(GetRandomArchetype());
-	StartNewArea();
+	StartSpecificArea(FString("Home"));
 }
 
 void ALunariaGameModeBase::BeginPlay()
@@ -63,6 +65,18 @@ EArchetype ALunariaGameModeBase::GetRandomArchetype()
 	return ValidArchetypes[Random];
 }
 
+void ALunariaGameModeBase::OnPlayerDeath()
+{
+	auto Ship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	Ship->StartPlayerDeath();
+
+	auto Handle = FTimerHandle();
+	GetWorldTimerManager().SetTimer(Handle, [this, Ship]() {
+		StartSpecificArea("Home");
+		Ship->EndPlayerDeath();
+	}, 5.f, false);
+}
+
 void ALunariaGameModeBase::StartNewArea(const FVector& EntryDirection)
 {
 	MapManager->LoadNewMap(FMath::RandRange(MinMapRadius, MaxMapRadius), EntryDirection, FMath::RandRange(1, 8));
@@ -72,9 +86,39 @@ void ALunariaGameModeBase::StartNewArea(const FVector& EntryDirection)
 
 void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 {
-	auto ExitDirection = (Door->GetActorLocation() - MapManager->GetCenter()).GetSafeNormal();
-	UpgradeManager->SetCurrentRoomArchetype(GetRandomArchetype());
-	StartNewArea(ExitDirection);
+	if (Door->ContainsMapDescription())
+	{
+		StartSpecificAreaFromDescription(Door->GetMapDescription());
+	}
+	else
+	{
+		auto ExitDirection = (Door->GetActorLocation() - MapManager->GetCenter()).GetSafeNormal();
+		UpgradeManager->SetCurrentRoomArchetype(GetRandomArchetype());
+		StartNewArea(ExitDirection);
+	}
+}
+
+void ALunariaGameModeBase::StartSpecificArea(const FString& AreaName)
+{
+	if (auto Find = MapDescriptions.Find(AreaName))
+	{
+		StartSpecificAreaFromDescription(*Find);
+	}
+}
+
+void ALunariaGameModeBase::StartSpecificAreaFromDescription(const FMapDescription& Description)
+{
+	MapManager->LoadMapFromDescription(Description);
+	RespawnPlayer();
+
+	if (Description.LevelTasks.Num() > 0)
+	{
+		StartTasks();
+	}
+	else
+	{
+		OnAllTasksComplete();
+	}
 }
 
 void ALunariaGameModeBase::StartTasks()

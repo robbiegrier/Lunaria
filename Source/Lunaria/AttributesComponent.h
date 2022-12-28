@@ -79,6 +79,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FLinearColor GetColorFromTagContainer(const FGameplayTagContainer& Attribute);
 
+	UFUNCTION(BlueprintCallable)
+		void Reset();
+
 	bool IsNodeViable(const FUpgradeNode& Node);
 
 protected:

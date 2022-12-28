@@ -16,6 +16,7 @@
 #include "Helpers.h"
 #include "GameplayEventManager.h"
 #include "HexWall.h"
+#include "SpaceProjectile.h"
 
 AObstacle::AObstacle()
 {
@@ -43,19 +44,17 @@ void AObstacle::BeginPlay()
 
 void AObstacle::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	if (OtherActor && OtherActor->GetClass() != GetClass() && !Cast<AHexWall>(OtherActor))
+	if (OtherActor && OtherActor->GetClass() != GetClass() && !Cast<AHexWall>(OtherActor) && !Cast<ASpaceProjectile>(OtherActor))
 	{
 		auto Event = FGameplayEvent(this, ENativeEventType::Hit, OtherActor);
 		Event.Values.Add("Damage", CollisionDamage);
 		Event.Vectors.Add("Location", GetActorLocation());
-		//Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
 		Event.EventTags.AppendTags(GameplayTags);
 		AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
 
 		auto SelfEvent = FGameplayEvent(this, ENativeEventType::Hit, this);
 		SelfEvent.Values.Add("Damage", SelfDamageOnCollision);
 		SelfEvent.Vectors.Add("Location", GetActorLocation());
-		//Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
 		Event.EventTags.AppendTags(GameplayTags);
 		AGameplayEventManager::Get(GetWorld())->SubmitEvent(SelfEvent);
 	}

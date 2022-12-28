@@ -20,6 +20,7 @@
 #include "AbilitiesComponent.h"
 #include "AreaOfEffect.h"
 #include "LunariaGameInstance.h"
+#include "GreatMessageWidget.h"
 
 AUser::AUser()
 {
@@ -70,6 +71,11 @@ void AUser::BeginPlay()
 	UserHudWidget->AddToViewport();
 	UserHudWidget->SetVisibility(ESlateVisibility::Visible);
 	UserHudWidget->SetOwningPlayer(this);
+
+	GreatMessageWidget = NewObject<UGreatMessageWidget>(GetWorld(), ALunariaGameModeBase::Get(GetWorld())->GetGreatMessageWidgetClass());
+	GreatMessageWidget->AddToViewport(50);
+	GreatMessageWidget->SetVisibility(ESlateVisibility::Hidden);
+	GreatMessageWidget->SetOwningPlayer(this);
 }
 
 void AUser::OnPossess(APawn* InPawn)
@@ -224,6 +230,18 @@ void AUser::ToggleUIControl(bool IsUIOn)
 	{
 		SetInputMode(FInputModeGameOnly());
 	}
+}
+
+void AUser::NativeOnDeath()
+{
+	GreatMessageWidget->StartDisplay("YOU DIED");
+	OnDeath();
+}
+
+void AUser::NativeOnRespawn()
+{
+	GreatMessageWidget->EndDisplay();
+	OnRespawn();
 }
 
 void AUser::HandleDebugAction()

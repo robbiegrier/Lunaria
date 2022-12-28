@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "CpuHealthBar.h"
 #include "DebugWidget.h"
+#include "GreatMessageWidget.h"
 #include "MapManager.h"
 #include "LevelTask.h"
 #include "AreaOfEffect.h"
@@ -55,10 +56,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 		EArchetype GetRandomArchetype();
 
+	const TMap<FString, FMapDescription>& GetGlobalMapDescriptions() const { return MapDescriptions; }
+
+	void OnPlayerDeath();
+
 	void StartNewArea(const FVector& EntryDirection = FVector(1.f, 1.f, 0.f));
 	void StartNewAreaFromDoor(class ADoor* Door);
 
+	void StartSpecificArea(const FString& AreaName);
+	void StartSpecificAreaFromDescription(const FMapDescription& Description);
+
 	UClass* GetDebugWidgetClass() const { return DebugWidgetClass; }
+	UClass* GetGreatMessageWidgetClass() const { return GreatMessageWidgetClass; }
 	UClass* GetHealthBarClass() const { return HealthBarClass; }
 	UClass* GetAreaOfEffectClass() const { return AreaOfEffectClass; }
 	UClass* GetPickupSelectionWidgetClass() const { return PickupSelectionWidgetClass; }
@@ -107,6 +116,9 @@ private:
 		TSubclassOf<class UDebugWidget> DebugWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class UGreatMessageWidget> GreatMessageWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UCpuHealthBar> HealthBarClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Managers, meta = (AllowPrivateAccess = "true"))
@@ -129,6 +141,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
 		TMap<FString, FLinearColor> StringColorMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Maps, meta = (AllowPrivateAccess = "true"))
+		TMap<FString, FMapDescription> MapDescriptions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level, meta = (AllowPrivateAccess = "true"))
 		int32 CurrentLevel = 0;

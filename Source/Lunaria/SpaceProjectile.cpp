@@ -68,8 +68,6 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 			if (OtherActor->FindComponentByClass<UCombatComponent>())
 			{
 				auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, OtherActor);
-
-				auto Attributes = GetOwner()->FindComponentByClass<UAttributesComponent>();
 				Event.Values.Add("Damage", DamagePayload);
 				//Event.Vectors.Add("Location", GetActorLocation());
 				Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));

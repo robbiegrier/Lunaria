@@ -62,7 +62,7 @@ bool Helpers::AreDifferentTeams(AActor* Left, AActor* Right)
 		}
 	}
 
-	return false;
+	return true;
 }
 
 bool Helpers::AreSameTeam(AActor* Left, AActor* Right)

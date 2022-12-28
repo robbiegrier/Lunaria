@@ -11,6 +11,7 @@
 #include "Components/WidgetComponent.h"
 #include "TimerManager.h"
 #include "User.h"
+#include "Spaceship.h"
 
 static bool DebugEvents = false;
 
@@ -290,7 +291,7 @@ void AGameplayEventManager::ProcessHealEvent(const FGameplayEvent& Event)
 
 			HealthComp->ApplyHealing(Scale);
 
-			Print(Event.Agent->GetName() + " provided " + FString::FromInt((int)Scale) + " healing to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+			if (DebugEvents) Print(Event.Agent->GetName() + " provided " + FString::FromInt((int)Scale) + " healing to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
 		}
 	}
 }
@@ -299,9 +300,18 @@ void AGameplayEventManager::ProcessKillEvent(const FGameplayEvent& Event)
 {
 	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
 	{
-		Event.Subject->Destroy();
+		auto Ship = Cast<ASpaceship>(Event.Subject);
 
-		if (DebugEvents) Print(Event.Agent->GetName() + " killed " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+		if (Ship && Ship->IsPlayerControlled())
+		{
+			ALunariaGameModeBase::Get(GetWorld())->OnPlayerDeath();
+		}
+		else
+		{
+			Event.Subject->Destroy();
+		}
+
+		if (ShouldWriteKillStatements) Print(Event.Agent->GetName() + " killed " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
 	}
 }
 

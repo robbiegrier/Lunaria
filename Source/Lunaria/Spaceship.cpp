@@ -25,6 +25,8 @@
 #include "Components/WidgetComponent.h"
 #include "CombatCpu.h"
 #include "CpuHealthBar.h"
+#include "InventoryComponent.h"
+#include "User.h"
 
 ASpaceship::ASpaceship()
 {
@@ -79,6 +81,7 @@ ASpaceship::ASpaceship()
 	AbilitiesComponent = CreateDefaultSubobject<UAbilitiesComponent>(TEXT("Abilities Component"));
 
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("Combat Component"));
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
 }
 
 float ASpaceship::GetCurrentTurnSpeed() const
@@ -177,6 +180,32 @@ void ASpaceship::EnterCombatState()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetVectorParameterValueOnMaterials(TEXT("Tint"), Helpers::GetVectorFromLinearColor(FLinearColor::White));
 	HealthBarComponent->SetVisibility(true);
+}
+
+void ASpaceship::StartPlayerDeath()
+{
+	SetActorEnableCollision(false);
+	SetActorHiddenInGame(true);
+	Controller->DisableInput(Cast<APlayerController>(Controller));
+
+	if (auto User = Cast<AUser>(Controller))
+	{
+		User->NativeOnDeath();
+	}
+}
+
+void ASpaceship::EndPlayerDeath()
+{
+	SetActorEnableCollision(true);
+	SetActorHiddenInGame(false);
+	Controller->EnableInput(Cast<APlayerController>(Controller));
+	HealthComponent->Reset();
+	Attributes->Reset();
+
+	if (auto User = Cast<AUser>(Controller))
+	{
+		User->NativeOnRespawn();
+	}
 }
 
 void ASpaceship::HandleThrottleInput(float Scale)

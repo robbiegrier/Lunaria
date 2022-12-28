@@ -58,7 +58,6 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 		{
 			LastAccelValue = Scale * FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
 			auto FrameThrust = Helpers::Dilate(LastAccelValue, GetWorld());
-			//Pawn->AddActorWorldOffset(Pawn->GetTransform().GetRotation().GetForwardVector() * FrameThrust, true, nullptr);
 			Pawn->AddMovementInput(Pawn->GetTransform().GetRotation().GetForwardVector(), FrameThrust);
 		}
 	}

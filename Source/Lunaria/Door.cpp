@@ -8,6 +8,7 @@
 #include "Printer.h"
 #include "User.h"
 #include "LunariaGameModeBase.h"
+#include "LunariaLib.h"
 
 ADoor::ADoor()
 {
@@ -30,7 +31,7 @@ ADoor::ADoor()
 void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
-	Close();
+	IsOpen ? Open() : Close();
 }
 
 void ADoor::Tick(float DeltaTime)
@@ -51,6 +52,28 @@ bool ADoor::ShowButtonWidget()
 void ADoor::Interact()
 {
 	CurrentState->Execute(this);
+}
+
+bool ADoor::ContainsMapDescription() const
+{
+	return MapDescriptions.Num() > 0 || MapDescriptionId != "";
+}
+
+FMapDescription ADoor::GetMapDescription() const
+{
+	auto Output = FMapDescription();
+
+	if (MapDescriptions.Num() > 0)
+	{
+		Output = MapDescriptions[FMath::RandRange(0, MapDescriptions.Num() - 1)];
+	}
+	else if (MapDescriptionId != "")
+	{
+		Output = ALunariaGameModeBase::Get(GetWorld())->GetGlobalMapDescriptions()[MapDescriptionId];
+	}
+
+	Output.Entry = (GetActorLocation() - ALunariaGameModeBase::Get(GetWorld())->GetMap()->GetCenter()).GetSafeNormal() * -1.f;
+	return Output;
 }
 
 void ADoor::Open()

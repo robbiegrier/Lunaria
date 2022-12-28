@@ -9,6 +9,9 @@
 #include "Helpers.h"
 #include "DrawDebugHelpers.h"
 #include "SpaceObjectMovementComponent.h"
+#include "SpaceProjectile.h"
+
+FMapDescription AMapManager::NullMapDescription = FMapDescription();
 
 AMapManager::AMapManager()
 {
@@ -64,13 +67,19 @@ void AMapManager::SetWallsDetailFlag(float Value)
 	ArenaWalls->SetScalarParameterValueOnMaterials(FName("Global Detail Flag"), Value);
 }
 
-void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 NumberOfDoors)
+void AMapManager::LoadMapBasics(float Scale)
 {
 	CleanupPreviousMap();
 	SetRadius(Scale);
+	InitializeCircleVisualization();
+	Entrance->SetActorHiddenInGame(false);
+}
+
+void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 NumberOfDoors)
+{
+	LoadMapBasics(Scale);
 	SetupNewEntry(ExitDirection);
 	SpawnRandomDoors(NumberOfDoors);
-	InitializeCircleVisualization();
 	SetRandomCosmicSoup();
 	SpawnWalls();
 
@@ -122,6 +131,20 @@ void AMapManager::LoadNewMap(float Scale, const FVector& ExitDirection, int32 Nu
 			}
 		}
 	}
+}
+
+void AMapManager::LoadMapFromDescription(const FMapDescription& Description)
+{
+	LoadMapBasics(Description.Radius);
+	SetupNewEntry(Description.Entry * -1.f);
+	SetRandomCosmicSoup();
+
+	for (const auto ObjectData : Description.Objects)
+	{
+		CurrentEnvironmentActors.Add(GetWorld()->SpawnActor(ObjectData.Actor, &ObjectData.Transform));
+	}
+
+	Entrance->SetActorHiddenInGame(!Description.ShowDefaultEntryActor);
 }
 
 AActor* AMapManager::SpawnEnvironmentActor(const FVector& Location)
@@ -204,6 +227,7 @@ void AMapManager::CleanupPreviousMap()
 {
 	ClearCurrentDoors();
 	ClearCurrentEnvironmentActors();
+	ClearExtraActors();
 }
 
 void AMapManager::SpawnWalls()
@@ -227,6 +251,7 @@ void AMapManager::SpawnWalls()
 			if (IsLocationInsideMap(WallLocation) && FVector::DistSquared(WallLocation, Center) > (MinWallRange * MinWallRange))
 			{
 				Wall = GetWorld()->SpawnActor<AHexWall>(HexWallClass, WallLocation, FRotator());
+				CurrentEnvironmentActors.Add(Wall);
 				WallMatrix.Add(Wall->GetActorLocation(), Wall);
 			}
 		}
@@ -314,4 +339,24 @@ void AMapManager::ClearCurrentEnvironmentActors()
 	}
 
 	WallMatrix.Empty();
+}
+
+void AMapManager::ClearExtraActors()
+{
+	auto Characters = TArray<AActor*>();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), Characters);
+	for (auto Character : Characters)
+	{
+		if (Character != GetWorld()->GetFirstPlayerController()->GetPawn())
+		{
+			Character->Destroy();
+		}
+	}
+
+	auto Projectiles = TArray<AActor*>();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpaceProjectile::StaticClass(), Projectiles);
+	for (auto Projectile : Projectiles)
+	{
+		Projectile->Destroy();
+	}
 }

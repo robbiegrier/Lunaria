@@ -254,6 +254,12 @@ float UAttributesComponent::GetForAbilityType(const FGameplayTag& Ability, const
 	return GetFromTagContainer(Container, Seed);
 }
 
+void UAttributesComponent::Reset()
+{
+	ClearBoons();
+	ClearStatusEffects();
+}
+
 bool UAttributesComponent::IsNodeViable(const FUpgradeNode& Node)
 {
 	bool Viable = Node.Enablers.Num() == 0;

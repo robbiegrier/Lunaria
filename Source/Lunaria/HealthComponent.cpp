@@ -53,6 +53,11 @@ bool UHealthComponent::IsHealthDepleted() const
 	return GetCurrentHealth() <= 0.f;
 }
 
+void UHealthComponent::Reset()
+{
+	MissingHealth = 0.f;
+}
+
 float UHealthComponent::GetMaxHealth() const
 {
 	return Attributes->Get("Health.Total", MaxHealthSeed);

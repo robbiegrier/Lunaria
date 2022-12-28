@@ -77,7 +77,7 @@ void UPickupSelectionWidget::MakeSelectionFromPickup(APickup* Pickup)
 
 void UPickupSelectionWidget::SignalChoiceMade(UPickupChoiceWidget* ChoiceWidget)
 {
-	Print(ChoiceWidget->GetChoiceActor()->GetName());
+	//Print(ChoiceWidget->GetChoiceActor()->GetName());
 
 	ChoicesVerticalBox->ClearChildren();
 

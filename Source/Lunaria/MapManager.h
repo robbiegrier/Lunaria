@@ -6,7 +6,43 @@
 #include "GameFramework/Character.h"
 #include "DetailTogglable.h"
 #include "HexWall.h"
+#include "LevelTask.h"
 #include "MapManager.generated.h"
+
+USTRUCT(BlueprintType)
+struct LUNARIA_API FMapObjectEntry
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objects)
+		FTransform Transform;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objects)
+		TSubclassOf<AActor> Actor;
+};
+
+USTRUCT(BlueprintType)
+struct LUNARIA_API FMapDescription
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objects)
+		TArray<FMapObjectEntry> Objects;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dimensions)
+		float Radius = 1500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dimensions)
+		FVector Entry;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dimensions)
+		bool ShowDefaultEntryActor = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tasks)
+		TArray<TSubclassOf<class ALevelTask>> LevelTasks;
+};
 
 UCLASS()
 class LUNARIA_API AMapManager : public AActor, public IDetailTogglable
@@ -21,8 +57,12 @@ public:
 	virtual void ToggleDetailOff();
 	void SetWallsDetailFlag(float Value);
 
+	void LoadMapBasics(float Scale);
+
 	// Manually load a new map
 	void LoadNewMap(float Scale, const FVector& ExitDirection, int32 NumberOfDoors);
+
+	void LoadMapFromDescription(const FMapDescription& Description);
 
 	// Get the center of the circular map
 	UFUNCTION(BlueprintCallable)
@@ -63,6 +103,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool IsLocationInsideMap(const FVector& Location);
 
+	static FMapDescription NullMapDescription;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -86,6 +128,7 @@ private:
 	void SetRadius(float R) { Radius = R; }
 
 	void ClearCurrentEnvironmentActors();
+	void ClearExtraActors();
 
 	void CleanupPreviousMap();
 

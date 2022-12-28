@@ -23,6 +23,8 @@ public:
 
 	void SetBoonList(const TArray<ABoon*>& ActiveBoons);
 
+	void SetInventoryDisplay(class UInventoryComponent* Inventory);
+
 private:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 		class UProgressBar* HealthBar;
@@ -32,4 +34,7 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
 		class UTextBlock* BoonListText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), meta = (AllowPrivateAccess = "true"))
+		class UTextBlock* InventoryText;
 };

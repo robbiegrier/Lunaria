@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool IsHealthDepleted() const;
 
+	UFUNCTION(BlueprintCallable)
+		void Reset();
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -88,6 +88,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Garbage, meta = (AllowPrivateAccess = "true"))
 		float CullInterval = 60.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Garbage, meta = (AllowPrivateAccess = "true"))
+		bool ShouldWriteKillStatements = false;
+
 	static void BroadcastClassEventDelegate(ClassDelegateMapType& Map, UClass* Class, const FGameplayEvent& Event);
 	static void AddClassEventDelegate(ClassDelegateMapType& Map, ENativeEventType Action, UClass* Class, FGameplayEventDynamicDelegate ClientFunction);
 };

@@ -71,10 +71,6 @@ void AAbility::Tick(float DeltaTime)
 	{
 		if (Now - LastUsed > GetCooldown())
 		{
-			if (AbilityTag == FGameplayTag::RequestGameplayTag(TEXT("Ability.Defensive")))
-			{
-				Print("Regenerated Charge for ability with cooldown " + FString::Printf(TEXT("%f"), GetCooldown()));
-			}
 			CurrentCharges = MaxCharges;
 		}
 	}

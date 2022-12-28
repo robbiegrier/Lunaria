@@ -23,6 +23,15 @@ public:
 	void MakeSelectionFromPickup(class APickup* Pickup);
 	void ToggleUIControl(bool IsUIOn);
 
+	void NativeOnDeath();
+	void NativeOnRespawn();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")
+		void OnDeath();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")
+		void OnRespawn();
+
 protected:
 	void PlayerTick(float DeltaTime) override;
 	void SetupInputComponent() override;
@@ -83,6 +92,9 @@ private:
 
 	UPROPERTY()
 		class UPickupSelectionWidget* PickupSelectionWidget;
+
+	UPROPERTY()
+		class UGreatMessageWidget* GreatMessageWidget;
 
 	float UpDownImpulse{ 0.f };
 	float RightLeftImpulse{ 0.f };

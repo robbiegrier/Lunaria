@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.h"
 #include "InteractableState.h"
+#include "MapManager.h"
 #include "Door.generated.h"
 
 UCLASS()
@@ -20,9 +21,17 @@ public:
 	virtual bool ShowButtonWidget() override;
 	virtual void Interact() override;
 
+	// Returns true if the door contains a Map Description entry.
+	bool ContainsMapDescription() const;
+
+	// Randomly get one of the Map Descriptions in the door or the global map Id.
+	FMapDescription GetMapDescription() const;
+
+	// Open the door.
 	UFUNCTION(BlueprintCallable)
 		void Open();
 
+	// Close the door.
 	UFUNCTION(BlueprintCallable)
 		void Close();
 
@@ -35,6 +44,17 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visualization, meta = (AllowPrivateAccess = "true"))
 		class UStaticMeshComponent* Mesh;
+
+	// The set of maps that can be entered from this door.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
+		TArray<FMapDescription> MapDescriptions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
+		FString MapDescriptionId;
+
+	// Should the door be open on spawn.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
+		bool IsOpen = false;
 
 	TSharedPtr<class InteractableDoorClosedState> ClosedState;
 	TSharedPtr<class InteractableDoorOpenState> OpenState;

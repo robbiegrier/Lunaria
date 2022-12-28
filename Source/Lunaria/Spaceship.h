@@ -27,6 +27,9 @@ public:
 	void EnterSpawningState();
 	void EnterCombatState();
 
+	void StartPlayerDeath();
+	void EndPlayerDeath();
+
 	UFUNCTION()
 		void HandleThrottleInput(float Scale);
 
@@ -59,6 +62,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		class UCombatComponent* GetCombatComponent() const { return CombatComponent; }
+
+	UFUNCTION(BlueprintCallable)
+		class UInventoryComponent* GetInventoryComponent() const { return Inventory; }
 
 	UFUNCTION(BlueprintCallable)
 		float GetCurrentTurnSpeed() const;
@@ -111,6 +117,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		float RutterScaleModifier = 1.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+		class UInventoryComponent* Inventory;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")
