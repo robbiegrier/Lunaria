@@ -7,6 +7,8 @@
 #include "CpuHealthBar.h"
 #include "DebugWidget.h"
 #include "GreatMessageWidget.h"
+#include "ScreenFadeWidget.h"
+#include "DestinationNameWidget.h"
 #include "MapManager.h"
 #include "LevelTask.h"
 #include "AreaOfEffect.h"
@@ -67,7 +69,9 @@ public:
 	void StartSpecificAreaFromDescription(const FMapDescription& Description);
 
 	UClass* GetDebugWidgetClass() const { return DebugWidgetClass; }
+	UClass* GetDestinationNameWidgetClass() const { return DestinationNameWidgetClass; }
 	UClass* GetGreatMessageWidgetClass() const { return GreatMessageWidgetClass; }
+	UClass* GetScreenFadeWidgetClass() const { return ScreenFadeWidgetClass; }
 	UClass* GetHealthBarClass() const { return HealthBarClass; }
 	UClass* GetAreaOfEffectClass() const { return AreaOfEffectClass; }
 	UClass* GetPickupSelectionWidgetClass() const { return PickupSelectionWidgetClass; }
@@ -116,7 +120,13 @@ private:
 		TSubclassOf<class UDebugWidget> DebugWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class UDestinationNameWidget> DestinationNameWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UGreatMessageWidget> GreatMessageWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class UScreenFadeWidget> ScreenFadeWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UCpuHealthBar> HealthBarClass;

@@ -26,11 +26,16 @@ public:
 	void NativeOnDeath();
 	void NativeOnRespawn();
 
+	void NativeOnUsedDoor(class ADoor* Door);
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")
 		void OnDeath();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")
 		void OnRespawn();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")
+		void OnUsedDoor(class ADoor* Door);
 
 protected:
 	void PlayerTick(float DeltaTime) override;
@@ -95,6 +100,9 @@ private:
 
 	UPROPERTY()
 		class UGreatMessageWidget* GreatMessageWidget;
+
+	UPROPERTY()
+		class UScreenFadeWidget* ScreenFadeWidget;
 
 	float UpDownImpulse{ 0.f };
 	float RightLeftImpulse{ 0.f };

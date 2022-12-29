@@ -212,7 +212,7 @@ void ASpaceship::HandleThrottleInput(float Scale)
 {
 	if (SpaceshipMovementComponent)
 	{
-		SpaceshipMovementComponent->Accelerate(Scale);
+		SpaceshipMovementComponent->Accelerate(Scale * MovementScale);
 	}
 }
 
@@ -220,7 +220,7 @@ void ASpaceship::HandleRutterInput(float Scale)
 {
 	if (SpaceshipMovementComponent)
 	{
-		SpaceshipMovementComponent->Turn(Scale * RutterScaleModifier);
+		SpaceshipMovementComponent->Turn(Scale * RutterScaleModifier * MovementScale);
 	}
 }
 

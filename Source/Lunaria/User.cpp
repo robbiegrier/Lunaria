@@ -21,6 +21,8 @@
 #include "AreaOfEffect.h"
 #include "LunariaGameInstance.h"
 #include "GreatMessageWidget.h"
+#include "ScreenFadeWidget.h"
+#include "TimerManager.h"
 
 AUser::AUser()
 {
@@ -73,9 +75,14 @@ void AUser::BeginPlay()
 	UserHudWidget->SetOwningPlayer(this);
 
 	GreatMessageWidget = NewObject<UGreatMessageWidget>(GetWorld(), ALunariaGameModeBase::Get(GetWorld())->GetGreatMessageWidgetClass());
-	GreatMessageWidget->AddToViewport(50);
+	GreatMessageWidget->AddToViewport(10000);
 	GreatMessageWidget->SetVisibility(ESlateVisibility::Hidden);
 	GreatMessageWidget->SetOwningPlayer(this);
+
+	ScreenFadeWidget = NewObject<UScreenFadeWidget>(GetWorld(), ALunariaGameModeBase::Get(GetWorld())->GetScreenFadeWidgetClass());
+	ScreenFadeWidget->AddToViewport(20000);
+	ScreenFadeWidget->SetVisibility(ESlateVisibility::Hidden);
+	ScreenFadeWidget->SetOwningPlayer(this);
 }
 
 void AUser::OnPossess(APawn* InPawn)
@@ -236,6 +243,18 @@ void AUser::NativeOnDeath()
 {
 	GreatMessageWidget->StartDisplay("YOU DIED");
 	OnDeath();
+
+	auto Handle = FTimerHandle();
+	GetWorldTimerManager().SetTimer(Handle, [this]() {
+		ScreenFadeWidget->Fade();
+
+		auto InnerHandle = FTimerHandle();
+		GetWorldTimerManager().SetTimer(InnerHandle, [this]() {
+			ScreenFadeWidget->Unfade();
+			ALunariaGameModeBase::Get(GetWorld())->StartSpecificArea("Home");
+			Spaceship->EndPlayerDeath();
+		}, 1.f, false);
+	}, 5.f, false);
 }
 
 void AUser::NativeOnRespawn()
@@ -244,9 +263,27 @@ void AUser::NativeOnRespawn()
 	OnRespawn();
 }
 
+void AUser::NativeOnUsedDoor(ADoor* Door)
+{
+	DisableInput(this);
+	Spaceship->SetMovementScale(0.f);
+	ScreenFadeWidget->Fade();
+
+	auto Handle = FTimerHandle();
+	GetWorldTimerManager().SetTimer(Handle, [this, Door]() {
+		EnableInput(this);
+		Spaceship->SetMovementScale(1.f);
+		ALunariaGameModeBase::Get(GetWorld())->StartNewAreaFromDoor(Door);
+		ScreenFadeWidget->Unfade();
+	}, 1.f, false);
+
+	OnUsedDoor(Door);
+}
+
 void AUser::HandleDebugAction()
 {
 	Print("Debug Action");
+	ScreenFadeWidget->Fade();
 
 	//Spaceship->GetAttributesComponent()->SetMoveSpeed(Spaceship->GetAttributesComponent()->GetMoveSpeed() + 100.0f);
 	//Spaceship->GetAttributesComponent()->SetAttackDamage(Spaceship->GetAttributesComponent()->GetAttackDamage() + 5.0f);
@@ -284,6 +321,8 @@ void AUser::HandleDebugAction()
 
 void AUser::HandleDebugAction1()
 {
+	ScreenFadeWidget->Unfade();
+
 	Print("Debug Action 1");
 
 	if (!BoonSpawn1 || BoonSpawn1->IsActorBeingDestroyed())

@@ -78,6 +78,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetSpawnTime(float Time);
 
+	UFUNCTION(BlueprintCallable)
+		void SetMovementScale(float Scale) { MovementScale = Scale; }
+
 protected:
 	void BeginPlay() override;
 
@@ -120,6 +123,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
 		class UInventoryComponent* Inventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		float MovementScale = 1.f;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Spawn Events")

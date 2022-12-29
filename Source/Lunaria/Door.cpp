@@ -90,11 +90,17 @@ void ADoor::Close()
 
 void InteractableDoorOpenState::Execute(AActor* Subject)
 {
-	if (auto GameMode = Cast<ALunariaGameModeBase>(Subject->GetWorld()->GetAuthGameMode()))
-	{
-		Cast<ADoor>(Subject)->OnDoorInteractWhenOpen();
-		GameMode->StartNewAreaFromDoor(Cast<ADoor>(Subject));
-	}
+	//if (auto GameMode = Cast<ALunariaGameModeBase>(Subject->GetWorld()->GetAuthGameMode()))
+	//{
+	//	Cast<ADoor>(Subject)->OnDoorInteractWhenOpen();
+	//	GameMode->StartNewAreaFromDoor(Cast<ADoor>(Subject));
+	//}
+
+	auto Door = Cast<ADoor>(Subject);
+	Door->OnDoorInteractWhenOpen();
+
+	auto User = Cast<AUser>(Subject->GetWorld()->GetFirstPlayerController());
+	User->NativeOnUsedDoor(Door);
 }
 
 void InteractableDoorClosedState::Execute(AActor* Subject)

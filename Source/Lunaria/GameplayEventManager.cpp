@@ -236,12 +236,15 @@ void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 			auto FindScale = Event.Values.Find("Damage");
 			auto Scale = FindScale ? *FindScale : 0.f;
 
-			// Any tags attached to this hit event should potentially modify the damage scale
-			if (auto Attributes = Event.Agent->FindComponentByClass<UAttributesComponent>())
+			if (Event.Agent)
 			{
-				auto DamageTags = Event.EventTags;
-				DamageTags.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Damage"));
-				Scale = Attributes->GetFromTagContainer(DamageTags, Scale);
+				// Any tags attached to this hit event should potentially modify the damage scale
+				if (auto Attributes = Event.Agent->FindComponentByClass<UAttributesComponent>())
+				{
+					auto DamageTags = Event.EventTags;
+					DamageTags.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Damage"));
+					Scale = Attributes->GetFromTagContainer(DamageTags, Scale);
+				}
 			}
 
 			if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())

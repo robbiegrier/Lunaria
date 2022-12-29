@@ -69,12 +69,6 @@ void ALunariaGameModeBase::OnPlayerDeath()
 {
 	auto Ship = Cast<ASpaceship>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	Ship->StartPlayerDeath();
-
-	auto Handle = FTimerHandle();
-	GetWorldTimerManager().SetTimer(Handle, [this, Ship]() {
-		StartSpecificArea("Home");
-		Ship->EndPlayerDeath();
-	}, 5.f, false);
 }
 
 void ALunariaGameModeBase::StartNewArea(const FVector& EntryDirection)
