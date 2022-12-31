@@ -34,4 +34,19 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		static class ASpaceship* Summon(AActor* Summoner, TSubclassOf<ASpaceship> SummonClass, const FTransform& Transform);
+
+	UFUNCTION(BlueprintCallable)
+		static AActor* GetClosestActorToLocation(const FVector& Location, const TArray<AActor*>& Array, AActor* Ignore = nullptr);
+
+	// Get the actors that are on the team
+	UFUNCTION(BlueprintCallable)
+		static TArray<AActor*> FilterActorsByTeam(const TArray<AActor*>& Array, int32 Team);
+
+	// Get the actors on any other team
+	UFUNCTION(BlueprintCallable)
+		static TArray<AActor*> FilterActorsByTeamExclusive(const TArray<AActor*>& Array, int32 Team);
+
+	// Get the rival team
+	UFUNCTION(BlueprintCallable)
+		static int32 GetRivalTeam(int32 Team);
 };

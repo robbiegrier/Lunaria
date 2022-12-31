@@ -5,6 +5,7 @@
 #include "GameplayTagAssetInterface.h"
 #include "Engine/World.h"
 #include "CombatComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 FGameplayTagContainer ULunariaLib::AddTagContainers(const FGameplayTagContainer& A, const FGameplayTagContainer& B)
 {
@@ -53,4 +54,55 @@ ASpaceship* ULunariaLib::Summon(AActor* Summoner, TSubclassOf<ASpaceship> Summon
 	}
 
 	return nullptr;
+}
+
+AActor* ULunariaLib::GetClosestActorToLocation(const FVector& Location, const TArray<AActor*>& Array, AActor* Ignore)
+{
+	return Helpers::GetClosestToLocation(Location, Array, Ignore);
+}
+
+TArray<AActor*> ULunariaLib::FilterActorsByTeam(const TArray<AActor*>& Array, int32 Team)
+{
+	auto Output = TArray<AActor*>();
+
+	for (auto Actor : Array)
+	{
+		if (auto Combat = Actor->FindComponentByClass<UCombatComponent>())
+		{
+			if (Combat->GetTeam() == Team)
+			{
+				Output.Add(Actor);
+			}
+		}
+	}
+
+	return Output;
+}
+
+TArray<AActor*> ULunariaLib::FilterActorsByTeamExclusive(const TArray<AActor*>& Array, int32 Team)
+{
+	auto Output = TArray<AActor*>();
+
+	for (auto Actor : Array)
+	{
+		if (auto Combat = Actor->FindComponentByClass<UCombatComponent>())
+		{
+			if (Combat->GetTeam() != Team)
+			{
+				Output.Add(Actor);
+			}
+		}
+	}
+
+	return Output;
+}
+
+int32 ULunariaLib::GetRivalTeam(int32 Team)
+{
+	if (Team == UCombatComponent::PlayerTeam)
+	{
+		return UCombatComponent::EnemyTeam;
+	}
+
+	return UCombatComponent::PlayerTeam;
 }

@@ -49,6 +49,16 @@ FLinearColor ALunariaGameModeBase::GetArchetypeColor(EArchetype Archetype)
 	return FLinearColor::Gray;
 }
 
+FSlateBrush ALunariaGameModeBase::GetArchetypeIcon(EArchetype Archetype)
+{
+	if (auto Find = ArchetypeIconMap.Find(Archetype))
+	{
+		return *Find;
+	}
+
+	return FSlateBrush();
+}
+
 FLinearColor ALunariaGameModeBase::GetGameColor(const FString& String)
 {
 	if (auto Find = StringColorMap.Find(String))
@@ -87,7 +97,7 @@ void ALunariaGameModeBase::StartNewAreaFromDoor(ADoor* Door)
 	else
 	{
 		auto ExitDirection = (Door->GetActorLocation() - MapManager->GetCenter()).GetSafeNormal();
-		UpgradeManager->SetCurrentRoomArchetype(GetRandomArchetype());
+		UpgradeManager->SetCurrentRoomArchetype(Door->GetArchetype());
 		StartNewArea(ExitDirection);
 	}
 }

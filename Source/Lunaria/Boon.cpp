@@ -5,6 +5,10 @@
 #include "AttributesComponent.h"
 #include "GameplayEventManager.h"
 #include "Components/SceneComponent.h"
+#include "SpaceProjectile.h"
+#include "Engine/World.h"
+#include "LunariaLib.h"
+#include "LunariaGameModeBase.h"
 
 FAttributeModifier ABoon::NullModifier = FAttributeModifier();
 
@@ -112,6 +116,23 @@ float ABoon::GetDurationAsStatusEffect() const
 	}
 
 	return Output;
+}
+
+ASpaceProjectile* ABoon::CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces)
+{
+	auto Params = FActorSpawnParameters();
+	Params.Owner = MyOwner;
+	auto Projectile = GetWorld()->SpawnActor<ASpaceProjectile>(SpawnClass, Transform, Params);
+
+	if (Projectile)
+	{
+		auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(GetArchetype());
+		Projectile->SetIgnoreActors(ActorsToIgnore);
+		Projectile->SetBounces(Bounces);
+		Projectile->SetPayloadProperties(InTags, Damage, Distance, Color);
+	}
+
+	return Projectile;
 }
 
 FAttributeModifier* ABoon::FindModifier(const FGameplayTagContainer& Attribute) const

@@ -7,6 +7,7 @@
 #include "Interactable.h"
 #include "InteractableState.h"
 #include "MapManager.h"
+#include "Archetype.h"
 #include "Door.generated.h"
 
 UCLASS()
@@ -35,6 +36,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Close();
 
+	UFUNCTION(BlueprintCallable)
+		EArchetype GetArchetype() const { return Archetype; }
+
+	UFUNCTION(BlueprintCallable)
+		void SetArchetype(EArchetype InArchetype);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -51,6 +58,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta = (AllowPrivateAccess = "true"))
 		FString MapDescriptionId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
+		EArchetype Archetype;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
+		class UWidgetComponent* SpriteWidgetComponent;
 
 	// Should the door be open on spawn.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))

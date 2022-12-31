@@ -9,6 +9,7 @@
 #include "User.h"
 #include "LunariaGameModeBase.h"
 #include "LunariaLib.h"
+#include "Components/WidgetComponent.h"
 
 ADoor::ADoor()
 {
@@ -26,12 +27,35 @@ ADoor::ADoor()
 	ClosedState = MakeShared<InteractableDoorClosedState>();
 	OpenState = MakeShared<InteractableDoorOpenState>();
 	CurrentState = ClosedState;
+
+	SpriteWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Sprite Widget Component"));
+	SpriteWidgetComponent->SetupAttachment(RootComponent);
+	SpriteWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	SpriteWidgetComponent->SetDrawAtDesiredSize(true);
+	SpriteWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Archetype = EArchetype::Alpha;
+}
+
+void ADoor::SetArchetype(EArchetype InArchetype)
+{
+	Archetype = InArchetype;
+	//auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(Archetype);
+	//Mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), FVector(Color.R, Color.G, Color.B));
+
+	if (auto SpriteWidget = Cast<USpriteWidget>(SpriteWidgetComponent->GetUserWidgetObject()))
+	{
+		SpriteWidget->SetSprite(ALunariaGameModeBase::Get(GetWorld())->GetArchetypeIcon(Archetype));
+		SpriteWidgetComponent->SetVisibility(true);
+	}
 }
 
 void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
 	IsOpen ? Open() : Close();
+
+	SpriteWidgetComponent->SetWidgetClass(ALunariaGameModeBase::Get(GetWorld())->GetSpriteWidgetClass());
+	SpriteWidgetComponent->SetVisibility(false);
 }
 
 void ADoor::Tick(float DeltaTime)
@@ -90,12 +114,6 @@ void ADoor::Close()
 
 void InteractableDoorOpenState::Execute(AActor* Subject)
 {
-	//if (auto GameMode = Cast<ALunariaGameModeBase>(Subject->GetWorld()->GetAuthGameMode()))
-	//{
-	//	Cast<ADoor>(Subject)->OnDoorInteractWhenOpen();
-	//	GameMode->StartNewAreaFromDoor(Cast<ADoor>(Subject));
-	//}
-
 	auto Door = Cast<ADoor>(Subject);
 	Door->OnDoorInteractWhenOpen();
 

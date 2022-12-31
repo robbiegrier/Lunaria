@@ -10,6 +10,7 @@
 #include "DrawDebugHelpers.h"
 #include "SpaceObjectMovementComponent.h"
 #include "SpaceProjectile.h"
+#include "LunariaGameModeBase.h"
 
 FMapDescription AMapManager::NullMapDescription = FMapDescription();
 
@@ -184,8 +185,12 @@ void AMapManager::ClearCurrentDoors()
 {
 	for (auto Door : CurrentDoors)
 	{
-		Door->Destroy();
+		if (Door)
+		{
+			Door->Destroy();
+		}
 	}
+
 	CurrentDoors.Empty();
 }
 
@@ -197,6 +202,7 @@ void AMapManager::SpawnRandomDoors(int32 NumberOfDoors)
 	for (auto i = 0; i < NumberOfDoors; i++)
 	{
 		auto Door = GetWorld()->SpawnActor<ADoor>(DoorClass);
+		Door->SetArchetype(ALunariaGameModeBase::Get(GetWorld())->GetRandomArchetype());
 		CurrentDoors.Add(Door);
 
 		auto SpawnLocation = GetRandomPointOnEdge(DoorFeathering);
@@ -251,6 +257,7 @@ void AMapManager::SpawnWalls()
 			if (IsLocationInsideMap(WallLocation) && FVector::DistSquared(WallLocation, Center) > (MinWallRange * MinWallRange))
 			{
 				Wall = GetWorld()->SpawnActor<AHexWall>(HexWallClass, WallLocation, FRotator());
+				Wall->SetActorRotation(FRotator());
 				CurrentEnvironmentActors.Add(Wall);
 				WallMatrix.Add(Wall->GetActorLocation(), Wall);
 			}

@@ -8,6 +8,7 @@
 #include "DebugWidget.h"
 #include "GreatMessageWidget.h"
 #include "ScreenFadeWidget.h"
+#include "SpriteWidget.h"
 #include "DestinationNameWidget.h"
 #include "MapManager.h"
 #include "LevelTask.h"
@@ -50,6 +51,9 @@ public:
 		FLinearColor GetArchetypeColor(EArchetype Archetype);
 
 	UFUNCTION(BlueprintCallable)
+		FSlateBrush GetArchetypeIcon(EArchetype Archetype);
+
+	UFUNCTION(BlueprintCallable)
 		FLinearColor GetGameColor(const FString& String);
 
 	UFUNCTION(BlueprintCallable)
@@ -70,6 +74,7 @@ public:
 
 	UClass* GetDebugWidgetClass() const { return DebugWidgetClass; }
 	UClass* GetDestinationNameWidgetClass() const { return DestinationNameWidgetClass; }
+	UClass* GetSpriteWidgetClass() const { return SpriteWidgetClass; }
 	UClass* GetGreatMessageWidgetClass() const { return GreatMessageWidgetClass; }
 	UClass* GetScreenFadeWidgetClass() const { return ScreenFadeWidgetClass; }
 	UClass* GetHealthBarClass() const { return HealthBarClass; }
@@ -123,6 +128,9 @@ private:
 		TSubclassOf<class UDestinationNameWidget> DestinationNameWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class USpriteWidget> SpriteWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class UGreatMessageWidget> GreatMessageWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
@@ -148,6 +156,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
 		TMap<EArchetype, FLinearColor> ArchetypeColorMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Icons, meta = (AllowPrivateAccess = "true"))
+		TMap<EArchetype, FSlateBrush> ArchetypeIconMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Colors, meta = (AllowPrivateAccess = "true"))
 		TMap<FString, FLinearColor> StringColorMap;

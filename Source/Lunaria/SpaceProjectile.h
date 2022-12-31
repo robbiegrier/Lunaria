@@ -43,6 +43,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		const FLinearColor& GetColor() const { return Color; }
 
+	UFUNCTION(BlueprintCallable)
+		void SetIgnoreActors(const TArray<AActor*>& ActorsToIgnore) { IgnoreActors = ActorsToIgnore; }
+
+	UFUNCTION(BlueprintCallable)
+		void SetBounces(int32 InBounces) { Bounces = InBounces; }
+
 protected:
 	virtual void BeginPlay() override;
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;
@@ -70,6 +76,12 @@ private:
 
 	UPROPERTY()
 		FTimerHandle Handle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Limits, meta = (AllowPrivateAccess = "true"))
+		TArray<AActor*> IgnoreActors;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Limits, meta = (AllowPrivateAccess = "true"))
+		int32 Bounces = 3;
 
 	float DamagePayload = 0;
 	float TravelDistance = 9999999.f;

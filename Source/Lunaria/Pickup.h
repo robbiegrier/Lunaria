@@ -43,6 +43,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Model, meta = (AllowPrivateAccess = "true"))
 		class UStaticMeshComponent* Mesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
+		class UWidgetComponent* SpriteWidgetComponent;
+
 	class ALevelTask* Task;
 
 public:

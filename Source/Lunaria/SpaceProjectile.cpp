@@ -61,7 +61,7 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 		return;
 	}
 
-	if (!(GetOwner() == OtherActor) && !Cast<ASpaceProjectile>(OtherActor))
+	if (!(GetOwner() == OtherActor) && !Cast<ASpaceProjectile>(OtherActor) && !IgnoreActors.Contains(OtherActor))
 	{
 		if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
 		{
@@ -69,7 +69,8 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 			{
 				auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, OtherActor);
 				Event.Values.Add("Damage", DamagePayload);
-				//Event.Vectors.Add("Location", GetActorLocation());
+				Event.Values.Add("Bounces", Bounces - 1);
+				Event.Classes.Add("ProjectileClass", GetClass());
 				Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
 				Event.EventTags.AppendTags(GameplayTags);
 				AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);

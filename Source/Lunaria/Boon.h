@@ -84,6 +84,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetArchetype(EArchetype InArchetype) { Archetype = InArchetype; }
 
+	UFUNCTION(BlueprintCallable)
+		class ASpaceProjectile* CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces);
+
 private:
 	FAttributeModifier* FindModifier(const FGameplayTagContainer& Attribute) const;
 	FAttributeModifier CalculateModifier(UClass* InClass, const FGameplayTagContainer& Attribute) const;
