@@ -44,6 +44,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visualization, meta = (AllowPrivateAccess = "true"))
@@ -72,6 +73,9 @@ private:
 	TSharedPtr<class InteractableDoorClosedState> ClosedState;
 	TSharedPtr<class InteractableDoorOpenState> OpenState;
 	TSharedPtr<class InteractableState> CurrentState;
+
+	UPROPERTY()
+		AActor* WorldSprite;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")

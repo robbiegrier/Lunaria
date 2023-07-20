@@ -33,6 +33,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 		EArchetype Archetype;
@@ -47,6 +49,9 @@ private:
 		class UWidgetComponent* SpriteWidgetComponent;
 
 	class ALevelTask* Task;
+
+	UPROPERTY()
+		AActor* WorldSprite;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")

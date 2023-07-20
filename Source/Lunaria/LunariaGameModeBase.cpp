@@ -59,6 +59,16 @@ FSlateBrush ALunariaGameModeBase::GetArchetypeIcon(EArchetype Archetype)
 	return FSlateBrush();
 }
 
+TSubclassOf<AWorldSprite> ALunariaGameModeBase::GetArchetypeWorldSpriteClass(EArchetype Archetype)
+{
+	if (auto Find = ArchetypeWorldSpriteMap.Find(Archetype))
+	{
+		return *Find;
+	}
+
+	return TSubclassOf<AWorldSprite>();
+}
+
 FLinearColor ALunariaGameModeBase::GetGameColor(const FString& String)
 {
 	if (auto Find = StringColorMap.Find(String))

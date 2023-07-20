@@ -12,6 +12,7 @@
 #include "Helpers.h"
 #include "GameplayEventManager.h"
 #include "AttributesComponent.h"
+#include "Ability.h"
 
 ASpaceProjectile::ASpaceProjectile()
 {
@@ -41,14 +42,42 @@ void ASpaceProjectile::SetColor(const FLinearColor& InColor)
 	Mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), Helpers::GetVectorFromLinearColor(Color));
 }
 
+void ASpaceProjectile::SetAbilityCreatedFrom(AAbility* Ability)
+{
+	AbilityParent = Ability;
+	auto ActorParent = Ability->GetMyOwner();
+
+	if (ActorParent)
+	{
+		if (auto Attributes = ActorParent->FindComponentByClass<UAttributesComponent>())
+		{
+			auto TagContainer = FGameplayTagContainer();
+			TagContainer.AddTag(Ability->GetAbilityTag());
+			TagContainer.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Speed.Projectile"));
+
+			auto SpeedModifier = Attributes->GetFromTagContainer(TagContainer, ProjectileMovementComponent->InitialSpeed);
+			ProjectileMovementComponent->InitialSpeed = SpeedModifier;
+			ProjectileMovementComponent->MaxSpeed = SpeedModifier;
+		}
+	}
+}
+
 void ASpaceProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(Handle, [this]() {
 		if (this && this->IsValidLowLevel()) Die();
-	}, SecondsUntilDespawn, false);
+		}, SecondsUntilDespawn, false);
 
 	StartingPoint = GetActorLocation();
+}
+
+void ASpaceProjectile::EndPlay(EEndPlayReason::Type Reason)
+{
+	if (AbilityParent)
+	{
+		AbilityParent->OnProjectileEnd(this);
+	}
 }
 
 void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)

@@ -34,12 +34,27 @@ void APickup::BeginPlay()
 	Super::BeginPlay();
 
 	SpriteWidgetComponent->SetWidgetClass(ALunariaGameModeBase::Get(GetWorld())->GetSpriteWidgetClass());
-	SpriteWidgetComponent->SetVisibility(true);
+	SpriteWidgetComponent->SetVisibility(false);
+}
+
+void APickup::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	if (WorldSprite)
+	{
+		WorldSprite->Destroy();
+	}
 }
 
 void APickup::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (WorldSprite)
+	{
+		WorldSprite->SetActorTransform(GetActorTransform());
+	}
 }
 
 FString APickup::GetInteractionText()
@@ -75,8 +90,10 @@ void APickup::SetArchetype(EArchetype InArchetype)
 	auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(Archetype);
 	Mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), FVector(Color.R, Color.G, Color.B));
 
-	if (auto SpriteWidget = Cast<USpriteWidget>(SpriteWidgetComponent->GetUserWidgetObject()))
-	{
-		SpriteWidget->SetSprite(ALunariaGameModeBase::Get(GetWorld())->GetArchetypeIcon(Archetype));
-	}
+	//if (auto SpriteWidget = Cast<USpriteWidget>(SpriteWidgetComponent->GetUserWidgetObject()))
+	//{
+	//	SpriteWidget->SetSprite(ALunariaGameModeBase::Get(GetWorld())->GetArchetypeIcon(Archetype));
+	//}
+
+	WorldSprite = GetWorld()->SpawnActor(ALunariaGameModeBase::Get(GetWorld())->GetArchetypeWorldSpriteClass(Archetype), &GetTransform());
 }

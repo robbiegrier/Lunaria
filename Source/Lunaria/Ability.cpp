@@ -19,10 +19,12 @@ AAbility::AAbility()
 	AudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	AudioPlayer->SetupAttachment(RootComponent);
 	AudioPlayer->SetAutoActivate(false);
+	AudioPlayer->SetVolumeMultiplier(0.3f);
 
 	ContextAudioPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("Context Audio Component"));
 	ContextAudioPlayer->SetupAttachment(RootComponent);
 	ContextAudioPlayer->SetAutoActivate(false);
+	ContextAudioPlayer->SetVolumeMultiplier(0.3f);
 }
 
 void AAbility::BeginPlay()
@@ -157,6 +159,11 @@ FLinearColor AAbility::GetAbilityColor() const
 	return FLinearColor();
 }
 
+const TArray<class ASpaceProjectile*>& AAbility::GetProjectilesInFlight() const
+{
+	return ProjectilesInFlight;
+}
+
 void AAbility::ExecuteContext()
 {
 	OnExecute();
@@ -231,6 +238,8 @@ ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASp
 		Projectile->SetPayloadProperties(ULunariaLib::GetTags(this), Damage, Distance, GetAbilityColor());
 	}
 
+	AddProjectile(Projectile);
+
 	return Projectile;
 }
 
@@ -243,6 +252,20 @@ void AAbility::UpdateCooldownOnExecute()
 {
 	--CurrentCharges;
 	LastUsed = GetWorld()->GetTimeSeconds();
+}
+
+void AAbility::AddProjectile(ASpaceProjectile* Projectile)
+{
+	if (Projectile)
+	{
+		ProjectilesInFlight.Add(Projectile);
+		Projectile->SetAbilityCreatedFrom(this);
+	}
+}
+
+void AAbility::OnProjectileEnd(ASpaceProjectile* Projectile)
+{
+	ProjectilesInFlight.Remove(Projectile);
 }
 
 bool AAbility::ShouldAiUse() const

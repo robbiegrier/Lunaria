@@ -49,8 +49,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetBounces(int32 InBounces) { Bounces = InBounces; }
 
+	UFUNCTION(BlueprintCallable)
+		void SetAbilityCreatedFrom(class AAbility* Ability);
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 private:
@@ -82,6 +86,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Limits, meta = (AllowPrivateAccess = "true"))
 		int32 Bounces = 3;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
+		class AAbility* AbilityParent = nullptr;
 
 	float DamagePayload = 0;
 	float TravelDistance = 9999999.f;

@@ -19,6 +19,7 @@
 #include "PickupChoiceWidget.h"
 #include "Components/Button.h"
 #include "SpawnIndicator.h"
+#include "WorldSprite.h"
 #include "Boon.h"
 #include "LunariaGameModeBase.generated.h"
 
@@ -52,6 +53,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FSlateBrush GetArchetypeIcon(EArchetype Archetype);
+
+	UFUNCTION(BlueprintCallable)
+		TSubclassOf<AWorldSprite> GetArchetypeWorldSpriteClass(EArchetype Archetype);
 
 	UFUNCTION(BlueprintCallable)
 		FLinearColor GetGameColor(const FString& String);
@@ -165,6 +169,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Maps, meta = (AllowPrivateAccess = "true"))
 		TMap<FString, FMapDescription> MapDescriptions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Icons, meta = (AllowPrivateAccess = "true"))
+		TMap<EArchetype, TSubclassOf<AWorldSprite>> ArchetypeWorldSpriteMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level, meta = (AllowPrivateAccess = "true"))
 		int32 CurrentLevel = 0;

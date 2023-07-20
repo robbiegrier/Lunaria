@@ -13,7 +13,7 @@
 
 ADoor::ADoor()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Scene Root Component"));
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
@@ -42,11 +42,11 @@ void ADoor::SetArchetype(EArchetype InArchetype)
 	//auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(Archetype);
 	//Mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), FVector(Color.R, Color.G, Color.B));
 
-	if (auto SpriteWidget = Cast<USpriteWidget>(SpriteWidgetComponent->GetUserWidgetObject()))
-	{
-		SpriteWidget->SetSprite(ALunariaGameModeBase::Get(GetWorld())->GetArchetypeIcon(Archetype));
-		SpriteWidgetComponent->SetVisibility(true);
-	}
+	//if (auto SpriteWidget = Cast<USpriteWidget>(SpriteWidgetComponent->GetUserWidgetObject()))
+	//{
+	//	SpriteWidget->SetSprite(ALunariaGameModeBase::Get(GetWorld())->GetArchetypeIcon(Archetype));
+	//	SpriteWidgetComponent->SetVisibility(true);
+	//}
 }
 
 void ADoor::BeginPlay()
@@ -58,9 +58,24 @@ void ADoor::BeginPlay()
 	SpriteWidgetComponent->SetVisibility(false);
 }
 
+void ADoor::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	if (WorldSprite)
+	{
+		WorldSprite->Destroy();
+	}
+}
+
 void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (WorldSprite)
+	{
+		WorldSprite->SetActorTransform(GetActorTransform());
+	}
 }
 
 FString ADoor::GetInteractionText()
@@ -103,6 +118,9 @@ FMapDescription ADoor::GetMapDescription() const
 void ADoor::Open()
 {
 	CurrentState = OpenState;
+
+	WorldSprite = GetWorld()->SpawnActor(ALunariaGameModeBase::Get(GetWorld())->GetArchetypeWorldSpriteClass(Archetype), &GetTransform());
+
 	OnOpen();
 }
 

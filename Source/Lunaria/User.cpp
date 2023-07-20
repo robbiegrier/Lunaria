@@ -253,8 +253,8 @@ void AUser::NativeOnDeath()
 			ScreenFadeWidget->Unfade();
 			ALunariaGameModeBase::Get(GetWorld())->StartSpecificArea("Home");
 			Spaceship->EndPlayerDeath();
-		}, 1.f, false);
-	}, 5.f, false);
+			}, 1.f, false);
+		}, 5.f, false);
 }
 
 void AUser::NativeOnRespawn()
@@ -275,7 +275,7 @@ void AUser::NativeOnUsedDoor(ADoor* Door)
 		Spaceship->SetMovementScale(1.f);
 		ALunariaGameModeBase::Get(GetWorld())->StartNewAreaFromDoor(Door);
 		ScreenFadeWidget->Unfade();
-	}, 1.f, false);
+		}, 1.f, false);
 
 	OnUsedDoor(Door);
 }
@@ -283,7 +283,7 @@ void AUser::NativeOnUsedDoor(ADoor* Door)
 void AUser::HandleDebugAction()
 {
 	Print("Debug Action");
-	ScreenFadeWidget->Fade();
+	//ScreenFadeWidget->Fade();
 
 	//Spaceship->GetAttributesComponent()->SetMoveSpeed(Spaceship->GetAttributesComponent()->GetMoveSpeed() + 100.0f);
 	//Spaceship->GetAttributesComponent()->SetAttackDamage(Spaceship->GetAttributesComponent()->GetAttackDamage() + 5.0f);
@@ -309,6 +309,7 @@ void AUser::HandleDebugAction()
 	else
 	{
 		Spaceship->GetAttributesComponent()->RemoveAndDestroyBoon(BoonSpawn);
+		BoonSpawn = nullptr;
 	}
 
 	//BoonSpawn = GetWorld()->SpawnActor<ABoon>(BoonClass);

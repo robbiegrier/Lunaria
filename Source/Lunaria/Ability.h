@@ -47,8 +47,9 @@ public:
 	virtual void ToggleOff();
 
 	virtual void ExecuteContext();
-
 	virtual void UpdateCooldownOnExecute();
+	void AddProjectile(class ASpaceProjectile* Projectile);
+	void OnProjectileEnd(class ASpaceProjectile* Projectile);
 
 	UFUNCTION(BlueprintCallable)
 		virtual bool ShouldAiUse() const;
@@ -76,6 +77,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FLinearColor GetAbilityColor() const;
+
+	UFUNCTION(BlueprintCallable)
+		const TArray<class ASpaceProjectile*>& GetProjectilesInFlight() const;
+
+	UFUNCTION(BlueprintCallable)
+		AActor* GetMyOwner() const { return MyOwner; }
+
+	UFUNCTION(BlueprintCallable)
+		const FGameplayTag& GetAbilityTag() const { return AbilityTag; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -137,6 +147,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
 		FGameplayTagContainer GameplayTags;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Projectiles, meta = (AllowPrivateAccess = "true"))
+		TArray<class ASpaceProjectile*> ProjectilesInFlight;
 
 	TSharedPtr<class FAbilityStrategy> AbilityStrategy;
 
