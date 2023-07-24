@@ -9,6 +9,7 @@
 #include "Hittable.h"
 #include "Helpers.h"
 #include "GameplayEventManager.h"
+#include "Action.h"
 
 AAreaOfEffect::AAreaOfEffect()
 {
@@ -80,22 +81,24 @@ void AAreaOfEffect::Tick(float DeltaTime)
 		{
 			if (auto OtherAsHittable = Cast<IHittable>(Actor))
 			{
-				if (Helpers::AreDifferentTeams(GetOwner(), Actor))
+				if (Helpers::AreDifferentTeams(Agent, Actor))
 				{
-					auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, Actor);
-					Event.Values.Add("Damage", DamagePayload);
-					Event.Vectors.Add("Location", GetActorLocation());
-					Event.EventTags.AppendTags(GameplayTags);
-					AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
+					/*	auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, Actor);
+						Event.Values.Add("Damage", DamagePayload);
+						Event.Vectors.Add("Location", GetActorLocation());
+						Event.EventTags.AppendTags(GameplayTags);
+						AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);*/
 
-					for (auto Effect : StatusPayload)
+					UActionHit::PerformHit(Agent, Actor, Tool, this);
+
+					/*for (auto Effect : StatusPayload)
 					{
 						auto StatusEvent = FGameplayEvent(GetOwner(), ENativeEventType::ApplyStatus, Actor);
 						StatusEvent.Classes.Add("StatusEffectClass", Effect);
 						StatusEvent.Vectors.Add("Location", GetActorLocation());
 						StatusEvent.EventTags.AppendTags(GameplayTags);
 						AGameplayEventManager::Get(GetWorld())->SubmitEvent(StatusEvent);
-					}
+					}*/
 				}
 			}
 		}

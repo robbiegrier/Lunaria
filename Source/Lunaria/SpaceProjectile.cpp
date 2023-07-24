@@ -13,6 +13,9 @@
 #include "GameplayEventManager.h"
 #include "AttributesComponent.h"
 #include "Ability.h"
+#include "AbilitySlot.h"
+#include "AbilitiesComponent.h"
+#include "Action.h"
 
 ASpaceProjectile::ASpaceProjectile()
 {
@@ -94,24 +97,43 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
 		{
-			if (OtherActor->FindComponentByClass<UCombatComponent>())
-			{
-				auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, OtherActor);
-				Event.Values.Add("Damage", DamagePayload);
-				Event.Values.Add("Bounces", Bounces - 1);
-				Event.Classes.Add("ProjectileClass", GetClass());
-				Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
-				Event.EventTags.AppendTags(GameplayTags);
-				AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
-			}
+			//if (OtherActor->FindComponentByClass<UCombatComponent>())
+			//{
+			//	auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, OtherActor);
+			//	Event.Values.Add("Damage", DamagePayload);
+			//	Event.Values.Add("Bounces", Bounces - 1);
+			//	Event.Classes.Add("ProjectileClass", GetClass());
+			//	Event.EventTags.AddTag(FGameplayTag::RequestGameplayTag("HitStrategy.Projectile"));
+			//	Event.EventTags.AppendTags(GameplayTags);
+			//	AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);
+			//}
 
-			if (OtherActor->Implements<UHittable>())
-			{
-				IHittable::Execute_OnHitByProjectile(OtherActor, this);
-			}
+			//if (OtherActor->Implements<UHittable>())
+			//{
+			//	IHittable::Execute_OnHitByProjectile(OtherActor, this);
+			//}
 
-			OnHitBeforeDestroy(OtherActor);
-			Die();
+			if (AbilityParent)
+			{
+				auto Agent = AbilityParent->GetSlot()->GetParent()->GetOwner();
+				/*			auto Action = NewObject<UActionHit>();
+							Action->Agent = Agent;
+							Action->Tool = AbilityParent;
+							Action->Subject = OtherActor;
+							Action->Medium = this;
+
+							if (auto CombatComponent = Agent->FindComponentByClass<UCombatComponent>())
+							{
+								CombatComponent->AddAction(Action);
+							}*/
+
+				UActionHit::PerformHit(Agent, OtherActor, AbilityParent, this);
+			}
+			/*		else
+					{
+						OnHitBeforeDestroy(OtherActor);
+						Die();
+					}*/
 		}
 		else
 		{

@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool IsSummon() const { return Summoner != nullptr; }
 
+	UFUNCTION(BlueprintCallable)
+		void AddAction(class UAction* Action) { Actions.Add(Action); }
+
 	const static int32 PlayerTeam = 0;
 	const static int32 EnemyTeam = 1;
 	const static int32 NeutralTeam = 2;
@@ -48,6 +51,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Team, meta = (AllowPrivateAccess = "true"))
 		TArray<AActor*> Summons;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Actions, meta = (AllowPrivateAccess = "true"))
+		TArray<class UAction*> Actions;
 
 	AActor* Summoner = nullptr;
 };

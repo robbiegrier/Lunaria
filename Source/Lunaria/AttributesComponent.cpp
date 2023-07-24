@@ -7,6 +7,7 @@
 #include "HealthComponent.h"
 #include "AttributeObserver.h"
 #include "StatusEffect.h"
+#include "Stat.h"
 
 UAttributesComponent::UAttributesComponent()
 {
@@ -16,6 +17,29 @@ UAttributesComponent::UAttributesComponent()
 void UAttributesComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	StatMap.Empty();
+
+	MovementSpeed = NewObject<UStat>();
+	MovementSpeed->Set(300.f);
+	RegisterAttribute("MovementSpeed", MovementSpeed);
+
+	TurnSpeed = NewObject<UStat>();
+	TurnSpeed->Set(500.f);
+	RegisterAttribute("TurnSpeed", TurnSpeed);
+
+	Damage = NewObject<UStat>();
+	Damage->Set(0.f);
+	RegisterAttribute("Damage", Damage);
+
+	DamageReceived = NewObject<UStat>();
+	DamageReceived->Set(0.f);
+	RegisterAttribute("DamageReceived", DamageReceived);
+}
+
+void UAttributesComponent::RegisterAttribute(const FString& AttributeName, UAttribute* Attribute)
+{
+	StatMap.Add(FGameplayTag::RequestGameplayTag(FName(*AttributeName)), Attribute);
 }
 
 void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -106,7 +130,7 @@ void UAttributesComponent::RemoveAndDestroyBoon(ABoon* TheBoon)
 {
 	if (TheBoon)
 	{
-		TheBoon->OnRemoved();
+		TheBoon->NativeOnRemoved();
 		Boons.Remove(TheBoon);
 		TheBoon->Destroy();
 	}
@@ -144,7 +168,7 @@ void UAttributesComponent::ClearBoons()
 	{
 		if (Boon)
 		{
-			Boon->OnRemoved();
+			Boon->NativeOnRemoved();
 			Boon->Destroy();
 		}
 	}
@@ -163,6 +187,18 @@ void UAttributesComponent::ClearStatusEffects()
 	}
 
 	StatusEffects.Empty();
+}
+
+const FAbilityStats& UAttributesComponent::GetAbilityStats(EAbilityKey Key)
+{
+	switch (Key)
+	{
+	case EAbilityKey::X:
+		return AttackStats;
+	}
+
+	check(false);
+	return AttackStats;
 }
 
 float UAttributesComponent::ClassGet(UClass* Class, const FString& Attribute, float Seed)

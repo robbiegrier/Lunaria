@@ -15,7 +15,8 @@ enum class ENativeEventType : uint8
 	ApplyStatus,
 	AbilityUsed,
 	Block,
-	Heal
+	Heal,
+	TakeDamage
 };
 
 USTRUCT(BlueprintType)
@@ -41,7 +42,7 @@ public:
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* Agent;
+		AActor* Agent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FGameplayTagContainer AgentTags;
@@ -50,10 +51,16 @@ public:
 		FString EventType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		ENativeEventType Action;
+		ENativeEventType Action = ENativeEventType::Hit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* Subject;
+		AActor* Subject = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AActor* Medium = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AActor* Tool = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FGameplayTagContainer SubjectTags;

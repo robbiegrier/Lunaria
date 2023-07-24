@@ -49,6 +49,7 @@ public:
 
 	ABoon();
 	void NativeOnAdded(class UAttributesComponent* Attributes, AActor* InCreator = nullptr);
+	void NativeOnRemoved();
 	void NativeLevelUp();
 	virtual FString GetChoiceName() override;
 	virtual FString GetChoiceDescription() override;
@@ -87,6 +88,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 		class ASpaceProjectile* CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces);
 
+	UFUNCTION(BlueprintCallable)
+		void MakeStatModification(FGameplayTag Stat, float Base, float Scalar);
+
+	UFUNCTION(BlueprintCallable)
+		void MakeColorModification(FGameplayTag Name, const FLinearColor& Color);
+
+	UFUNCTION(BlueprintCallable)
+		float GetDamage() const { return Damage; }
+
+	void Close();
+
 private:
 	FAttributeModifier* FindModifier(const FGameplayTagContainer& Attribute) const;
 	FAttributeModifier CalculateModifier(UClass* InClass, const FGameplayTagContainer& Attribute) const;
@@ -113,6 +125,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		class UAttributesComponent* MyOwnerAttributes;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stats, meta = (AllowPrivateAccess = "true"))
+		float Damage = 25.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status Effect", meta = (AllowPrivateAccess = "true"))
 		float DurationAsStatusEffect = 2.f;
 
@@ -127,6 +142,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		EArchetype Archetype;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Mods, meta = (AllowPrivateAccess = "true"))
+		TArray<class UModification*> Modifications;
 
 	static FAttributeModifier NullModifier;
 

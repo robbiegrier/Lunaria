@@ -22,14 +22,12 @@ AHexWall::AHexWall()
 	SpaceObjectDetector->SetCapsuleRadius(1000.f);
 }
 
-// Called when the game starts or when spawned
 void AHexWall::BeginPlay()
 {
 	Super::BeginPlay();
 	RestPosition = GetActorLocation();
 }
 
-// Called every frame
 void AHexWall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -56,6 +54,8 @@ void AHexWall::Tick(float DeltaTime)
 
 	auto DistanceSunk = FVector::DistSquared(RestPosition, GetActorLocation());
 	Mesh->SetScalarParameterValueOnMaterials(TEXT("Sink"), 1.f - (DistanceSunk / DarknessCreep));
+
+	SetActorRotation(FRotator());
 }
 
 FVector AHexWall::GetAdjecentSlot(int ClockSide)

@@ -59,6 +59,7 @@ private:
 	using ClassDelegateMapType = TMap<ENativeEventType, TMap<UClass*, TArray<FGameplayEventDynamicDelegate>>>;
 
 	void ProcessGameplayEvents();
+	void ProcessGameplayEvent(const FGameplayEvent& Event);
 	void TriggerSubjectObservation(const FGameplayEvent& Event);
 	void TriggerAgentObservation(const FGameplayEvent& Event);
 	void TriggerAgentOfClassDelegates(const FGameplayEvent& Event);

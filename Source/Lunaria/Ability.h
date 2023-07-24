@@ -19,10 +19,22 @@ enum class EAbilityExecution : uint8
 	Passive = 4
 };
 
-UENUM()
+UENUM(BlueprintType)
 enum class EAbilityKey : uint8
 {
 	A, B, X, Y, LT
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityStats
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Ability)
+		FLinearColor Color = FLinearColor::White;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Ability)
+		class UStat* Damage;
 };
 
 UCLASS()
@@ -35,7 +47,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
-	void Attach(AActor* InOwner, EAbilityKey Key);
+	void Attach(class UAbilitySlot* InSlot);
 
 	virtual void Press();
 	virtual void Release();
@@ -47,9 +59,13 @@ public:
 	virtual void ToggleOff();
 
 	virtual void ExecuteContext();
+	virtual void Execute();
 	virtual void UpdateCooldownOnExecute();
 	void AddProjectile(class ASpaceProjectile* Projectile);
 	void OnProjectileEnd(class ASpaceProjectile* Projectile);
+
+	UFUNCTION(BlueprintCallable)
+		const FAbilityStats& GetStats() const;
 
 	UFUNCTION(BlueprintCallable)
 		virtual bool ShouldAiUse() const;
@@ -87,6 +103,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		const FGameplayTag& GetAbilityTag() const { return AbilityTag; }
 
+	UFUNCTION(BlueprintCallable)
+		class UAbilitySlot* GetSlot() const { return Slot; }
+
+	UFUNCTION(BlueprintCallable)
+		class AActor* GetAgent() const;
+
+	UFUNCTION(BlueprintCallable)
+		float GetDamage() { return Damage; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -101,6 +126,13 @@ protected:
 
 private:
 	void UpdateStrategy(TEnumAsByte<EAbilityExecution> Type);
+
+	// native damage of the ability
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats, meta = (AllowPrivateAccess = "true"))
+		float Damage = 100.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
+		class UAbilitySlot* Slot;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
 		TEnumAsByte<EAbilityExecution> ExecutionType;
@@ -150,6 +182,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Projectiles, meta = (AllowPrivateAccess = "true"))
 		TArray<class ASpaceProjectile*> ProjectilesInFlight;
+
+	EAbilityKey Key;
 
 	TSharedPtr<class FAbilityStrategy> AbilityStrategy;
 

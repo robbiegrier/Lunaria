@@ -52,14 +52,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetAbilityCreatedFrom(class AAbility* Ability);
 
+	void Die();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 private:
-	void Die();
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		class UProjectileMovementComponent* ProjectileMovementComponent;
 

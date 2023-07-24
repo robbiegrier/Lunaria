@@ -8,6 +8,10 @@
 #include "AttributesComponent.h"
 #include "GameplayEventManager.h"
 #include "LunariaLib.h"
+#include "AbilitySlot.h"
+#include "AbilitiesComponent.h"
+#include "Action.h"
+#include "CombatComponent.h"
 
 AAbility::AAbility()
 {
@@ -25,6 +29,11 @@ AAbility::AAbility()
 	ContextAudioPlayer->SetupAttachment(RootComponent);
 	ContextAudioPlayer->SetAutoActivate(false);
 	ContextAudioPlayer->SetVolumeMultiplier(0.3f);
+}
+
+AActor* AAbility::GetAgent() const
+{
+	return GetSlot()->GetParent()->GetOwner();
 }
 
 void AAbility::BeginPlay()
@@ -93,30 +102,12 @@ void AAbility::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 	TagContainer.AddTag(AbilityTag);
 }
 
-void AAbility::Attach(AActor* InOwner, EAbilityKey Key)
+void AAbility::Attach(class UAbilitySlot* InSlot)
 {
-	MyOwner = InOwner;
-
-	switch (Key)
-	{
-	case EAbilityKey::A:
-		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Movement"));
-		break;
-	case EAbilityKey::B:
-		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Defensive"));
-		break;
-	case EAbilityKey::X:
-		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Attack"));
-		break;
-	case EAbilityKey::Y:
-		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Special"));
-		break;
-	case EAbilityKey::LT:
-		AbilityTag = FGameplayTag::RequestGameplayTag(TEXT("Ability.Other"));
-		break;
-	default:
-		break;
-	}
+	Slot = InSlot;
+	MyOwner = InSlot->GetParent()->GetOwner();
+	AbilityTag = FGameplayTag::RequestGameplayTag("Attack");
+	Key = EAbilityKey::X;
 }
 
 UAttributesComponent* AAbility::GetAttributes() const
@@ -151,12 +142,14 @@ float AAbility::GetAttributeValueFromTag(const FGameplayTag& Attribute, float Se
 
 FLinearColor AAbility::GetAbilityColor() const
 {
-	if (MyOwner)
+	/*if (MyOwner)
 	{
 		return GetAttributes()->GetColor(AbilityTag);
 	}
 
-	return FLinearColor();
+	return FLinearColor();*/
+
+	return Slot->Color->Render();
 }
 
 const TArray<class ASpaceProjectile*>& AAbility::GetProjectilesInFlight() const
@@ -165,6 +158,16 @@ const TArray<class ASpaceProjectile*>& AAbility::GetProjectilesInFlight() const
 }
 
 void AAbility::ExecuteContext()
+{
+	auto Action = NewObject<UActionUseAbility>();
+	Action->Agent = GetSlot()->GetParent()->GetOwner();
+	Action->Subject = this;
+	Action->Tool = this;
+
+	Action->Agent->FindComponentByClass<UCombatComponent>()->AddAction(Action);
+}
+
+void AAbility::Execute()
 {
 	OnExecute();
 	UpdateCooldownOnExecute();
@@ -222,12 +225,12 @@ void AAbility::StopSound(UAudioComponent* Player)
 	Player->Stop();
 }
 
-ASpaceProjectile* AAbility::CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float Damage, float Distance)
+ASpaceProjectile* AAbility::CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float InDamage, float Distance)
 {
-	return CreateAbilityProjectileWithTransform(SpawnClass, GetTransform(), Damage, Distance);
+	return CreateAbilityProjectileWithTransform(SpawnClass, GetTransform(), InDamage, Distance);
 }
 
-ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage, float Distance)
+ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float InDamage, float Distance)
 {
 	auto Params = FActorSpawnParameters();
 	Params.Owner = MyOwner;
@@ -235,7 +238,7 @@ ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASp
 
 	if (Projectile)
 	{
-		Projectile->SetPayloadProperties(ULunariaLib::GetTags(this), Damage, Distance, GetAbilityColor());
+		Projectile->SetPayloadProperties(ULunariaLib::GetTags(this), InDamage, Distance, GetAbilityColor());
 	}
 
 	AddProjectile(Projectile);
@@ -266,6 +269,11 @@ void AAbility::AddProjectile(ASpaceProjectile* Projectile)
 void AAbility::OnProjectileEnd(ASpaceProjectile* Projectile)
 {
 	ProjectilesInFlight.Remove(Projectile);
+}
+
+const FAbilityStats& AAbility::GetStats() const
+{
+	return GetAttributes()->GetAbilityStats(Key);
 }
 
 bool AAbility::ShouldAiUse() const

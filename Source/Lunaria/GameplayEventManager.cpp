@@ -100,7 +100,8 @@ AGameplayEventManager* AGameplayEventManager::Get(UWorld* WorldContext)
 
 void AGameplayEventManager::SubmitEvent(const FGameplayEvent& Event)
 {
-	Events.Add(Event);
+	ProcessGameplayEvent(Event);
+	//Events.Add(Event);
 }
 
 void AGameplayEventManager::Submit(AActor* ClientObject, const FGameplayEvent& Event)
@@ -150,32 +151,36 @@ void AGameplayEventManager::ProcessGameplayEvents()
 	while (Events.Num() > 0)
 	{
 		auto Event = Events.Pop();
+		ProcessGameplayEvent(Event);
+	}
+}
 
-		TriggerAgentObservation(Event);
-		TriggerSubjectObservation(Event);
-		TriggerAgentOfClassDelegates(Event);
-		TriggerSubjectOfClassDelegates(Event);
+void AGameplayEventManager::ProcessGameplayEvent(const FGameplayEvent& Event)
+{
+	TriggerAgentObservation(Event);
+	TriggerSubjectObservation(Event);
+	TriggerAgentOfClassDelegates(Event);
+	TriggerSubjectOfClassDelegates(Event);
 
-		if (Event.Action == ENativeEventType::Hit)
-		{
-			ProcessHitEvent(Event);
-		}
-		if (Event.Action == ENativeEventType::Heal)
-		{
-			ProcessHealEvent(Event);
-		}
-		else if (Event.Action == ENativeEventType::Kill)
-		{
-			ProcessKillEvent(Event);
-		}
-		else if (Event.Action == ENativeEventType::ApplyStatus)
-		{
-			ProcessApplyStatusEvent(Event);
-		}
-		else if (Event.Action == ENativeEventType::AbilityUsed)
-		{
-			if (DebugEvents) Print(Event.Agent->GetName() + " used " + Event.EventTags.ToStringSimple());
-		}
+	if (Event.Action == ENativeEventType::Hit)
+	{
+		//ProcessHitEvent(Event);
+	}
+	if (Event.Action == ENativeEventType::Heal)
+	{
+		ProcessHealEvent(Event);
+	}
+	else if (Event.Action == ENativeEventType::Kill)
+	{
+		//ProcessKillEvent(Event);
+	}
+	else if (Event.Action == ENativeEventType::ApplyStatus)
+	{
+		ProcessApplyStatusEvent(Event);
+	}
+	else if (Event.Action == ENativeEventType::AbilityUsed)
+	{
+		//if (DebugEvents) Print(Event.Agent->GetName() + " used " + Event.EventTags.ToStringSimple());
 	}
 }
 
@@ -412,7 +417,7 @@ void AGameplayEventManager::CullHangingDelegates(ClassDelegateMapType& Map)
 
 			Delegates.RemoveAll([](const auto& Delegate) {
 				return !Delegate.IsBound();
-			});
+				});
 		}
 	}
 }

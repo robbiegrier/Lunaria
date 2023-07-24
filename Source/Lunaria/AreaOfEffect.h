@@ -25,6 +25,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Launch(const FGameplayTagContainer& TagContainer, const TArray<TSubclassOf<ABoon>>& StatusesToApply, float InDamage = 20.f, float InRadius = 150.f, float InDelay = 0.5f);
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Owners, meta = (AllowPrivateAccess = "true"))
+		class AActor* Agent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visualization, meta = (AllowPrivateAccess = "true"))
+		class AActor* Tool;
+
 protected:
 	virtual void BeginPlay() override;
 

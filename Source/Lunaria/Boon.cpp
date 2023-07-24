@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "LunariaLib.h"
 #include "LunariaGameModeBase.h"
+#include "Modification.h"
 
 FAttributeModifier ABoon::NullModifier = FAttributeModifier();
 
@@ -37,6 +38,12 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes, AActor* InCreator)
 	}
 
 	OnAdded();
+}
+
+void ABoon::NativeOnRemoved()
+{
+	Close();
+	OnRemoved();
 }
 
 void ABoon::NativeLevelUp()
@@ -118,7 +125,7 @@ float ABoon::GetDurationAsStatusEffect() const
 	return Output;
 }
 
-ASpaceProjectile* ABoon::CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces)
+ASpaceProjectile* ABoon::CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float InDamage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces)
 {
 	auto Params = FActorSpawnParameters();
 	Params.Owner = MyOwner;
@@ -129,17 +136,77 @@ ASpaceProjectile* ABoon::CreateBoonProjectileWithTransform(TSubclassOf<ASpacePro
 		auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(GetArchetype());
 		Projectile->SetIgnoreActors(ActorsToIgnore);
 		Projectile->SetBounces(Bounces);
-		Projectile->SetPayloadProperties(InTags, Damage, Distance, Color);
+		Projectile->SetPayloadProperties(InTags, InDamage, Distance, Color);
 	}
 
 	return Projectile;
+}
+
+void ABoon::MakeStatModification(FGameplayTag StatTag, float Base, float Scalar)
+{
+	auto Modification = NewObject<UModificationStat>();
+	auto FindAttribute = MyOwnerAttributes->StatMap.Find(StatTag);
+
+	if (FindAttribute)
+	{
+		auto Attribute = *FindAttribute;
+
+		if (auto Stat = Cast<UStat>(Attribute))
+		{
+			Modification->Set(Stat, Base, Scalar);
+			Modifications.Add(Modification);
+			Modification->Open();
+		}
+		else
+		{
+			Print("Cannot make stat Modification. Invalid Attribute type for: " + StatTag.ToString());
+		}
+	}
+	else
+	{
+		Print("Cannot make stat Modification. Invalid Stat: " + StatTag.ToString());
+	}
+}
+
+void ABoon::MakeColorModification(FGameplayTag Name, const FLinearColor& Color)
+{
+	auto Modification = NewObject<UModificationColor>();
+	auto FindAttribute = MyOwnerAttributes->StatMap.Find(Name);
+
+	if (FindAttribute)
+	{
+		auto Attribute = *FindAttribute;
+
+		if (auto ColorAttr = Cast<UColorAttribute>(Attribute))
+		{
+			Modification->Set(ColorAttr, Color);
+			Modifications.Add(Modification);
+			Modification->Open();
+		}
+		else
+		{
+			Print("Cannot make color Modification. Invalid Attribute type for: " + Name.ToString());
+		}
+	}
+	else
+	{
+		Print("Cannot make color Modification. Invalid Color: " + Name.ToString());
+	}
+}
+
+void ABoon::Close()
+{
+	for (auto Mod : Modifications)
+	{
+		Mod->Close();
+	}
 }
 
 FAttributeModifier* ABoon::FindModifier(const FGameplayTagContainer& Attribute) const
 {
 	return const_cast<FAttributeModifier*>(AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
 		return Attribute == Element.Attribute;
-	}));
+		}));
 }
 
 FAttributeModifier ABoon::CalculateModifier(UClass* InClass, const FGameplayTagContainer& Attribute) const

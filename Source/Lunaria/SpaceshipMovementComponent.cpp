@@ -38,7 +38,7 @@ void USpaceshipMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Location.Z = 100.f;
 	GetOwner()->SetActorLocation(Location);
 
-	CharacterMovement->MaxWalkSpeed = FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
+	CharacterMovement->MaxWalkSpeed = Attributes->MovementSpeed->Render();// FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
 }
 
 void USpaceshipMovementComponent::Accelerate(float Scale)
@@ -56,7 +56,7 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 	{
 		if (auto Pawn = Cast<APawn>(GetOwner()))
 		{
-			LastAccelValue = Scale * FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
+			LastAccelValue = Scale * Attributes->MovementSpeed->Render(); // FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
 			auto FrameThrust = Helpers::Dilate(LastAccelValue, GetWorld());
 			Pawn->AddMovementInput(Pawn->GetTransform().GetRotation().GetForwardVector(), FrameThrust);
 		}
@@ -65,7 +65,7 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 
 void USpaceshipMovementComponent::Turn(float Scale)
 {
-	ExecuteTurning(Scale, GetCurrentTurnSpeed());
+	ExecuteTurning(Scale, Attributes->TurnSpeed->Render());
 }
 
 float USpaceshipMovementComponent::GetCurrentTurnSpeed() const

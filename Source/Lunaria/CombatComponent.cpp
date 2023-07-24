@@ -6,10 +6,11 @@
 #include "SpaceProjectile.h"
 #include "Spaceship.h"
 #include "GameFramework/Controller.h"
+#include "Action.h"
 
 UCombatComponent::UCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UCombatComponent::AddSummon(AActor* InSummon)
@@ -31,4 +32,10 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	while (Actions.Num() > 0)
+	{
+		auto Action = Actions.Pop();
+		Action->Execute();
+	}
 }

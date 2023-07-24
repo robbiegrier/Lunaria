@@ -8,7 +8,60 @@
 #include "Boon.h"
 #include "GameplayTagContainer.h"
 #include "UpgradeNode.h"
+#include "Stat.h"
+#include "Ability.h"
 #include "AttributesComponent.generated.h"
+
+USTRUCT(BlueprintType)
+struct FCharacterStats
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	// Movement
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Movement)
+	//	FStat MovementSpeed = { 300.f };
+
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Movement)
+	//	float TurnSpeed = 500.f;
+
+	// Offense
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Offense)
+		float ProjectileSpeed = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Offense)
+		float Damage = 0.f;
+
+	// Defense
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
+		float MaxHealth = 1000.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
+		float DamageReduction = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
+		float DamageAmplification = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
+		float HealingReduction = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
+		float HealingAmplification = 0.f;
+
+	// Luck
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Luck)
+		float NumberOfChoices = 3.f;
+};
+
+USTRUCT(BlueprintType)
+struct FBoonStats
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Boon)
+		float Damage = 100.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Boon)
+		float StatusEffectReceivedDuration = 3.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Boon)
+		float StatusEffectAppliedDuration = 3.f;
+};
 
 /*
 * This component contains the "stats" of an actor that influence how strong it is. Other components will draw on these
@@ -84,9 +137,33 @@ public:
 
 	bool IsNodeViable(const FUpgradeNode& Node);
 
+	void RegisterAttribute(const FString& AttributeName, class UAttribute* Attribute);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class UStat* MovementSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class UStat* TurnSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class UStat* Damage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class UStat* DamageReceived;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		FAbilityStats AttackStats;
+
+	UPROPERTY()
+		TMap<FGameplayTag, UAttribute*> StatMap;
+
+	UFUNCTION(BlueprintCallable)
+		const FAbilityStats& GetAbilityStats(EAbilityKey Key);
 
 private:
 	void ClearBoons();
