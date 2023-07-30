@@ -10,11 +10,7 @@ void UAbilitySlot::Begin()
 {
 	if (auto Attributes = GetParent()->GetOwner()->FindComponentByClass<UAttributesComponent>())
 	{
-		Damage = NewObject<UStat>();
-		Damage->Set(0.f);
-		Attributes->RegisterAttribute(SlotName + ".Damage", Damage);
-
-		Color = NewObject<UColorAttribute>();
+		Color = NewObject<ULunariaColor>();
 		Color->Set(FLinearColor::White);
 		Attributes->RegisterAttribute(SlotName + ".Color", Color);
 	}

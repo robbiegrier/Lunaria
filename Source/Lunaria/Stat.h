@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
 #include "Stat.generated.h"
 
 UCLASS(BlueprintType)
@@ -11,68 +12,47 @@ class LUNARIA_API UAttribute : public UObject
 {
 	GENERATED_BODY()
 public:
-	virtual void OpenModification(class UModification* Mod) {}
-	virtual void CloseModification(class UModification* Mod) {}
-};
-
-/**
- *
- */
-UCLASS(BlueprintType)
-class LUNARIA_API UStat : public UAttribute
-{
-	GENERATED_BODY()
-public:
-	void Set(float InBase, float InScalar = 1.f);
-	FORCEINLINE float Render() { return Base * Scalar; }
-	virtual void OpenModification(class UModification* Mod) override;
-	virtual void CloseModification(class UModification* Mod) override;
-
-	float GetBase() const { return Base; }
-	float GetScalar() const { return Scalar; }
+	void OpenModification(class UModification* Mod) { Mods.Add(Mod); }
+	void CloseModification(class UModification* Mod) { Mods.Remove(Mod); }
+	void SetAttributeName(const FGameplayTag& InName) { AttributeName = InName; }
 
 protected:
-	float Base = 0.f;
-	float Scalar = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FGameplayTag AttributeName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<class UModification*> Mods;
 };
 
 UCLASS(BlueprintType)
-class LUNARIA_API UColorAttribute : public UAttribute
+class LUNARIA_API ULunariaStat : public UAttribute
 {
 	GENERATED_BODY()
 public:
-	void Set(const FLinearColor& InBase);
-	FORCEINLINE FLinearColor Render() { return Color; }
-	virtual void OpenModification(class UModification* Mod) override;
-	virtual void CloseModification(class UModification* Mod) override;
+	UFUNCTION(BlueprintCallable)
+		void Set(float InBase) { Base = InBase; }
+
+	UFUNCTION(BlueprintCallable)
+		float Render(class UAction* Action);
 
 protected:
-	FLinearColor Base = FLinearColor::White;
-	FLinearColor Color = FLinearColor::White;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Base = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Scalar = 1.f;
 };
 
-class LUNARIA_API FStatComposite
+UCLASS(BlueprintType)
+class LUNARIA_API ULunariaColor : public UAttribute
 {
+	GENERATED_BODY()
 public:
-	void Add(float InBase) { Base += InBase; }
-	void AddScale(float InScalar) { Scalar *= InScalar; }
-	void Add(UStat* SingleStat) { SubStats.Add(SingleStat); }
+	UFUNCTION(BlueprintCallable)
+		void Set(FLinearColor InBase) { Base = InBase; }
 
-	float Render() {
-		float TotalBase = Base;
-		float TotalScalar = Scalar;
-
-		for (auto Stat : SubStats)
-		{
-			TotalBase += Stat->GetBase();
-			TotalScalar *= Stat->GetScalar();
-		}
-
-		return TotalBase * TotalScalar;
-	}
+	UFUNCTION(BlueprintCallable)
+		FLinearColor Render(class UAction* Action);
 
 protected:
-	float Base = 0.f;
-	float Scalar = 1.f;
-	TArray<UStat*> SubStats;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor Base;
 };

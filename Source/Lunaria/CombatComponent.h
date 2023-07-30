@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+//DECLARE_DYNAMIC_DELEGATE_TwoParams(FHitDamageObserver, class UAction*, Action, class UStat*, Stat);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class LUNARIA_API UCombatComponent : public UActorComponent
 {
@@ -38,6 +40,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void AddAction(class UAction* Action) { Actions.Add(Action); }
 
+	//UFUNCTION(BlueprintCallable)
+	//	void AddHitDamageObserver(const FHitDamageObserver& Observer) { HitDamageObservers.Add(Observer); }
+
+	//const TArray<FHitDamageObserver>& GetHitDamageObservers() const { return HitDamageObservers; }
+
 	const static int32 PlayerTeam = 0;
 	const static int32 EnemyTeam = 1;
 	const static int32 NeutralTeam = 2;
@@ -54,6 +61,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Actions, meta = (AllowPrivateAccess = "true"))
 		TArray<class UAction*> Actions;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Actions, meta = (AllowPrivateAccess = "true"))
+	//	TArray<FHitDamageObserver> HitDamageObservers;
 
 	AActor* Summoner = nullptr;
 };

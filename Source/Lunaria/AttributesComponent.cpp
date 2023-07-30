@@ -8,6 +8,10 @@
 #include "AttributeObserver.h"
 #include "StatusEffect.h"
 #include "Stat.h"
+#include "Helpers.h"
+#include "CombatComponent.h"
+#include "StatCommand.h"
+#include "Action.h"
 
 UAttributesComponent::UAttributesComponent()
 {
@@ -18,28 +22,28 @@ void UAttributesComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StatMap.Empty();
-
-	MovementSpeed = NewObject<UStat>();
-	MovementSpeed->Set(300.f);
-	RegisterAttribute("MovementSpeed", MovementSpeed);
-
-	TurnSpeed = NewObject<UStat>();
-	TurnSpeed->Set(500.f);
-	RegisterAttribute("TurnSpeed", TurnSpeed);
-
-	Damage = NewObject<UStat>();
-	Damage->Set(0.f);
+	Damage = NewObject<ULunariaStat>();
+	Damage->Set(100.f);
 	RegisterAttribute("Damage", Damage);
 
-	DamageReceived = NewObject<UStat>();
+	AreaOfEffectDelay = NewObject<ULunariaStat>();
+	AreaOfEffectDelay->Set(0.f);
+	RegisterAttribute("AreaOfEffect.Delay", AreaOfEffectDelay);
+
+	AreaOfEffectRadius = NewObject<ULunariaStat>();
+	AreaOfEffectRadius->Set(0.f);
+	RegisterAttribute("AreaOfEffect.Radius", AreaOfEffectRadius);
+
+	DamageReceived = NewObject<ULunariaStat>();
 	DamageReceived->Set(0.f);
 	RegisterAttribute("DamageReceived", DamageReceived);
 }
 
 void UAttributesComponent::RegisterAttribute(const FString& AttributeName, UAttribute* Attribute)
 {
-	StatMap.Add(FGameplayTag::RequestGameplayTag(FName(*AttributeName)), Attribute);
+	auto Tag = FGameplayTag::RequestGameplayTag(FName(*AttributeName));
+	Attribute->SetAttributeName(Tag);
+	StatMap.Add(Tag, Attribute);
 }
 
 void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -189,16 +193,19 @@ void UAttributesComponent::ClearStatusEffects()
 	StatusEffects.Empty();
 }
 
-const FAbilityStats& UAttributesComponent::GetAbilityStats(EAbilityKey Key)
+ULunariaColor* UAttributesComponent::GetColorAttribute(const FString& Name)
 {
-	switch (Key)
+	auto Find = StatMap.Find(FGameplayTag::RequestGameplayTag(FName(*Name)));
+
+	if (Find)
 	{
-	case EAbilityKey::X:
-		return AttackStats;
+		if (auto Color = Cast<ULunariaColor>(*Find))
+		{
+			return Color;
+		}
 	}
 
-	check(false);
-	return AttackStats;
+	return nullptr;
 }
 
 float UAttributesComponent::ClassGet(UClass* Class, const FString& Attribute, float Seed)

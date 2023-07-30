@@ -27,14 +27,14 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes, AActor* InCreator)
 	MyOwnerAttributes = Attributes;
 	Creator = InCreator ? InCreator : MyOwner;
 
-	if (auto Attributes = Creator->FindComponentByClass<UAttributesComponent>())
+	if (auto CreatorAttributes = Creator->FindComponentByClass<UAttributesComponent>())
 	{
-		DurationAsStatusEffect = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsCreated", DurationAsStatusEffect);
+		DurationAsStatusEffect = CreatorAttributes->ClassGet(GetClass(), "Duration.StatusEffectsCreated", DurationAsStatusEffect);
 	}
 
-	if (auto Attributes = MyOwner->FindComponentByClass<UAttributesComponent>())
+	if (auto OwnerAttributes = MyOwner->FindComponentByClass<UAttributesComponent>())
 	{
-		DurationAsStatusEffect = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsOwned", DurationAsStatusEffect);
+		DurationAsStatusEffect = OwnerAttributes->ClassGet(GetClass(), "Duration.StatusEffectsOwned", DurationAsStatusEffect);
 	}
 
 	OnAdded();
@@ -142,55 +142,20 @@ ASpaceProjectile* ABoon::CreateBoonProjectileWithTransform(TSubclassOf<ASpacePro
 	return Projectile;
 }
 
-void ABoon::MakeStatModification(FGameplayTag StatTag, float Base, float Scalar)
+void ABoon::ModifyAttribute(FGameplayTag AttributeName, UModification* Mod)
 {
-	auto Modification = NewObject<UModificationStat>();
-	auto FindAttribute = MyOwnerAttributes->StatMap.Find(StatTag);
+	auto FindAttribute = MyOwnerAttributes->StatMap.Find(AttributeName);
 
 	if (FindAttribute)
 	{
 		auto Attribute = *FindAttribute;
-
-		if (auto Stat = Cast<UStat>(Attribute))
-		{
-			Modification->Set(Stat, Base, Scalar);
-			Modifications.Add(Modification);
-			Modification->Open();
-		}
-		else
-		{
-			Print("Cannot make stat Modification. Invalid Attribute type for: " + StatTag.ToString());
-		}
+		Mod->SetAttribute(Attribute);
+		Modifications.Add(Mod);
+		Mod->Open();
 	}
 	else
 	{
-		Print("Cannot make stat Modification. Invalid Stat: " + StatTag.ToString());
-	}
-}
-
-void ABoon::MakeColorModification(FGameplayTag Name, const FLinearColor& Color)
-{
-	auto Modification = NewObject<UModificationColor>();
-	auto FindAttribute = MyOwnerAttributes->StatMap.Find(Name);
-
-	if (FindAttribute)
-	{
-		auto Attribute = *FindAttribute;
-
-		if (auto ColorAttr = Cast<UColorAttribute>(Attribute))
-		{
-			Modification->Set(ColorAttr, Color);
-			Modifications.Add(Modification);
-			Modification->Open();
-		}
-		else
-		{
-			Print("Cannot make color Modification. Invalid Attribute type for: " + Name.ToString());
-		}
-	}
-	else
-	{
-		Print("Cannot make color Modification. Invalid Color: " + Name.ToString());
+		Print("Cannot make Modification. Could not find Attribute: " + AttributeName.ToString());
 	}
 }
 

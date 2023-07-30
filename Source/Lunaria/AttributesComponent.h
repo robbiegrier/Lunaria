@@ -145,25 +145,22 @@ protected:
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		class UStat* MovementSpeed;
+		class ULunariaStat* Damage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		class UStat* TurnSpeed;
+		class ULunariaStat* AreaOfEffectDelay;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		class UStat* Damage;
+		class ULunariaStat* AreaOfEffectRadius;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		class UStat* DamageReceived;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		FAbilityStats AttackStats;
+		class ULunariaStat* DamageReceived;
 
 	UPROPERTY()
 		TMap<FGameplayTag, UAttribute*> StatMap;
 
 	UFUNCTION(BlueprintCallable)
-		const FAbilityStats& GetAbilityStats(EAbilityKey Key);
+		ULunariaColor* GetColorAttribute(const FString& Name);
 
 private:
 	void ClearBoons();

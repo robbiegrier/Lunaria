@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "Choosable.h"
 #include "Archetype.h"
+#include "CommonActor.h"
 #include "Boon.generated.h"
 
 USTRUCT(BlueprintType)
@@ -89,10 +90,7 @@ public:
 		class ASpaceProjectile* CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces);
 
 	UFUNCTION(BlueprintCallable)
-		void MakeStatModification(FGameplayTag Stat, float Base, float Scalar);
-
-	UFUNCTION(BlueprintCallable)
-		void MakeColorModification(FGameplayTag Name, const FLinearColor& Color);
+		void ModifyAttribute(FGameplayTag AttributeName, class UModification* Mod);
 
 	UFUNCTION(BlueprintCallable)
 		float GetDamage() const { return Damage; }

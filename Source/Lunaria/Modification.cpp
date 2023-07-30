@@ -15,15 +15,7 @@ void UModification::Close()
 	IsOpen = false;
 }
 
-void UModificationStat::Set(UStat* InAttribute, float InBase, float InScalar)
+void UModification::SetAttribute(class UAttribute* InAttribute)
 {
 	Attribute = InAttribute;
-	Base = InBase;
-	Scalar = InScalar;
-}
-
-void UModificationColor::Set(class UColorAttribute* InAttribute, const FLinearColor& InColor)
-{
-	Attribute = InAttribute;
-	Color = InColor;
 }

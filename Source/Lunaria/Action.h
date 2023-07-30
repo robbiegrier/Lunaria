@@ -9,7 +9,7 @@
 /**
  *
  */
-UCLASS()
+UCLASS(BlueprintType)
 class LUNARIA_API UAction : public UObject
 {
 	GENERATED_BODY()
@@ -18,13 +18,16 @@ public:
 	virtual void Execute() {}
 
 	// The actor, owned by the agent, that is responsible for the action
-	AActor* Tool = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		AActor* Tool = nullptr;
 
 	// The subject of the action, if any
-	AActor* Subject = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		AActor* Subject = nullptr;
 
 	// the agent of the action
-	AActor* Agent = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		AActor* Agent = nullptr;
 };
 
 UCLASS(BlueprintType)
@@ -34,15 +37,16 @@ class LUNARIA_API UActionHit : public UAction
 
 public:
 	UFUNCTION(BlueprintCallable)
-		static void PerformHit(AActor* Agent, AActor* Subject, AActor* Tool, AActor* Medium);
+		static void PerformHit(AActor* InAgent, AActor* InSubject, AActor* InTool, AActor* InMedium);
 
 	virtual void Execute() override;
 
 	// The actor medium through which the hit occured
-	AActor* Medium = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		AActor* Medium = nullptr;
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class LUNARIA_API UActionTakeDamage : public UAction
 {
 	GENERATED_BODY()
@@ -50,10 +54,11 @@ class LUNARIA_API UActionTakeDamage : public UAction
 public:
 	virtual void Execute() override;
 
-	float Damage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float Damage;
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class LUNARIA_API UActionDie : public UAction
 {
 	GENERATED_BODY()
@@ -61,7 +66,8 @@ class LUNARIA_API UActionDie : public UAction
 public:
 	virtual void Execute() override;
 
-	float DamageOfKillingBlow;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float DamageOfKillingBlow;
 };
 
 UCLASS(BlueprintType)
@@ -80,7 +86,7 @@ class LUNARIA_API UActionCreateAreaOfEffect : public UAction
 
 public:
 	UFUNCTION(BlueprintCallable)
-		static void PerformAreaOfEffect(AActor* Agent, AActor* Tool, TSubclassOf<class AAreaOfEffect> AreaOfEffectClass, const FVector& Location, float Damage, float Radius, float Delay);
+		static void PerformAreaOfEffect(AActor* InAgent, AActor* InTool, TSubclassOf<class AAreaOfEffect> InAreaOfEffectClass, const FVector& InLocation, float InDamage, float InRadius, float InDelay);
 
 	virtual void Execute() override;
 

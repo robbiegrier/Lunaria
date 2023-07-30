@@ -45,26 +45,25 @@ void AAbility::BeginPlay()
 	LastUsed = -9999.f;
 }
 
-void AAbility::UpdateStrategy(TEnumAsByte<EAbilityExecution> Type)
+void AAbility::UpdateStrategy(EAbilityExecution Type)
 {
 	ExecutionType = Type;
 
-	if (ExecutionType == EAbilityExecution::Queue)
+	switch (ExecutionType)
 	{
+	case EAbilityExecution::Queue:
 		AbilityStrategy = MakeShared<FAbilityStrategyQueue>();
-	}
-	else if (ExecutionType == EAbilityExecution::Hold)
-	{
+		break;
+	case EAbilityExecution::Hold:
 		AbilityStrategy = MakeShared<FAbilityStrategyHold>();
-	}
-	else if (ExecutionType == EAbilityExecution::Toggle)
-	{
+		break;
+	case EAbilityExecution::Toggle:
 		AbilityStrategy = MakeShared<FAbilityStrategyToggle>();
-	}
-	else
-	{
+		break;
+	default:
 		ExecutionType = EAbilityExecution::Instant;
 		AbilityStrategy = MakeShared<FAbilityStrategyInstant>();
+		break;
 	}
 
 	AbilityStrategy->SetAbility(this);
@@ -149,7 +148,7 @@ FLinearColor AAbility::GetAbilityColor() const
 
 	return FLinearColor();*/
 
-	return Slot->Color->Render();
+	return Slot->Color->Render(nullptr);
 }
 
 const TArray<class ASpaceProjectile*>& AAbility::GetProjectilesInFlight() const
@@ -269,11 +268,6 @@ void AAbility::AddProjectile(ASpaceProjectile* Projectile)
 void AAbility::OnProjectileEnd(ASpaceProjectile* Projectile)
 {
 	ProjectilesInFlight.Remove(Projectile);
-}
-
-const FAbilityStats& AAbility::GetStats() const
-{
-	return GetAttributes()->GetAbilityStats(Key);
 }
 
 bool AAbility::ShouldAiUse() const

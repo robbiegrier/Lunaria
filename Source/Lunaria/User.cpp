@@ -283,23 +283,6 @@ void AUser::NativeOnUsedDoor(ADoor* Door)
 void AUser::HandleDebugAction()
 {
 	Print("Debug Action");
-	//ScreenFadeWidget->Fade();
-
-	//Spaceship->GetAttributesComponent()->SetMoveSpeed(Spaceship->GetAttributesComponent()->GetMoveSpeed() + 100.0f);
-	//Spaceship->GetAttributesComponent()->SetAttackDamage(Spaceship->GetAttributesComponent()->GetAttackDamage() + 5.0f);
-	//Spaceship->GetAttributesComponent()->SetMaxHealth(Spaceship->GetAttributesComponent()->GetMaxHealth() + 5.0f);
-	//Spaceship->GetAttributesComponent()->SetTurnSpeed(Spaceship->GetAttributesComponent()->GetTurnSpeed() + 25.0f);
-
-	//Spaceship->GetAttributesComponent()->AddBoon(NewObject<UBoon>((UObject*)GetTransientPackage(), BoonClass));
-	//if (auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
-	//{
-	//	GameMode->StartNewArea();
-	//}
-
-	//if (auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode()))
-	//{
-	//	GameMode->GetMap()->OpenCurrentDoors();
-	//}
 
 	if (!BoonSpawn || BoonSpawn->IsActorBeingDestroyed())
 	{
@@ -311,19 +294,10 @@ void AUser::HandleDebugAction()
 		Spaceship->GetAttributesComponent()->RemoveAndDestroyBoon(BoonSpawn);
 		BoonSpawn = nullptr;
 	}
-
-	//BoonSpawn = GetWorld()->SpawnActor<ABoon>(BoonClass);
-	//Spaceship->GetAttributesComponent()->AddStatusEffectFromClass(BoonClass);
-
-	//auto GameMode = Cast<ALunariaGameModeBase>(GetWorld()->GetAuthGameMode());
-	//auto Aoe = GetWorld()->SpawnActor<AAreaOfEffect>(GameMode->GetAreaOfEffectClass());
-	//Aoe->Launch(FGameplayTagContainer(), TArray<TSubclassOf<ABoon>>(), 20.f, 150.f, 0.5f);
 }
 
 void AUser::HandleDebugAction1()
 {
-	ScreenFadeWidget->Unfade();
-
 	Print("Debug Action 1");
 
 	if (!BoonSpawn1 || BoonSpawn1->IsActorBeingDestroyed())

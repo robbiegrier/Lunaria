@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "AttributesComponent.h"
+#include "Stat.h"
+#include "CommonActor.h"
 #include "Modification.generated.h"
 
 /**
@@ -16,6 +18,8 @@ class LUNARIA_API UModification : public UObject
 	GENERATED_BODY()
 
 public:
+	void SetAttribute(class UAttribute* InAttribute);
+
 	void Open();
 	void Close();
 
@@ -24,33 +28,26 @@ protected:
 	bool IsOpen = false;
 };
 
-UCLASS(BlueprintType)
-class LUNARIA_API UModificationStat : public UModification
+//DECLARE_DYNAMIC_DELEGATE_OneParam(FLunariaModificationCallback, class UAction*, Action);
+
+UCLASS(Blueprintable, BlueprintType)
+class LUNARIA_API UModificationLunariaStat : public UModification
 {
 	GENERATED_BODY()
 
 public:
-	void Set(class UStat* InAttribute, float InBase, float InScalar);
-
-	float GetBase() const { return Base; }
-	float GetScalar() const { return Scalar; }
-
-protected:
-	float Base = 0.f;
-	float Scalar = 0.f;
-	bool IsOpen = false;
+	UFUNCTION(BlueprintNativeEvent)
+		float GetScalar(class UAction* Action);
+	float GetScalar_Implementation(class UAction* Action) { return 0.f; }
 };
 
-UCLASS(BlueprintType)
-class LUNARIA_API UModificationColor : public UModification
+UCLASS(Blueprintable, BlueprintType)
+class LUNARIA_API UModificationLunariaColor : public UModification
 {
 	GENERATED_BODY()
 
 public:
-	void Set(class UColorAttribute* InAttribute, const FLinearColor& InColor);
-
-	FLinearColor GetColor() const { return Color; }
-
-protected:
-	FLinearColor Color;
+	UFUNCTION(BlueprintNativeEvent)
+		FLinearColor GetColor(class UAction* Action);
+	FLinearColor GetColor_Implementation(class UAction* Action) { return FLinearColor::White; }
 };

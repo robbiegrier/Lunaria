@@ -9,7 +9,7 @@
 #include "SpaceProjectile.h"
 #include "Ability.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum class EAbilityExecution : uint8
 {
 	Instant = 0,
@@ -23,18 +23,6 @@ UENUM(BlueprintType)
 enum class EAbilityKey : uint8
 {
 	A, B, X, Y, LT
-};
-
-USTRUCT(BlueprintType)
-struct FAbilityStats
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Ability)
-		FLinearColor Color = FLinearColor::White;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Ability)
-		class UStat* Damage;
 };
 
 UCLASS()
@@ -63,9 +51,6 @@ public:
 	virtual void UpdateCooldownOnExecute();
 	void AddProjectile(class ASpaceProjectile* Projectile);
 	void OnProjectileEnd(class ASpaceProjectile* Projectile);
-
-	UFUNCTION(BlueprintCallable)
-		const FAbilityStats& GetStats() const;
 
 	UFUNCTION(BlueprintCallable)
 		virtual bool ShouldAiUse() const;
@@ -125,7 +110,7 @@ protected:
 		class ASpaceProjectile* CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage = 50.f, float Distance = 3000.f);
 
 private:
-	void UpdateStrategy(TEnumAsByte<EAbilityExecution> Type);
+	void UpdateStrategy(EAbilityExecution Type);
 
 	// native damage of the ability
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats, meta = (AllowPrivateAccess = "true"))
@@ -135,7 +120,7 @@ private:
 		class UAbilitySlot* Slot;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Settings, meta = (AllowPrivateAccess = "true"))
-		TEnumAsByte<EAbilityExecution> ExecutionType;
+		EAbilityExecution ExecutionType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		AActor* MyOwner;

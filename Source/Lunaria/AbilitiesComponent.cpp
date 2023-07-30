@@ -94,6 +94,7 @@ void UAbilitiesComponent::EnsureSlotExists(EAbilityKey Key)
 		auto Slot = NewObject<UAbilitySlot>();
 		Slot->SetParent(this);
 		Slot->SetSlotName(AbilityKeyToSlotName(Key));
+		Slot->SetAbilityKey(Key);
 		Abilities.Add(Key, Slot);
 		Slot->Begin();
 	}

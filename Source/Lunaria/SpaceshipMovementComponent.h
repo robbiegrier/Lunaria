@@ -62,6 +62,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 		float DriftSpeedMultiplier{ 0.8f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		class ULunariaStat* MovementSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		class ULunariaStat* TurnSpeed;
+
 	class UAttributesComponent* Attributes;
 	class UCharacterMovementComponent* CharacterMovement;
 	float CurrentBankValue{ 0.f };

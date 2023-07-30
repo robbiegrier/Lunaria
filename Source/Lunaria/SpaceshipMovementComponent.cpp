@@ -14,6 +14,7 @@
 #include "Camera/CameraComponent.h"
 #include "LunariaGameModeBase.h"
 #include "MapManager.h"
+#include "Stat.h"
 
 float USpaceshipMovementComponent::CpuTurnCompensation = 2.5f;
 
@@ -27,6 +28,14 @@ void USpaceshipMovementComponent::BeginPlay()
 	Super::BeginPlay();
 	Attributes = Helpers::GetSister<UAttributesComponent>(this);
 	CharacterMovement = Helpers::GetSister<UCharacterMovementComponent>(this);
+
+	MovementSpeed = NewObject<ULunariaStat>();
+	MovementSpeed->Set(300.f);
+	Attributes->RegisterAttribute("MovementSpeed", MovementSpeed);
+
+	TurnSpeed = NewObject<ULunariaStat>();
+	TurnSpeed->Set(500.f);
+	Attributes->RegisterAttribute("TurnSpeed", TurnSpeed);
 }
 
 void USpaceshipMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -38,7 +47,7 @@ void USpaceshipMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Location.Z = 100.f;
 	GetOwner()->SetActorLocation(Location);
 
-	CharacterMovement->MaxWalkSpeed = Attributes->MovementSpeed->Render();// FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
+	CharacterMovement->MaxWalkSpeed = MovementSpeed->Render(nullptr);
 }
 
 void USpaceshipMovementComponent::Accelerate(float Scale)
@@ -56,7 +65,7 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 	{
 		if (auto Pawn = Cast<APawn>(GetOwner()))
 		{
-			LastAccelValue = Scale * Attributes->MovementSpeed->Render(); // FMath::Max(Attributes->Get("Speed.Move", MoveSpeedSeed), 0.f);
+			LastAccelValue = Scale * MovementSpeed->Render(nullptr);
 			auto FrameThrust = Helpers::Dilate(LastAccelValue, GetWorld());
 			Pawn->AddMovementInput(Pawn->GetTransform().GetRotation().GetForwardVector(), FrameThrust);
 		}
@@ -65,12 +74,12 @@ void USpaceshipMovementComponent::Accelerate(float Scale)
 
 void USpaceshipMovementComponent::Turn(float Scale)
 {
-	ExecuteTurning(Scale, Attributes->TurnSpeed->Render());
+	ExecuteTurning(Scale, TurnSpeed->Render(nullptr));
 }
 
 float USpaceshipMovementComponent::GetCurrentTurnSpeed() const
 {
-	return FMath::Max(Attributes->Get("Speed.Turn", TurnSpeedSeed), 0.f);
+	return TurnSpeed->Render(nullptr);
 }
 
 void USpaceshipMovementComponent::Drift()

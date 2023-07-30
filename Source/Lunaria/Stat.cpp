@@ -1,50 +1,43 @@
 // Robbie Grier
 
 #include "Stat.h"
+#include "Action.h"
 #include "Modification.h"
+#include "Printer.h"
 
-void UStat::Set(float InBase, float InScalar)
+float ULunariaStat::Render(class UAction* Action)
 {
-	Base = InBase;
-	Scalar = InScalar;
-}
+	auto TotalBase = Base;
+	auto TotalScalar = Scalar;
 
-void UStat::OpenModification(UModification* Mod)
-{
-	if (auto Stat = Cast<UModificationStat>(Mod))
+	for (auto Mod : Mods)
 	{
-		Base += Stat->GetBase();
-		Scalar += Stat->GetScalar();
+		if (auto StatMod = Cast<UModificationLunariaStat>(Mod))
+		{
+			TotalScalar += StatMod->GetScalar(Action);
+		}
+		else
+		{
+			Print("Wrong type of modification found for stat: " + AttributeName.ToString());
+		}
 	}
+
+	return TotalBase * TotalScalar;
 }
 
-void UStat::CloseModification(UModification* Mod)
+FLinearColor ULunariaColor::Render(UAction* Action)
 {
-	if (auto Stat = Cast<UModificationStat>(Mod))
+	if (Mods.Num() > 0)
 	{
-		Base -= Stat->GetBase();
-		Scalar -= Stat->GetScalar();
+		if (auto ColorMod = Cast<UModificationLunariaColor>(Mods[0]))
+		{
+			return ColorMod->GetColor(Action);
+		}
+		else
+		{
+			Print("Wrong type of modification found for color: " + AttributeName.ToString());
+		}
 	}
-}
 
-void UColorAttribute::Set(const FLinearColor& InBase)
-{
-	Base = InBase;
-	Color = InBase;
-}
-
-void UColorAttribute::OpenModification(UModification* Mod)
-{
-	if (auto ColorAttr = Cast<UModificationColor>(Mod))
-	{
-		Color = ColorAttr->GetColor();
-	}
-}
-
-void UColorAttribute::CloseModification(UModification* Mod)
-{
-	if (auto ColorAttr = Cast<UModificationColor>(Mod))
-	{
-		Color = Base;
-	}
+	return FLinearColor::White;
 }

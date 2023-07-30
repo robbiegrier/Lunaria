@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "Ability.h"
 #include "AbilitySlot.generated.h"
 
 /**
@@ -24,20 +25,22 @@ public:
 	void SetSlotName(const FString& InName) { SlotName = InName; }
 	const FString& GetSlotName() const { return SlotName; }
 
+	void SetAbilityKey(EAbilityKey InKey) { Key = InKey; }
+
 	void Begin();
 
 	UPROPERTY()
-		class UStat* Damage;
+		class ULunariaColor* Color;
 
-	UPROPERTY()
-		class UColorAttribute* Color;
-
-private:
+protected:
 	class UAbilitiesComponent* Parent;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		FString SlotName;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class AAbility* Ability;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		EAbilityKey Key;
 };
