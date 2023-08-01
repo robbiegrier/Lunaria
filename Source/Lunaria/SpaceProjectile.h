@@ -6,10 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "GameplayTagContainer.h"
 #include "GameplayTagAssetInterface.h"
+#include "Medium.h"
 #include "SpaceProjectile.generated.h"
 
 UCLASS()
-class LUNARIA_API ASpaceProjectile : public AActor, public IGameplayTagAssetInterface
+class LUNARIA_API ASpaceProjectile : public AMedium, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
@@ -18,27 +19,25 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovementComponent; };
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
+	virtual void OnHitEnd(class UActionHit* Action) override;
+	virtual void SetColor(const FLinearColor& InColor) override;
+	virtual void LaunchCombatMedium() override;
+	void SetProjectileProperties(float InDistance = 9999999.f, float InSpeed = 1000.f);
 
 	UFUNCTION(BlueprintCallable)
-		void SetDamage(float InDamage) { DamagePayload = InDamage; }
+		void SetDamage(float InDamage) { BaseDamage = InDamage; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetTravelDistance(float InDistance) { TravelDistance = InDistance; }
 
 	UFUNCTION(BlueprintCallable)
-		float GetDamage() const { return DamagePayload; }
+		float GetDamage() const { return BaseDamage; }
 
 	UFUNCTION(BlueprintCallable)
 		class UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
 
-	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "TagContainer,InDamage,InDistance,InColor"))
-		void SetPayloadProperties(const FGameplayTagContainer& TagContainer, float InDamage, float InDistance = 9999999.f, const FLinearColor& InColor = FLinearColor::White);
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
 		void OnHitBeforeDestroy(AActor* OtherActor);
-
-	UFUNCTION(BlueprintCallable)
-		void SetColor(const FLinearColor& InColor);
 
 	UFUNCTION(BlueprintCallable)
 		const FLinearColor& GetColor() const { return Color; }
@@ -90,7 +89,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
 		class AAbility* AbilityParent = nullptr;
 
-	float DamagePayload = 0;
+	//float DamagePayload = 0;
 	float TravelDistance = 9999999.f;
 	FVector StartingPoint;
 };

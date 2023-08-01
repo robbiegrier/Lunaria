@@ -30,16 +30,17 @@ void AAreaOfEffect::SetColor(const FLinearColor& InColor)
 	Mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), FVector(InColor.R, InColor.G, InColor.B));
 }
 
-void AAreaOfEffect::Launch(const FGameplayTagContainer& TagContainer, const TArray<TSubclassOf<ABoon>>& StatusesToApply, float InDamage, float InRadius, float InDelay)
+void AAreaOfEffect::LaunchCombatMedium()
 {
-	GameplayTags.AppendTags(TagContainer);
-	StatusPayload = StatusesToApply;
-	DamagePayload = InDamage;
+	FrameRadius = 0.f;
+	SetActorTickEnabled(true);
+}
+
+void AAreaOfEffect::SetAreaOfEffectProperties(float InRadius, float InDelay)
+{
 	Radius = InRadius;
 	Delay = InDelay;
-	FrameRadius = 0.f;
 	Mesh->SetWorldScale3D(FVector(Radius / 10.f));
-	SetActorTickEnabled(true);
 }
 
 void AAreaOfEffect::BeginPlay()
@@ -83,22 +84,7 @@ void AAreaOfEffect::Tick(float DeltaTime)
 			{
 				if (Helpers::AreDifferentTeams(Agent, Actor))
 				{
-					/*	auto Event = FGameplayEvent(GetOwner(), ENativeEventType::Hit, Actor);
-						Event.Values.Add("Damage", DamagePayload);
-						Event.Vectors.Add("Location", GetActorLocation());
-						Event.EventTags.AppendTags(GameplayTags);
-						AGameplayEventManager::Get(GetWorld())->SubmitEvent(Event);*/
-
 					UActionHit::PerformHit(Agent, Actor, Tool, this);
-
-					/*for (auto Effect : StatusPayload)
-					{
-						auto StatusEvent = FGameplayEvent(GetOwner(), ENativeEventType::ApplyStatus, Actor);
-						StatusEvent.Classes.Add("StatusEffectClass", Effect);
-						StatusEvent.Vectors.Add("Location", GetActorLocation());
-						StatusEvent.EventTags.AppendTags(GameplayTags);
-						AGameplayEventManager::Get(GetWorld())->SubmitEvent(StatusEvent);
-					}*/
 				}
 			}
 		}

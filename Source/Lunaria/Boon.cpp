@@ -127,19 +127,23 @@ float ABoon::GetDurationAsStatusEffect() const
 
 ASpaceProjectile* ABoon::CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float InDamage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces)
 {
-	auto Params = FActorSpawnParameters();
-	Params.Owner = MyOwner;
-	auto Projectile = GetWorld()->SpawnActor<ASpaceProjectile>(SpawnClass, Transform, Params);
+	//auto Params = FActorSpawnParameters();
+	//Params.Owner = MyOwner;
+	//auto Projectile = GetWorld()->SpawnActor<ASpaceProjectile>(SpawnClass, Transform, Params);
 
-	if (Projectile)
-	{
-		auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(GetArchetype());
-		Projectile->SetIgnoreActors(ActorsToIgnore);
-		Projectile->SetBounces(Bounces);
-		Projectile->SetPayloadProperties(InTags, InDamage, Distance, Color);
-	}
+	//if (Projectile)
+	//{
+	//	auto Color = ALunariaGameModeBase::Get(GetWorld())->GetArchetypeColor(GetArchetype());
+	//	Projectile->SetIgnoreActors(ActorsToIgnore);
+	//	Projectile->SetBounces(Bounces);
+	//	Projectile->SetPayloadProperties(InTags, InDamage, Distance, Color);
+	//}
 
-	return Projectile;
+	//return Projectile;
+
+	Print("boon proj create is deprecated: " + MyOwner->GetName());
+
+	return nullptr;
 }
 
 void ABoon::ModifyAttribute(FGameplayTag AttributeName, UModification* Mod)

@@ -34,6 +34,10 @@ void UAttributesComponent::BeginPlay()
 	AreaOfEffectRadius->Set(0.f);
 	RegisterAttribute("AreaOfEffect.Radius", AreaOfEffectRadius);
 
+	ProjectileSpeed = NewObject<ULunariaStat>();
+	ProjectileSpeed->Set(0.f);
+	RegisterAttribute("Projectile.Speed", ProjectileSpeed);
+
 	DamageReceived = NewObject<ULunariaStat>();
 	DamageReceived->Set(0.f);
 	RegisterAttribute("DamageReceived", DamageReceived);

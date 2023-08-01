@@ -5,7 +5,7 @@
 #include "Modification.h"
 #include "Printer.h"
 
-float ULunariaStat::Render(class UAction* Action)
+float ULunariaStat::Render(class UAction const* const Action)
 {
 	auto TotalBase = Base;
 	auto TotalScalar = Scalar;

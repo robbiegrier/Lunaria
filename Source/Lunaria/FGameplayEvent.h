@@ -27,8 +27,8 @@ struct FGameplayEvent
 public:
 	FGameplayEvent() = default;
 
-	FGameplayEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject)
-		: Agent(InAgent), Action(InAction), Subject(InSubject) {
+	FGameplayEvent(AActor* InAgent, ENativeEventType InAction, AActor* InSubject, AActor* InTool = nullptr, AActor* InMedium = nullptr)
+		: Agent(InAgent), Action(InAction), Subject(InSubject), Medium(InMedium), Tool(InTool) {
 		if (Agent) {
 			if (auto Tagged = Cast<IGameplayTagAssetInterface>(Agent)) {
 				Tagged->GetOwnedGameplayTags(AgentTags);

@@ -37,8 +37,8 @@ class LUNARIA_API UModificationLunariaStat : public UModification
 
 public:
 	UFUNCTION(BlueprintNativeEvent)
-		float GetScalar(class UAction* Action);
-	float GetScalar_Implementation(class UAction* Action) { return 0.f; }
+		float GetScalar(class UAction const* const Action);
+	float GetScalar_Implementation(class UAction const* const Action) { return 0.f; }
 };
 
 UCLASS(Blueprintable, BlueprintType)

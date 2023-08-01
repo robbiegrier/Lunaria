@@ -32,7 +32,7 @@ public:
 		void Set(float InBase) { Base = InBase; }
 
 	UFUNCTION(BlueprintCallable)
-		float Render(class UAction* Action);
+		float Render(class UAction const* const Action);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

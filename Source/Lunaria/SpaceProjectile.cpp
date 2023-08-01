@@ -45,6 +45,11 @@ void ASpaceProjectile::SetColor(const FLinearColor& InColor)
 	Mesh->SetVectorParameterValueOnMaterials(TEXT("Color"), Helpers::GetVectorFromLinearColor(Color));
 }
 
+void ASpaceProjectile::LaunchCombatMedium()
+{
+	ProjectileShell->SetCollisionProfileName("OverlapAllDynamic");
+}
+
 void ASpaceProjectile::SetAbilityCreatedFrom(AAbility* Ability)
 {
 	AbilityParent = Ability;
@@ -93,19 +98,14 @@ void ASpaceProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 		return;
 	}
 
-	if (!(GetOwner() == OtherActor) && !Cast<ASpaceProjectile>(OtherActor) && !IgnoreActors.Contains(OtherActor))
+	if (!(Agent == OtherActor) && !Cast<ASpaceProjectile>(OtherActor) && !IgnoreActors.Contains(OtherActor))
 	{
-		if (Helpers::AreDifferentTeams(GetOwner(), OtherActor))
+		if (Helpers::AreDifferentTeams(Agent, OtherActor))
 		{
-			if (AbilityParent)
+			if (Tool)
 			{
-				auto Agent = AbilityParent->GetSlot()->GetParent()->GetOwner();
-				UActionHit::PerformHit(Agent, OtherActor, AbilityParent, this);
+				UActionHit::PerformHit(Agent, OtherActor, Tool, this);
 			}
-		}
-		else
-		{
-			// When hit a friendly, do not die
 		}
 	}
 }
@@ -126,11 +126,15 @@ void ASpaceProjectile::Tick(float DeltaTime)
 	}
 }
 
-void ASpaceProjectile::SetPayloadProperties(const FGameplayTagContainer& TagContainer, float InDamage, float InDistance, const FLinearColor& InColor)
+void ASpaceProjectile::OnHitEnd(UActionHit* Action)
 {
-	GameplayTags.AppendTags(TagContainer);
-	DamagePayload = InDamage;
+	OnHitBeforeDestroy(Action->Subject);
+	Die();
+}
+
+void ASpaceProjectile::SetProjectileProperties(float InDistance, float InSpeed)
+{
 	TravelDistance = InDistance;
-	ProjectileShell->SetCollisionProfileName("OverlapAllDynamic");
-	SetColor(InColor);
+	ProjectileMovementComponent->InitialSpeed = InSpeed;
+	ProjectileMovementComponent->MaxSpeed = InSpeed;
 }

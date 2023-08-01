@@ -37,13 +37,18 @@ class LUNARIA_API UActionHit : public UAction
 
 public:
 	UFUNCTION(BlueprintCallable)
-		static void PerformHit(AActor* InAgent, AActor* InSubject, AActor* InTool, AActor* InMedium);
+		static void PerformHit(AActor* InAgent, AActor* InSubject, AActor* InTool, class AMedium* InMedium);
 
 	virtual void Execute() override;
 
 	// The actor medium through which the hit occured
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		AActor* Medium = nullptr;
+		class AMedium* Medium = nullptr;
+
+protected:
+	float GetBaseDamage() const;
+	float AddAgentDamage(float Damage) const;
+	float AddSubjectDamage(float Damage) const;
 };
 
 UCLASS(BlueprintType)
@@ -53,6 +58,8 @@ class LUNARIA_API UActionTakeDamage : public UAction
 
 public:
 	virtual void Execute() override;
+
+	UActionTakeDamage* With(AActor* InAgent, AActor* InSubject, AActor* InTool, float InDamage);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float Damage;

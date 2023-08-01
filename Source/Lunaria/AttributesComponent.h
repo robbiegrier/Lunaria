@@ -154,6 +154,9 @@ public:
 		class ULunariaStat* AreaOfEffectRadius;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class ULunariaStat* ProjectileSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		class ULunariaStat* DamageReceived;
 
 	UPROPERTY()

@@ -231,18 +231,22 @@ ASpaceProjectile* AAbility::CreateAbilityProjectile(TSubclassOf<ASpaceProjectile
 
 ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float InDamage, float Distance)
 {
-	auto Params = FActorSpawnParameters();
-	Params.Owner = MyOwner;
-	auto Projectile = GetWorld()->SpawnActor<ASpaceProjectile>(SpawnClass, Transform, Params);
+	//auto Params = FActorSpawnParameters();
+	//Params.Owner = MyOwner;
+	//auto Projectile = GetWorld()->SpawnActor<ASpaceProjectile>(SpawnClass, Transform, Params);
 
-	if (Projectile)
-	{
-		Projectile->SetPayloadProperties(ULunariaLib::GetTags(this), InDamage, Distance, GetAbilityColor());
-	}
+	//if (Projectile)
+	//{
+	//	Projectile->SetPayloadProperties(ULunariaLib::GetTags(this), InDamage, Distance, GetAbilityColor());
+	//}
 
-	AddProjectile(Projectile);
+	//AddProjectile(Projectile);
 
-	return Projectile;
+	//return Projectile;
+
+	Print("ability proj create is deprecated: " + GetMyOwner()->GetName());
+
+	return nullptr;
 }
 
 bool AAbility::IsOffCooldown() const

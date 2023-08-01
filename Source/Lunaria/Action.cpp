@@ -17,8 +17,9 @@
 #include "Boon.h"
 #include "AreaOfEffect.h"
 #include "StatCommand.h"
+#include "Medium.h"
 
-void UActionHit::PerformHit(AActor* Agent, AActor* Subject, AActor* Tool, AActor* Medium)
+void UActionHit::PerformHit(AActor* Agent, AActor* Subject, AActor* Tool, AMedium* Medium)
 {
 	auto Action = NewObject<UActionHit>();
 	Action->Agent = Agent;
@@ -39,77 +40,54 @@ void UActionHit::Execute()
 {
 	//Print("Action Hit: Tool: " + Tool->GetName() + ", Subject: " + Subject->GetName() + ", Medium: " + Medium->GetName());
 
-	auto Event = FGameplayEvent(Agent, ENativeEventType::Hit, Subject);
-	Event.Medium = Medium;
-	Event.Tool = Tool;
+	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(FGameplayEvent(Agent, ENativeEventType::Hit, Subject, Tool, Medium));
 
-	/// Move this below with true damage as tag
-	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(Event);
-
-	//auto DamageTotal = FStatComposite();
-
-	//for (auto Observer : Agent->FindComponentByClass<UCombatComponent>()->GetHitDamageObservers())
-	//{
-	//	auto ObsStat = NewObject<UStat>();
-	//	Observer.ExecuteIfBound(this, ObsStat);
-	//	DamageTotal.Add(ObsStat);
-	//}
-
-	///// TODO - Damage Dealt Command
-	//if (auto Attributes = Agent->FindComponentByClass<UAttributesComponent>())
-	//{
-	//	DamageTotal.Add(Attributes->Damage);
-	//}
-
-	///// TODO - Damage Dealt Command
-	//if (auto Ability = Cast<AAbility>(Tool))
-	//{
-	//	DamageTotal.Add(Ability->GetDamage());
-	//	DamageTotal.Add(Ability->GetSlot()->Damage);
-	//}
-	///// TODO - Damage Dealt Command
-	//else if (auto Boon = Cast<ABoon>(Tool))
-	//{
-	//	DamageTotal.Add(Boon->GetDamage());
-	//}
-
-	//auto Damage = DamageTotal.Render();
-	auto DamageRequested = 0.f;
-	auto DamageApplied = 0.f;
-
-	if (auto AgentAttr = Agent->FindComponentByClass<UAttributesComponent>())
-	{
-		DamageRequested = AgentAttr->Damage->Render(this);
-	}
-
-	if (auto SubjectAttr = Subject->FindComponentByClass<UAttributesComponent>())
-	{
-		SubjectAttr->DamageReceived->Set(DamageRequested);
-		DamageApplied = SubjectAttr->DamageReceived->Render(this);
-	}
+	float Damage = AddSubjectDamage(AddAgentDamage(GetBaseDamage()));
 
 	if (Subject && !Subject->IsActorBeingDestroyed())
 	{
 		if (auto CombatComponent = Subject->FindComponentByClass<UCombatComponent>())
 		{
-			auto TakeDamageAction = NewObject<UActionTakeDamage>();
-			TakeDamageAction->Agent = Agent;
-			TakeDamageAction->Subject = Subject;
-			TakeDamageAction->Tool = Tool;
-			TakeDamageAction->Damage = DamageApplied;
-			CombatComponent->AddAction(TakeDamageAction);
+			CombatComponent->AddAction(NewObject<UActionTakeDamage>()->With(Agent, Subject, Tool, Damage));
 		}
 	}
 
-	/// TODO - Callback on Medium (base class)
 	if (Medium)
 	{
-		if (auto Projectile = Cast<ASpaceProjectile>(Medium))
-		{
-			Projectile->OnHitBeforeDestroy(Subject);
-			Projectile->Die();
-		}
+		Medium->OnHitEnd(this);
 	}
+}
+
+float UActionHit::GetBaseDamage() const
+{
+	if (Medium)
+	{
+		return Medium->GetBaseDamage();
+	}
+
+	return 0.f;
+}
+
+float UActionHit::AddAgentDamage(float Damage) const
+{
+	if (auto AgentAttr = Agent->FindComponentByClass<UAttributesComponent>())
+	{
+		AgentAttr->Damage->Set(Damage);
+		return AgentAttr->Damage->Render(this);
+	}
+
+	return Damage;
+}
+
+float UActionHit::AddSubjectDamage(float Damage) const
+{
+	if (auto SubjectAttr = Subject->FindComponentByClass<UAttributesComponent>())
+	{
+		SubjectAttr->DamageReceived->Set(Damage);
+		return SubjectAttr->DamageReceived->Render(this);
+	}
+
+	return Damage;
 }
 
 void UActionTakeDamage::Execute()
@@ -120,7 +98,6 @@ void UActionTakeDamage::Execute()
 	Event.Tool = Tool;
 	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(Event);
 
-	/// Take Damage Commands?
 	if (auto HealthComp = Subject->FindComponentByClass<UHealthComponent>())
 	{
 		HealthComp->ApplyDamage(Damage);
@@ -143,6 +120,15 @@ void UActionTakeDamage::Execute()
 	}
 }
 
+UActionTakeDamage* UActionTakeDamage::With(AActor* InAgent, AActor* InSubject, AActor* InTool, float InDamage)
+{
+	Agent = InAgent;
+	Subject = InSubject;
+	Tool = InTool;
+	Damage = InDamage;
+	return this;
+}
+
 void UActionDie::Execute()
 {
 	Print("Action Die: Tool: " + Tool->GetName() + ", Subject: " + Subject->GetName() + ", Damage: " + FString::FromInt(DamageOfKillingBlow), FColor::Red);
@@ -151,7 +137,6 @@ void UActionDie::Execute()
 	Event.Tool = Tool;
 	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(Event);
 
-	/// DIE Commands?
 	if (Subject && !Subject->IsActorBeingDestroyed())
 	{
 		auto Ship = Cast<ASpaceship>(Subject);
@@ -203,15 +188,6 @@ void UActionCreateAreaOfEffect::Execute()
 {
 	Print("aoe action from " + Tool->GetName() + " -> " + AreaOfEffectClass->GetName(), FColor::Orange);
 
-	auto AreaOfEffectSpawn = Agent->GetWorld()->SpawnActor<AAreaOfEffect>(AreaOfEffectClass, FTransform(Location));
-	AreaOfEffectSpawn->Agent = Agent;
-	AreaOfEffectSpawn->Tool = Tool;
-
-	if (auto Ability = Cast<AAbility>(Tool))
-	{
-		AreaOfEffectSpawn->SetColor(Ability->GetAbilityColor());
-	}
-
 	if (auto Attributes = Agent->FindComponentByClass<UAttributesComponent>())
 	{
 		Attributes->AreaOfEffectDelay->Set(Delay);
@@ -221,5 +197,7 @@ void UActionCreateAreaOfEffect::Execute()
 		Radius = Attributes->AreaOfEffectRadius->Render(this);
 	}
 
-	AreaOfEffectSpawn->Launch(FGameplayTagContainer(), TArray<TSubclassOf<ABoon>>(), Damage, Radius, Delay);
+	auto MediumSpawn = Cast<AAreaOfEffect>(AMedium::Spawn(AreaOfEffectClass, Agent, Tool, FTransform(Location), Damage));
+	MediumSpawn->SetAreaOfEffectProperties(Radius, Delay);
+	MediumSpawn->LaunchCombatMedium();
 }
