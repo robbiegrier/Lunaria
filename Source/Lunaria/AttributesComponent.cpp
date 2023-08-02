@@ -65,19 +65,19 @@ void UAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
-void UAttributesComponent::NativeWhenAgentOf(const FGameplayEvent& Event)
+void UAttributesComponent::NativeWhenAgentOf(UAction* Action)
 {
 	for (auto Boon : Boons)
 	{
-		Boon->ExecuteAgentOf(Event);
+		Boon->ExecuteAgentOf(Action);
 	}
 }
 
-void UAttributesComponent::NativeWhenSubjectOf(const FGameplayEvent& Event)
+void UAttributesComponent::NativeWhenSubjectOf(UAction* Action)
 {
 	for (auto Boon : Boons)
 	{
-		Boon->ExecuteSubjectOf(Event);
+		Boon->ExecuteSubjectOf(Action);
 	}
 }
 

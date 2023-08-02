@@ -36,6 +36,6 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	while (Actions.Num() > 0)
 	{
 		auto Action = Actions.Pop();
-		Action->Execute();
+		Action->NativeExecute();
 	}
 }

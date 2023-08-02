@@ -18,8 +18,28 @@
 #include "AreaOfEffect.h"
 #include "StatCommand.h"
 #include "Medium.h"
+#include "Tool.h"
 
-void UActionHit::PerformHit(AActor* Agent, AActor* Subject, AActor* Tool, AMedium* Medium)
+void UAction::NativeExecute()
+{
+	TriggerObservers();
+	Execute();
+}
+
+void UAction::TriggerObservers()
+{
+	if (auto Observer = Cast<IGameplayEventObserver>(Agent))
+	{
+		Observer->ExecuteAgentOf(this);
+	}
+
+	if (auto Observer = Cast<IGameplayEventObserver>(Subject))
+	{
+		Observer->ExecuteSubjectOf(this);
+	}
+}
+
+void UActionHit::PerformHit(AActor* Agent, AActor* Subject, ATool* Tool, AMedium* Medium)
 {
 	auto Action = NewObject<UActionHit>();
 	Action->Agent = Agent;
@@ -40,8 +60,6 @@ void UActionHit::Execute()
 {
 	//Print("Action Hit: Tool: " + Tool->GetName() + ", Subject: " + Subject->GetName() + ", Medium: " + Medium->GetName());
 
-	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(FGameplayEvent(Agent, ENativeEventType::Hit, Subject, Tool, Medium));
-
 	float Damage = AddSubjectDamage(AddAgentDamage(GetBaseDamage()));
 
 	if (Subject && !Subject->IsActorBeingDestroyed())
@@ -56,6 +74,36 @@ void UActionHit::Execute()
 	{
 		Medium->OnHitEnd(this);
 	}
+}
+
+void UActionHit::VisitAsAgent(IGameplayEventObserver* Observer)
+{
+	Observer->Execute_WhenHitSomething(Cast<UObject>(Observer), this);
+
+	if (auto Ability = Cast<AAbility>(Tool))
+	{
+		if (Ability->GetSlot()->GetSlotName().Equals("Attack"))
+		{
+			Observer->Execute_WhenHitSomethingWithAttack(Cast<UObject>(Observer), this);
+		}
+		else if (Ability->GetSlot()->GetSlotName().Equals("Special"))
+		{
+			Observer->Execute_WhenHitSomethingWithSpecial(Cast<UObject>(Observer), this);
+		}
+		else if (Ability->GetSlot()->GetSlotName().Equals("Movement"))
+		{
+			Observer->Execute_WhenHitSomethingWithMovement(Cast<UObject>(Observer), this);
+		}
+		else if (Ability->GetSlot()->GetSlotName().Equals("Defensive"))
+		{
+			Observer->Execute_WhenHitSomethingWithDefensive(Cast<UObject>(Observer), this);
+		}
+	}
+}
+
+void UActionHit::VisitAsSubject(IGameplayEventObserver* Observer)
+{
+	Observer->Execute_WhenHitBySomething(Cast<UObject>(Observer), this);
 }
 
 float UActionHit::GetBaseDamage() const
@@ -120,7 +168,7 @@ void UActionTakeDamage::Execute()
 	}
 }
 
-UActionTakeDamage* UActionTakeDamage::With(AActor* InAgent, AActor* InSubject, AActor* InTool, float InDamage)
+UActionTakeDamage* UActionTakeDamage::With(AActor* InAgent, AActor* InSubject, ATool* InTool, float InDamage)
 {
 	Agent = InAgent;
 	Subject = InSubject;
@@ -152,6 +200,16 @@ void UActionDie::Execute()
 	}
 }
 
+void UActionDie::VisitAsAgent(IGameplayEventObserver* Observer)
+{
+	Observer->Execute_WhenKilledSomething(Cast<UObject>(Observer), this);
+}
+
+void UActionDie::VisitAsSubject(IGameplayEventObserver* Observer)
+{
+	Observer->Execute_WhenKilledBySomething(Cast<UObject>(Observer), this);
+}
+
 void UActionUseAbility::Execute()
 {
 	Print("Action Ability: Tool: " + Tool->GetName(), FColor::Blue);
@@ -166,7 +224,30 @@ void UActionUseAbility::Execute()
 	}
 }
 
-void UActionCreateAreaOfEffect::PerformAreaOfEffect(AActor* Agent, AActor* Tool, TSubclassOf<class AAreaOfEffect> AreaOfEffectClass, const FVector& Location, float Damage, float Radius, float Delay)
+void UActionUseAbility::VisitAsAgent(IGameplayEventObserver* Observer)
+{
+	if (auto Ability = Cast<AAbility>(Tool))
+	{
+		if (Ability->GetSlot()->GetSlotName().Equals("Attack"))
+		{
+			Observer->Execute_WhenAttackUsed(Cast<UObject>(Observer), this);
+		}
+		else if (Ability->GetSlot()->GetSlotName().Equals("Special"))
+		{
+			Observer->Execute_WhenSpecialUsed(Cast<UObject>(Observer), this);
+		}
+		else if (Ability->GetSlot()->GetSlotName().Equals("Movement"))
+		{
+			Observer->Execute_WhenMovementUsed(Cast<UObject>(Observer), this);
+		}
+		else if (Ability->GetSlot()->GetSlotName().Equals("Defensive"))
+		{
+			Observer->Execute_WhenDefensiveUsed(Cast<UObject>(Observer), this);
+		}
+	}
+}
+
+void UActionCreateAreaOfEffect::PerformAreaOfEffect(AActor* Agent, ATool* Tool, TSubclassOf<class AAreaOfEffect> AreaOfEffectClass, const FVector& Location, float Damage, float Radius, float Delay)
 {
 	auto Action = NewObject<UActionCreateAreaOfEffect>();
 	Action->Agent = Agent;

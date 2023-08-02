@@ -75,8 +75,9 @@ class LUNARIA_API UAttributesComponent : public UActorComponent, public IGamepla
 public:
 	UAttributesComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	virtual void NativeWhenAgentOf(const FGameplayEvent& Event) override;
-	virtual void NativeWhenSubjectOf(const FGameplayEvent& Event) override;
+
+	virtual void NativeWhenAgentOf(class UAction* Action) override;
+	virtual void NativeWhenSubjectOf(class UAction* Action) override;
 
 	UFUNCTION(BlueprintCallable)
 		float Get(const FString& Attribute, float Seed);

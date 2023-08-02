@@ -3,8 +3,9 @@
 #include "Medium.h"
 #include "Engine/World.h"
 #include "Ability.h"
+#include "Tool.h"
 
-AMedium* AMedium::Spawn(UClass* Class, AActor* Agent, AActor* Tool, FTransform Transform, float BaseDamage)
+AMedium* AMedium::Spawn(UClass* Class, AActor* Agent, ATool* Tool, FTransform Transform, float BaseDamage)
 {
 	auto Params = FActorSpawnParameters();
 	Params.Owner = Agent;
@@ -13,11 +14,7 @@ AMedium* AMedium::Spawn(UClass* Class, AActor* Agent, AActor* Tool, FTransform T
 	MediumSpawn->SetAgent(Agent);
 	MediumSpawn->SetTool(Tool);
 	MediumSpawn->SetBaseDamage(BaseDamage);
-
-	if (auto Ability = Cast<AAbility>(Tool))
-	{
-		MediumSpawn->SetColor(Ability->GetAbilityColor());
-	}
+	MediumSpawn->SetColor(Tool->GetColor());
 
 	return MediumSpawn;
 }

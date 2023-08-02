@@ -9,7 +9,7 @@
 #include "Engine/World.h"
 #include "CombatComponent.h"
 
-void UActionCreateProjectile::PerformCreateProjectile(AActor* InAgent, AActor* InTool, TSubclassOf<class ASpaceProjectile> InProjectileClass, const FTransform& InTransform, float InBaseDamage, float InDistance, float InSpeed)
+void UActionCreateProjectile::PerformCreateProjectile(AActor* InAgent, ATool* InTool, TSubclassOf<class ASpaceProjectile> InProjectileClass, const FTransform& InTransform, float InBaseDamage, float InDistance, float InSpeed)
 {
 	auto Action = NewObject<UActionCreateProjectile>();
 	Action->Agent = InAgent;

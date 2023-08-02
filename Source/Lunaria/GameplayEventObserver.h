@@ -21,51 +21,52 @@ class LUNARIA_API IGameplayEventObserver
 	GENERATED_BODY()
 
 public:
-	virtual void ExecuteAgentOf(const FGameplayEvent& Event);
-	virtual void ExecuteSubjectOf(const FGameplayEvent& Event);
+	virtual void ExecuteAgentOf(class UAction* Action);
+	virtual void ExecuteSubjectOf(class UAction* Action);
 
-	virtual void NativeWhenAgentOf(const FGameplayEvent& Event) {}
-	virtual void NativeWhenSubjectOf(const FGameplayEvent& Event) {}
+	virtual void NativeWhenAgentOf(class UAction* Action) {}
+	virtual void NativeWhenSubjectOf(class UAction* Action) {}
+
+public:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
+		void WhenAgentOf(class UAction* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
-		void WhenAgentOf(const FGameplayEvent& Event);
+		void WhenSubjectOf(class UAction* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
-		void WhenSubjectOf(const FGameplayEvent& Event);
+		void WhenHitSomething(class UActionHit* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
-		void WhenHitSomething(const FGameplayEvent& Event);
+		void WhenHitBySomething(class UActionHit* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
-		void WhenKilledSomething(const FGameplayEvent& Event);
+		void WhenKilledSomething(class UActionDie* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
-		void WhenHitBySomething(const FGameplayEvent& Event);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")
-		void WhenKilledBySomething(const FGameplayEvent& Event);
+		void WhenKilledBySomething(class UActionDie* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenAttackUsed(const FGameplayEvent& Event);
+		void WhenHitSomethingWithAttack(class UActionHit* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenSpecialUsed(const FGameplayEvent& Event);
+		void WhenHitSomethingWithSpecial(class UActionHit* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenMovementUsed(const FGameplayEvent& Event);
+		void WhenHitSomethingWithMovement(class UActionHit* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenDefensiveUsed(const FGameplayEvent& Event);
+		void WhenHitSomethingWithDefensive(class UActionHit* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenHitSomethingWithAttack(const FGameplayEvent& Event);
+		void WhenAttackUsed(class UActionUseAbility* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenHitSomethingWithSpecial(const FGameplayEvent& Event);
+		void WhenSpecialUsed(class UActionUseAbility* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenHitSomethingWithMovement(const FGameplayEvent& Event);
+		void WhenMovementUsed(class UActionUseAbility* Action);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Ability Action Events")
-		void WhenHitSomethingWithDefensive(const FGameplayEvent& Event);
+		void WhenDefensiveUsed(class UActionUseAbility* Action);
 };

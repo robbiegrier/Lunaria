@@ -12,7 +12,7 @@ class LUNARIA_API AMedium : public AActor
 	GENERATED_BODY()
 
 public:
-	static AMedium* Spawn(UClass* Class, AActor* Agent, AActor* Tool, FTransform Transform, float BaseDamage);
+	static AMedium* Spawn(UClass* Class, AActor* Agent, class ATool* Tool, FTransform Transform, float BaseDamage);
 
 	AMedium();
 	virtual void Tick(float DeltaTime) override;
@@ -21,7 +21,7 @@ public:
 	virtual void LaunchCombatMedium() {}
 
 	UFUNCTION(BlueprintCallable)
-		void SetTool(AActor* InTool) { Tool = InTool; }
+		void SetTool(class ATool* InTool) { Tool = InTool; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetAgent(AActor* InAgent) { Agent = InAgent; }
@@ -30,7 +30,7 @@ public:
 		void SetBaseDamage(float InBaseDamage) { BaseDamage = InBaseDamage; }
 
 	UFUNCTION(BlueprintCallable)
-		AActor* GetTool() const { return Tool; }
+		class ATool* GetTool() const { return Tool; }
 
 	UFUNCTION(BlueprintCallable)
 		AActor* GetAgent() const { return Agent; }
@@ -42,7 +42,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		AActor* Tool;
+		class ATool* Tool;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		AActor* Agent;

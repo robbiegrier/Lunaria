@@ -20,7 +20,7 @@ public:
 	void Tick(float DeltaTime) override;
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void RespawnOnMap(class AMapManager* MapManager);
-	virtual void NativeWhenAgentOf(const FGameplayEvent& Event) override;
+	virtual void NativeWhenAgentOf(class UAction* Action) override;
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
 	void SetRutterScaleModifier(float InModifier) { RutterScaleModifier = InModifier; }
 

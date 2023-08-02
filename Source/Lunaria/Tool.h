@@ -10,17 +10,19 @@ UCLASS()
 class LUNARIA_API ATool : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
 	ATool();
+	virtual void Tick(float DeltaTime) override;
+	void SetAgent(AActor* InAgent) { Agent = InAgent; }
+	virtual FLinearColor GetColor() { return FLinearColor::White; }
+
+	UFUNCTION(BlueprintCallable)
+		AActor* GetAgent() const { return Agent; }
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		AActor* Agent;
 };

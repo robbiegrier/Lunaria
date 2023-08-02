@@ -12,7 +12,7 @@ class LUNARIA_API UActionCreateProjectile : public UAction
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)
-		static void PerformCreateProjectile(AActor* InAgent, AActor* InTool, TSubclassOf<class ASpaceProjectile> InProjectileClass, const FTransform& InTransform, float InBaseDamage, float InDistance, float InSpeed);
+		static void PerformCreateProjectile(AActor* InAgent, ATool* InTool, TSubclassOf<class ASpaceProjectile> InProjectileClass, const FTransform& InTransform, float InBaseDamage, float InDistance, float InSpeed);
 
 	virtual void Execute() override;
 

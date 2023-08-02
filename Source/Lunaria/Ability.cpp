@@ -31,11 +31,6 @@ AAbility::AAbility()
 	ContextAudioPlayer->SetVolumeMultiplier(0.3f);
 }
 
-AActor* AAbility::GetAgent() const
-{
-	return GetSlot()->GetParent()->GetOwner();
-}
-
 void AAbility::BeginPlay()
 {
 	Super::BeginPlay();
@@ -99,6 +94,11 @@ void AAbility::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
 	TagContainer = GameplayTags;
 	TagContainer.AddTag(AbilityTag);
+}
+
+FLinearColor AAbility::GetColor()
+{
+	return GetSlot()->Color->Render(nullptr);
 }
 
 void AAbility::Attach(class UAbilitySlot* InSlot)

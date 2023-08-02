@@ -9,6 +9,7 @@
 #include "Choosable.h"
 #include "Archetype.h"
 #include "CommonActor.h"
+#include "Tool.h"
 #include "Boon.generated.h"
 
 USTRUCT(BlueprintType)
@@ -42,7 +43,7 @@ public:
  *
  */
 UCLASS()
-class LUNARIA_API ABoon : public AActor, public IGameplayEventObserver, public IChoosable
+class LUNARIA_API ABoon : public ATool, public IGameplayEventObserver, public IChoosable
 {
 	GENERATED_BODY()
 

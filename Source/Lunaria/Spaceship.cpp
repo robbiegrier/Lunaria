@@ -160,7 +160,7 @@ void ASpaceship::RespawnOnMap(AMapManager* MapManager)
 	OnRespawn();
 }
 
-void ASpaceship::NativeWhenAgentOf(const FGameplayEvent& Event)
+void ASpaceship::NativeWhenAgentOf(UAction* Action)
 {
 	//Print("Was agent of " + Event.EventType);
 }

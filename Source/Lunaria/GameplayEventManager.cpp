@@ -186,50 +186,50 @@ void AGameplayEventManager::ProcessGameplayEvent(const FGameplayEvent& Event)
 
 void AGameplayEventManager::TriggerSubjectObservation(const FGameplayEvent& Event)
 {
-	if (auto Actor = Event.Subject)
-	{
-		if (auto Observer = Cast<IGameplayEventObserver>(Actor))
-		{
-			Observer->ExecuteSubjectOf(Event);
-		}
+	//if (auto Actor = Event.Subject)
+	//{
+	//	if (auto Observer = Cast<IGameplayEventObserver>(Actor))
+	//	{
+	//		Observer->ExecuteSubjectOf(Event);
+	//	}
 
-		for (auto Component : Actor->GetComponentsByInterface(UGameplayEventObserver::StaticClass()))
-		{
-			Cast<IGameplayEventObserver>(Component)->ExecuteSubjectOf(Event);
-		}
+	//	for (auto Component : Actor->GetComponentsByInterface(UGameplayEventObserver::StaticClass()))
+	//	{
+	//		Cast<IGameplayEventObserver>(Component)->ExecuteSubjectOf(Event);
+	//	}
 
-		if (auto Pawn = Cast<APawn>(Actor))
-		{
-			if (auto Observer = Cast<IGameplayEventObserver>(Pawn->GetController()))
-			{
-				Observer->ExecuteSubjectOf(Event);
-			}
-		}
-	}
+	//	if (auto Pawn = Cast<APawn>(Actor))
+	//	{
+	//		if (auto Observer = Cast<IGameplayEventObserver>(Pawn->GetController()))
+	//		{
+	//			Observer->ExecuteSubjectOf(Event);
+	//		}
+	//	}
+	//}
 }
 
 void AGameplayEventManager::TriggerAgentObservation(const FGameplayEvent& Event)
 {
-	if (auto Actor = Event.Agent)
-	{
-		if (auto Observer = Cast<IGameplayEventObserver>(Actor))
-		{
-			Observer->ExecuteAgentOf(Event);
-		}
+	//if (auto Actor = Event.Agent)
+	//{
+	//	if (auto Observer = Cast<IGameplayEventObserver>(Actor))
+	//	{
+	//		Observer->ExecuteAgentOf(Event);
+	//	}
 
-		for (auto Component : Actor->GetComponentsByInterface(UGameplayEventObserver::StaticClass()))
-		{
-			Cast<IGameplayEventObserver>(Component)->ExecuteAgentOf(Event);
-		}
+	//	for (auto Component : Actor->GetComponentsByInterface(UGameplayEventObserver::StaticClass()))
+	//	{
+	//		Cast<IGameplayEventObserver>(Component)->ExecuteAgentOf(Event);
+	//	}
 
-		if (auto Pawn = Cast<APawn>(Actor))
-		{
-			if (auto Observer = Cast<IGameplayEventObserver>(Pawn->GetController()))
-			{
-				Observer->ExecuteAgentOf(Event);
-			}
-		}
-	}
+	//	if (auto Pawn = Cast<APawn>(Actor))
+	//	{
+	//		if (auto Observer = Cast<IGameplayEventObserver>(Pawn->GetController()))
+	//		{
+	//			Observer->ExecuteAgentOf(Event);
+	//		}
+	//	}
+	//}
 }
 
 void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)

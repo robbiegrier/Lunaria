@@ -15,11 +15,13 @@ class LUNARIA_API UAction : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual void Execute() {}
+	void NativeExecute();
+	virtual void VisitAsAgent(class IGameplayEventObserver* Observer) {}
+	virtual void VisitAsSubject(class IGameplayEventObserver* Observer) {}
 
 	// The actor, owned by the agent, that is responsible for the action
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		AActor* Tool = nullptr;
+		class ATool* Tool = nullptr;
 
 	// The subject of the action, if any
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -28,6 +30,10 @@ public:
 	// the agent of the action
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		AActor* Agent = nullptr;
+
+protected:
+	void TriggerObservers();
+	virtual void Execute() {}
 };
 
 UCLASS(BlueprintType)
@@ -37,9 +43,11 @@ class LUNARIA_API UActionHit : public UAction
 
 public:
 	UFUNCTION(BlueprintCallable)
-		static void PerformHit(AActor* InAgent, AActor* InSubject, AActor* InTool, class AMedium* InMedium);
+		static void PerformHit(AActor* InAgent, AActor* InSubject, ATool* InTool, class AMedium* InMedium);
 
 	virtual void Execute() override;
+	virtual void VisitAsAgent(class IGameplayEventObserver* Observer) override;
+	virtual void VisitAsSubject(class IGameplayEventObserver* Observer) override;
 
 	// The actor medium through which the hit occured
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -59,7 +67,7 @@ class LUNARIA_API UActionTakeDamage : public UAction
 public:
 	virtual void Execute() override;
 
-	UActionTakeDamage* With(AActor* InAgent, AActor* InSubject, AActor* InTool, float InDamage);
+	UActionTakeDamage* With(AActor* InAgent, AActor* InSubject, ATool* InTool, float InDamage);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float Damage;
@@ -72,6 +80,8 @@ class LUNARIA_API UActionDie : public UAction
 
 public:
 	virtual void Execute() override;
+	virtual void VisitAsAgent(class IGameplayEventObserver* Observer) override;
+	virtual void VisitAsSubject(class IGameplayEventObserver* Observer) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float DamageOfKillingBlow;
@@ -84,6 +94,7 @@ class LUNARIA_API UActionUseAbility : public UAction
 
 public:
 	virtual void Execute() override;
+	virtual void VisitAsAgent(class IGameplayEventObserver* Observer) override;
 };
 
 UCLASS(BlueprintType)
@@ -93,7 +104,7 @@ class LUNARIA_API UActionCreateAreaOfEffect : public UAction
 
 public:
 	UFUNCTION(BlueprintCallable)
-		static void PerformAreaOfEffect(AActor* InAgent, AActor* InTool, TSubclassOf<class AAreaOfEffect> InAreaOfEffectClass, const FVector& InLocation, float InDamage, float InRadius, float InDelay);
+		static void PerformAreaOfEffect(AActor* InAgent, ATool* InTool, TSubclassOf<class AAreaOfEffect> InAreaOfEffectClass, const FVector& InLocation, float InDamage, float InRadius, float InDelay);
 
 	virtual void Execute() override;
 

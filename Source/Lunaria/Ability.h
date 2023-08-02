@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "GameplayTagAssetInterface.h"
 #include "SpaceProjectile.h"
+#include "Tool.h"
 #include "Ability.generated.h"
 
 UENUM(BlueprintType)
@@ -26,7 +27,7 @@ enum class EAbilityKey : uint8
 };
 
 UCLASS()
-class LUNARIA_API AAbility : public AActor, public IGameplayTagAssetInterface
+class LUNARIA_API AAbility : public ATool, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
@@ -34,6 +35,7 @@ public:
 	AAbility();
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual FLinearColor GetColor() override;
 
 	void Attach(class UAbilitySlot* InSlot);
 
@@ -90,9 +92,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		class UAbilitySlot* GetSlot() const { return Slot; }
-
-	UFUNCTION(BlueprintCallable)
-		class AActor* GetAgent() const;
 
 	UFUNCTION(BlueprintCallable)
 		float GetDamage() { return Damage; }

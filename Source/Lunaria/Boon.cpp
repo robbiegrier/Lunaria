@@ -26,6 +26,7 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes, AActor* InCreator)
 	MyOwner = Attributes->GetOwner();
 	MyOwnerAttributes = Attributes;
 	Creator = InCreator ? InCreator : MyOwner;
+	SetAgent(Creator);
 
 	if (auto CreatorAttributes = Creator->FindComponentByClass<UAttributesComponent>())
 	{
