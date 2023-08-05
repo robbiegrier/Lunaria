@@ -26,7 +26,7 @@ void USpaceshipWeaponComponent::FireWeapon()
 	if (!GetWorld() || !ProjectileClass || !GetOwner() || !TargetingVolume) return;
 
 	auto Projectile = GetWorld()->SpawnActorDeferred<ASpaceProjectile>(ProjectileClass,
-		GetComponentTransform(), GetOwner(), GetOwner()->Instigator);
+		GetComponentTransform(), GetOwner(), GetOwner()->GetInstigator());
 
 	InitializeProjectileBeforeSpawn(Projectile);
 	Projectile->FinishSpawning(GetComponentTransform());

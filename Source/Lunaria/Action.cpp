@@ -47,7 +47,7 @@ void UActionHit::PerformHit(AActor* Agent, AActor* Subject, ATool* Tool, AMedium
 	Action->Tool = Tool;
 	Action->Medium = Medium;
 
-	if (Agent && Subject)
+	if (Action->Agent && Action->Subject)
 	{
 		if (auto CombatComponent = Agent->FindComponentByClass<UCombatComponent>())
 		{
@@ -142,10 +142,6 @@ void UActionTakeDamage::Execute()
 {
 	//Print("Action Take Damage: Tool: " + Tool->GetName() + ", Subject: " + Subject->GetName() + ", Damage: " + FString::FromInt(Damage), FColor::Yellow);
 
-	auto Event = FGameplayEvent(Agent, ENativeEventType::TakeDamage, Subject);
-	Event.Tool = Tool;
-	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(Event);
-
 	if (auto HealthComp = Subject->FindComponentByClass<UHealthComponent>())
 	{
 		HealthComp->ApplyDamage(Damage);
@@ -181,10 +177,6 @@ void UActionDie::Execute()
 {
 	Print("Action Die: Tool: " + Tool->GetName() + ", Subject: " + Subject->GetName() + ", Damage: " + FString::FromInt(DamageOfKillingBlow), FColor::Red);
 
-	auto Event = FGameplayEvent(Agent, ENativeEventType::Kill, Subject);
-	Event.Tool = Tool;
-	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(Event);
-
 	if (Subject && !Subject->IsActorBeingDestroyed())
 	{
 		auto Ship = Cast<ASpaceship>(Subject);
@@ -213,10 +205,6 @@ void UActionDie::VisitAsSubject(IGameplayEventObserver* Observer)
 void UActionUseAbility::Execute()
 {
 	Print("Action Ability: Tool: " + Tool->GetName(), FColor::Blue);
-
-	auto Event = FGameplayEvent(Agent, ENativeEventType::AbilityUsed, nullptr);
-	Event.Tool = Tool;
-	AGameplayEventManager::Get(Agent->GetWorld())->SubmitEvent(Event);
 
 	if (auto Ability = Cast<AAbility>(Tool))
 	{
@@ -259,9 +247,12 @@ void UActionCreateAreaOfEffect::PerformAreaOfEffect(AActor* Agent, ATool* Tool, 
 	Action->Radius = Radius;
 	Action->Delay = Delay;
 
-	if (auto CombatComponent = Agent->FindComponentByClass<UCombatComponent>())
+	if (Action->Agent)
 	{
-		CombatComponent->AddAction(Action);
+		if (auto CombatComponent = Agent->FindComponentByClass<UCombatComponent>())
+		{
+			CombatComponent->AddAction(Action);
+		}
 	}
 }
 

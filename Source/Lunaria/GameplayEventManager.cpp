@@ -157,8 +157,8 @@ void AGameplayEventManager::ProcessGameplayEvents()
 
 void AGameplayEventManager::ProcessGameplayEvent(const FGameplayEvent& Event)
 {
-	TriggerAgentObservation(Event);
-	TriggerSubjectObservation(Event);
+	//TriggerAgentObservation(Event);
+	//TriggerSubjectObservation(Event);
 	TriggerAgentOfClassDelegates(Event);
 	TriggerSubjectOfClassDelegates(Event);
 
@@ -168,7 +168,7 @@ void AGameplayEventManager::ProcessGameplayEvent(const FGameplayEvent& Event)
 	}
 	if (Event.Action == ENativeEventType::Heal)
 	{
-		ProcessHealEvent(Event);
+		//ProcessHealEvent(Event);
 	}
 	else if (Event.Action == ENativeEventType::Kill)
 	{
@@ -176,7 +176,7 @@ void AGameplayEventManager::ProcessGameplayEvent(const FGameplayEvent& Event)
 	}
 	else if (Event.Action == ENativeEventType::ApplyStatus)
 	{
-		ProcessApplyStatusEvent(Event);
+		//ProcessApplyStatusEvent(Event);
 	}
 	else if (Event.Action == ENativeEventType::AbilityUsed)
 	{
@@ -234,111 +234,111 @@ void AGameplayEventManager::TriggerAgentObservation(const FGameplayEvent& Event)
 
 void AGameplayEventManager::ProcessHitEvent(const FGameplayEvent& Event)
 {
-	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
-	{
-		if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
-		{
-			auto FindScale = Event.Values.Find("Damage");
-			auto Scale = FindScale ? *FindScale : 0.f;
+	//if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
+	//{
+	//	if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
+	//	{
+	//		auto FindScale = Event.Values.Find("Damage");
+	//		auto Scale = FindScale ? *FindScale : 0.f;
 
-			if (Event.Agent)
-			{
-				// Any tags attached to this hit event should potentially modify the damage scale
-				if (auto Attributes = Event.Agent->FindComponentByClass<UAttributesComponent>())
-				{
-					auto DamageTags = Event.EventTags;
-					DamageTags.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Damage"));
-					Scale = Attributes->GetFromTagContainer(DamageTags, Scale);
-				}
-			}
+	//		if (Event.Agent)
+	//		{
+	//			// Any tags attached to this hit event should potentially modify the damage scale
+	//			if (auto Attributes = Event.Agent->FindComponentByClass<UAttributesComponent>())
+	//			{
+	//				auto DamageTags = Event.EventTags;
+	//				DamageTags.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Damage"));
+	//				Scale = Attributes->GetFromTagContainer(DamageTags, Scale);
+	//			}
+	//		}
 
-			if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
-			{
-				auto ReductionPercent = Attributes->Get("Reduction.Damage", 0.f) * 0.01f;
-				auto ReductionAmount = Scale * ReductionPercent;
-				Scale -= ReductionAmount;
+	//		if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
+	//		{
+	//			auto ReductionPercent = Attributes->Get("Reduction.Damage", 0.f) * 0.01f;
+	//			auto ReductionAmount = Scale * ReductionPercent;
+	//			Scale -= ReductionAmount;
 
-				auto AmpPercent = Attributes->Get("Amplify.Damage", 0.f) * 0.01f;
-				auto AmpAmount = Scale * AmpPercent;
-				Scale += AmpAmount;
-			}
+	//			auto AmpPercent = Attributes->Get("Amplify.Damage", 0.f) * 0.01f;
+	//			auto AmpAmount = Scale * AmpPercent;
+	//			Scale += AmpAmount;
+	//		}
 
-			HealthComp->ApplyDamage(Scale);
+	//		HealthComp->ApplyDamage(Scale);
 
-			if (HealthComp->IsHealthDepleted())
-			{
-				auto KillEvent = Event;
-				KillEvent.Action = ENativeEventType::Kill;
-				SubmitEvent(KillEvent);
-			}
+	//		if (HealthComp->IsHealthDepleted())
+	//		{
+	//			auto KillEvent = Event;
+	//			KillEvent.Action = ENativeEventType::Kill;
+	//			SubmitEvent(KillEvent);
+	//		}
 
-			if (DebugEvents) Print(Event.Agent->GetName() + " did " + FString::FromInt((int)Scale) + " damage to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
-		}
-	}
+	//		if (DebugEvents) Print(Event.Agent->GetName() + " did " + FString::FromInt((int)Scale) + " damage to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+	//	}
+	//}
 }
 
 void AGameplayEventManager::ProcessHealEvent(const FGameplayEvent& Event)
 {
-	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
-	{
-		if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
-		{
-			auto FindScale = Event.Values.Find("Healing");
-			auto Scale = FindScale ? *FindScale : 0.f;
+	//if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
+	//{
+	//	if (auto HealthComp = Event.Subject->FindComponentByClass<UHealthComponent>())
+	//	{
+	//		auto FindScale = Event.Values.Find("Healing");
+	//		auto Scale = FindScale ? *FindScale : 0.f;
 
-			if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
-			{
-				auto ReductionPercent = Attributes->Get("Reduction.Healing", 0.f) * 0.01f;
-				auto ReductionAmount = Scale * ReductionPercent;
-				Scale -= ReductionAmount;
+	//		if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
+	//		{
+	//			auto ReductionPercent = Attributes->Get("Reduction.Healing", 0.f) * 0.01f;
+	//			auto ReductionAmount = Scale * ReductionPercent;
+	//			Scale -= ReductionAmount;
 
-				auto AmpPercent = Attributes->Get("Amplify.Healing", 0.f) * 0.01f;
-				auto AmpAmount = Scale * AmpPercent;
-				Scale += AmpAmount;
-			}
+	//			auto AmpPercent = Attributes->Get("Amplify.Healing", 0.f) * 0.01f;
+	//			auto AmpAmount = Scale * AmpPercent;
+	//			Scale += AmpAmount;
+	//		}
 
-			HealthComp->ApplyHealing(Scale);
+	//		HealthComp->ApplyHealing(Scale);
 
-			if (DebugEvents) Print(Event.Agent->GetName() + " provided " + FString::FromInt((int)Scale) + " healing to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
-		}
-	}
+	//		if (DebugEvents) Print(Event.Agent->GetName() + " provided " + FString::FromInt((int)Scale) + " healing to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+	//	}
+	//}
 }
 
 void AGameplayEventManager::ProcessKillEvent(const FGameplayEvent& Event)
 {
-	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
-	{
-		auto Ship = Cast<ASpaceship>(Event.Subject);
+	//if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
+	//{
+	//	auto Ship = Cast<ASpaceship>(Event.Subject);
 
-		if (Ship && Ship->IsPlayerControlled())
-		{
-			ALunariaGameModeBase::Get(GetWorld())->OnPlayerDeath();
-		}
-		else
-		{
-			Event.Subject->Destroy();
-		}
+	//	if (Ship && Ship->IsPlayerControlled())
+	//	{
+	//		ALunariaGameModeBase::Get(GetWorld())->OnPlayerDeath();
+	//	}
+	//	else
+	//	{
+	//		Event.Subject->Destroy();
+	//	}
 
-		if (ShouldWriteKillStatements) Print(Event.Agent->GetName() + " killed " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
-	}
+	//	if (ShouldWriteKillStatements) Print(Event.Agent->GetName() + " killed " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+	//}
 }
 
 void AGameplayEventManager::ProcessApplyStatusEvent(const FGameplayEvent& Event)
 {
-	if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
-	{
-		if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
-		{
-			if (auto Find = Event.Classes.Find("StatusEffectClass"))
-			{
-				if (*Find)
-				{
-					Attributes->AddStatusEffectFromClass(*Find, Event.Agent);
-					if (DebugEvents) Print(Event.Agent->GetName() + " applied " + (*Find)->GetName() + " to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
-				}
-			}
-		}
-	}
+	//if (Event.Subject && !Event.Subject->IsActorBeingDestroyed())
+	//{
+	//	if (auto Attributes = Event.Subject->FindComponentByClass<UAttributesComponent>())
+	//	{
+	//		if (auto Find = Event.Classes.Find("StatusEffectClass"))
+	//		{
+	//			if (*Find)
+	//			{
+	//				Attributes->AddStatusEffectFromClass(*Find, Event.Agent);
+	//				if (DebugEvents) Print(Event.Agent->GetName() + " applied " + (*Find)->GetName() + " to " + Event.Subject->GetName() + " (" + Event.EventTags.ToStringSimple() + ")");
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void AGameplayEventManager::WhenClassAgentOf(ENativeEventType Action, UClass* Class, AActor* ClientObject, FGameplayEventDynamicDelegate ClientFunction)

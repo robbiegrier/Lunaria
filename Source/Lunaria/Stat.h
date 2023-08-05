@@ -54,5 +54,5 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FLinearColor Base;
+		FLinearColor Base = FLinearColor::White;
 };

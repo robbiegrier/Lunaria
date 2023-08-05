@@ -5,27 +5,40 @@
 #include "CombatComponent.h"
 #include "AttributesComponent.h"
 
-void UActionApplyStatus::PerformApplyStatus(AActor* InAgent, AActor* InSubject, ATool* InTool, TSubclassOf<class ABoon> InStatusClass)
+void UActionApplyStatus::PerformApplyStatus(AActor* InAgent, AActor* InSubject, ATool* InTool, TSubclassOf<class ABoon> InStatusClass, float InDuration)
 {
-	auto Action = NewObject<UActionApplyStatus>();
-	Action->Agent = InAgent;
-	Action->StatusClass = InStatusClass;
-	Action->Subject = InSubject;
-	Action->Tool = InTool;
-
-	if (auto CombatComponent = InAgent->FindComponentByClass<UCombatComponent>())
+	if (InAgent && InSubject)
 	{
-		CombatComponent->AddAction(Action);
+		auto Action = NewObject<UActionApplyStatus>();
+		Action->Agent = InAgent;
+		Action->StatusClass = InStatusClass;
+		Action->Subject = InSubject;
+		Action->Tool = InTool;
+		Action->Duration = InDuration;
+
+		if (auto CombatComponent = InAgent->FindComponentByClass<UCombatComponent>())
+		{
+			CombatComponent->AddAction(Action);
+		}
 	}
 }
 
 void UActionApplyStatus::Execute()
 {
+	if (Agent)
+	{
+		if (auto Attributes = Agent->FindComponentByClass<UAttributesComponent>())
+		{
+			Attributes->StatusEffectAppliedDuration->Set(Duration);
+			Duration = Attributes->StatusEffectAppliedDuration->Render(this);
+		}
+	}
+
 	if (Subject && !Subject->IsActorBeingDestroyed())
 	{
 		if (auto SubjectAttributes = Subject->FindComponentByClass<UAttributesComponent>())
 		{
-			SubjectAttributes->AddStatusEffectFromClass(StatusClass, Agent);
+			SubjectAttributes->AddStatusEffectFromClass(StatusClass, Agent, Duration);
 		}
 	}
 }

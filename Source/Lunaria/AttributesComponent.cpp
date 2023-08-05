@@ -41,6 +41,18 @@ void UAttributesComponent::BeginPlay()
 	DamageReceived = NewObject<ULunariaStat>();
 	DamageReceived->Set(0.f);
 	RegisterAttribute("DamageReceived", DamageReceived);
+
+	StatusEffectAppliedDuration = NewObject<ULunariaStat>();
+	StatusEffectAppliedDuration->Set(3.f);
+	RegisterAttribute("StatusEffect.AppliedDuration", StatusEffectAppliedDuration);
+
+	Cooldown = NewObject<ULunariaStat>();
+	Cooldown->Set(0.f);
+	RegisterAttribute("Cooldown", Cooldown);
+
+	Charges = NewObject<ULunariaStat>();
+	Charges->Set(1.f);
+	RegisterAttribute("Charges", Charges);
 }
 
 void UAttributesComponent::RegisterAttribute(const FString& AttributeName, UAttribute* Attribute)
@@ -92,6 +104,7 @@ void UAttributesComponent::AddBoon(ABoon* NewBoon)
 {
 	if (NewBoon)
 	{
+		NewBoon->SetAgent(GetOwner());
 		Boons.Add(NewBoon);
 		NewBoon->NativeOnAdded(this);
 	}
@@ -102,33 +115,33 @@ void UAttributesComponent::AddBoonFromClass(TSubclassOf<ABoon> NewBoonClass)
 	if (NewBoonClass)
 	{
 		auto NewBoon = GetWorld()->SpawnActor<ABoon>(NewBoonClass);
-		Boons.Add(NewBoon);
-		NewBoon->NativeOnAdded(this);
+		AddBoon(NewBoon);
 	}
 }
 
-ABoon* UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> NewEffectClass, AActor* Creator)
+ABoon* UAttributesComponent::AddStatusEffectFromClass(TSubclassOf<class ABoon> NewEffectClass, AActor* Creator, float Duration)
 {
 	auto AddedStack = static_cast<ABoon*>(nullptr);
 
 	if (NewEffectClass)
 	{
-		auto AddedEffect = static_cast<AStatusEffect*>(nullptr);
+		auto Effect = static_cast<AStatusEffect*>(nullptr);
 		auto Find = StatusEffects.Find(NewEffectClass);
 
 		if (!Find)
 		{
-			AddedEffect = GetWorld()->SpawnActor<AStatusEffect>();
-			StatusEffects.Add(NewEffectClass, AddedEffect);
-			AddedEffect->SetBoonClass(NewEffectClass);
-			AddedEffect->NativeOnAdded(this);
+			Effect = GetWorld()->SpawnActor<AStatusEffect>();
+			StatusEffects.Add(NewEffectClass, Effect);
+			Effect->SetBoonClass(NewEffectClass);
+			Effect->NativeOnAdded(this);
 		}
 		else
 		{
-			AddedEffect = *Find;
+			Effect = *Find;
 		}
 
-		AddedStack = AddedEffect->AddStack(Creator);
+		Effect->SetDuration(Duration);
+		AddedStack = Effect->AddStack(Creator);
 	}
 
 	return AddedStack;
@@ -210,95 +223,6 @@ ULunariaColor* UAttributesComponent::GetColorAttribute(const FString& Name)
 	}
 
 	return nullptr;
-}
-
-float UAttributesComponent::ClassGet(UClass* Class, const FString& Attribute, float Seed)
-{
-	return ClassGetTagged(Class, FGameplayTag::RequestGameplayTag(*("Attribute." + Attribute)), Seed);
-}
-
-float UAttributesComponent::ClassGetTagged(UClass* Class, const FGameplayTag& Attribute, float Seed)
-{
-	return ClassGetFromTagContainer(Class, FGameplayTagContainer(Attribute), Seed);
-}
-
-float UAttributesComponent::ClassGetFromTagContainer(UClass* Class, const FGameplayTagContainer& Attribute, float Seed)
-{
-	auto Modifier = GetModifierFromTagContainer(Attribute, Seed, Class);
-	return Modifier.Additive * Modifier.Multiplier;
-}
-
-float UAttributesComponent::Get(const FString& Attribute, float Seed)
-{
-	return GetTagged(FGameplayTag::RequestGameplayTag(*("Attribute." + Attribute)), Seed);
-}
-
-float UAttributesComponent::GetTagged(const FGameplayTag& Attribute, float Seed)
-{
-	return GetFromTagContainer(FGameplayTagContainer(Attribute), Seed);
-}
-
-float UAttributesComponent::GetFromTagContainer(const FGameplayTagContainer& Attribute, float Seed)
-{
-	auto Modifier = GetModifierFromTagContainer(Attribute, Seed);
-	return Modifier.Additive * Modifier.Multiplier;
-}
-
-FAttributeModifier UAttributesComponent::GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed, UClass* Class)
-{
-	auto Output = FAttributeModifier();
-	Output.Additive = Seed;
-	Output.Multiplier = 1.f;
-
-	for (auto Boon : Boons)
-	{
-		Boon->BeforeAttributeQueried(Attribute);
-		auto Modifier = Boon->GetModifierForTagContainer(Class, Attribute);
-
-		Output.Additive += Modifier.Additive;
-		Output.Multiplier += Modifier.Multiplier / 100.f;
-
-		if (!Modifier.Color.Equals(FLinearColor::White))
-		{
-			Output.Color = Modifier.Color;
-		}
-	}
-
-	for (auto& EffectRegister : StatusEffects)
-	{
-		for (auto Boon : EffectRegister.Value->GetStatuses())
-		{
-			Boon->BeforeAttributeQueried(Attribute);
-			auto Modifier = Boon->GetModifierForTagContainer(Class, Attribute);
-
-			Output.Additive += Modifier.Additive;
-			Output.Multiplier += Modifier.Multiplier / 100.f;
-
-			if (!Modifier.Color.Equals(FLinearColor::White))
-			{
-				Output.Color = Modifier.Color;
-			}
-		}
-	}
-
-	return Output;
-}
-
-FLinearColor UAttributesComponent::GetColor(const FGameplayTag& Attribute)
-{
-	return GetColorFromTagContainer(FGameplayTagContainer(Attribute));
-}
-
-FLinearColor UAttributesComponent::GetColorFromTagContainer(const FGameplayTagContainer& Attribute)
-{
-	return GetModifierFromTagContainer(Attribute, 0.f).Color;
-}
-
-float UAttributesComponent::GetForAbilityType(const FGameplayTag& Ability, const FGameplayTag& Attribute, float Seed)
-{
-	auto Container = FGameplayTagContainer(Ability);
-	Container.AddTag(Attribute);
-	return GetFromTagContainer(Container, Seed);
 }
 
 void UAttributesComponent::Reset()

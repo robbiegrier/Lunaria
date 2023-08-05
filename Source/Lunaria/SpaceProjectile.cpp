@@ -52,22 +52,22 @@ void ASpaceProjectile::LaunchCombatMedium()
 
 void ASpaceProjectile::SetAbilityCreatedFrom(AAbility* Ability)
 {
-	AbilityParent = Ability;
-	auto ActorParent = Ability->GetMyOwner();
+	//AbilityParent = Ability;
+	//auto ActorParent = Ability->GetMyOwner();
 
-	if (ActorParent)
-	{
-		if (auto Attributes = ActorParent->FindComponentByClass<UAttributesComponent>())
-		{
-			auto TagContainer = FGameplayTagContainer();
-			TagContainer.AddTag(Ability->GetAbilityTag());
-			TagContainer.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Speed.Projectile"));
+	//if (ActorParent)
+	//{
+	//	if (auto Attributes = ActorParent->FindComponentByClass<UAttributesComponent>())
+	//	{
+	//		auto TagContainer = FGameplayTagContainer();
+	//		TagContainer.AddTag(Ability->GetAbilityTag());
+	//		TagContainer.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Speed.Projectile"));
 
-			auto SpeedModifier = Attributes->GetFromTagContainer(TagContainer, ProjectileMovementComponent->InitialSpeed);
-			ProjectileMovementComponent->InitialSpeed = SpeedModifier;
-			ProjectileMovementComponent->MaxSpeed = SpeedModifier;
-		}
-	}
+	//		auto SpeedModifier = Attributes->GetFromTagContainer(TagContainer, ProjectileMovementComponent->InitialSpeed);
+	//		ProjectileMovementComponent->InitialSpeed = SpeedModifier;
+	//		ProjectileMovementComponent->MaxSpeed = SpeedModifier;
+	//	}
+	//}
 }
 
 void ASpaceProjectile::BeginPlay()

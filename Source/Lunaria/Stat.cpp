@@ -15,6 +15,7 @@ float ULunariaStat::Render(class UAction const* const Action)
 		if (auto StatMod = Cast<UModificationLunariaStat>(Mod))
 		{
 			TotalScalar += StatMod->GetScalar(Action);
+			TotalBase += StatMod->GetAdditive(Action);
 		}
 		else
 		{

@@ -12,33 +12,6 @@
 #include "Tool.h"
 #include "Boon.generated.h"
 
-USTRUCT(BlueprintType)
-struct FAttributeModifier
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
-		FGameplayTagContainer Attribute;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
-		UClass* Class;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
-		float Additive = 0.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Modifiers)
-		float Multiplier = 0.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visual)
-		FLinearColor Color = FLinearColor::White;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ModifiersPerLevel)
-		float AdditiveGainPerLevel = 0.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ModifiersPerLevel)
-		float MultiplierGainPerLevel = 0.f;
-};
-
 /**
  *
  */
@@ -48,7 +21,6 @@ class LUNARIA_API ABoon : public ATool, public IGameplayEventObserver, public IC
 	GENERATED_BODY()
 
 public:
-
 	ABoon();
 	void NativeOnAdded(class UAttributesComponent* Attributes, AActor* InCreator = nullptr);
 	void NativeOnRemoved();
@@ -61,16 +33,7 @@ public:
 		const FString& GetBoonName() const { return BoonName; }
 
 	UFUNCTION(BlueprintCallable)
-		FAttributeModifier GetModifierForTagContainer(UClass* InClass, const FGameplayTagContainer& Attribute) const;
-
-	UFUNCTION(BlueprintCallable)
-		void SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier);
-
-	UFUNCTION(BlueprintCallable)
 		void Remove();
-
-	UFUNCTION(BlueprintCallable)
-		float GetDurationAsStatusEffect() const;
 
 	UFUNCTION(BlueprintCallable)
 		int32 GetMaxStacksAsStatusEffect() const { return MaxStacksAsStatusEffect; }
@@ -99,9 +62,6 @@ public:
 	void Close();
 
 private:
-	FAttributeModifier* FindModifier(const FGameplayTagContainer& Attribute) const;
-	FAttributeModifier CalculateModifier(UClass* InClass, const FGameplayTagContainer& Attribute) const;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonName;
 
@@ -110,9 +70,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Metadata, meta = (AllowPrivateAccess = "true"))
 		FString BoonLevelUpDescription;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Testing, meta = (AllowPrivateAccess = "true"))
-		TArray<FAttributeModifier> AttributeModifierList;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Owner, meta = (AllowPrivateAccess = "true"))
 		AActor* MyOwner;
@@ -128,10 +85,7 @@ private:
 		float Damage = 25.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status Effect", meta = (AllowPrivateAccess = "true"))
-		float DurationAsStatusEffect = 2.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status Effect", meta = (AllowPrivateAccess = "true"))
-		int32 MaxStacksAsStatusEffect = 3;
+		int32 MaxStacksAsStatusEffect = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Scene, meta = (AllowPrivateAccess = "true"))
 		class USceneComponent* SceneComponent;
@@ -144,8 +98,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Mods, meta = (AllowPrivateAccess = "true"))
 		TArray<class UModification*> Modifications;
-
-	static FAttributeModifier NullModifier;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Action Events")

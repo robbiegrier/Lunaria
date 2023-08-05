@@ -15,10 +15,13 @@ class LUNARIA_API UActionApplyStatus : public UAction
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)
-		static void PerformApplyStatus(AActor* InAgent, AActor* InSubject, ATool* InTool, TSubclassOf<class ABoon> InStatusClass);
+		static void PerformApplyStatus(AActor* InAgent, AActor* InSubject, ATool* InTool, TSubclassOf<class ABoon> InStatusClass, float InDuration);
 
 	virtual void Execute() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UClass* StatusClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float Duration = 3.f;
 };

@@ -19,6 +19,7 @@ public:
 	virtual void OnHitEnd(class UActionHit* HitAction) {}
 	virtual void SetColor(const FLinearColor& InColor) {}
 	virtual void LaunchCombatMedium() {}
+	virtual float NativeGetBaseDamage() const { return BaseDamage; }
 
 	UFUNCTION(BlueprintCallable)
 		void SetTool(class ATool* InTool) { Tool = InTool; }
@@ -36,7 +37,7 @@ public:
 		AActor* GetAgent() const { return Agent; }
 
 	UFUNCTION(BlueprintCallable)
-		float GetBaseDamage() const { return BaseDamage; }
+		float GetBaseDamage() const { return NativeGetBaseDamage(); }
 
 protected:
 	virtual void BeginPlay() override;

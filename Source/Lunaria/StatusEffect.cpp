@@ -20,11 +20,10 @@ ABoon* AStatusEffect::AddStack(AActor* Creator)
 
 	if (BoonClass)
 	{
-		if (Statuses.Num() < MyOwnerAttributes->Get("Stacks.StatusEffect", MaxStacksSeed))
+		if (Statuses.Num() < 10)
 		{
 			AddedBoon = GetWorld()->SpawnActor<ABoon>(BoonClass);
 			Statuses.Add(AddedBoon);
-			SetDuration(AddedBoon->GetDurationAsStatusEffect());
 			SetMaxStacks(AddedBoon->GetMaxStacksAsStatusEffect());
 			AddedBoon->NativeOnAdded(MyOwnerAttributes, Creator);
 		}
@@ -81,7 +80,7 @@ void AStatusEffect::Tick(float DeltaTime)
 
 	if (Statuses.Num() > 0)
 	{
-		if (TimePassed > Statuses[0]->GetDurationAsStatusEffect())
+		if (TimePassed > Duration)
 		{
 			Remove();
 		}

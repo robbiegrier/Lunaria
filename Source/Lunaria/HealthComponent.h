@@ -52,6 +52,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 		float MaxHealthSeed = 100.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		class ULunariaStat* MaxHealth;
+
 	UPROPERTY()
 		float MissingHealth = 0.f;
 

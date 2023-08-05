@@ -73,6 +73,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Flair, meta = (AllowPrivateAccess = "true"))
 		float Tilt = 0.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		class ULunariaStat* MovementSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		class ULunariaStat* TurnSpeed;
+
 	FVector Velocity;
 	FVector LocationLastFrame;
 	AActor* OrbitalParent;

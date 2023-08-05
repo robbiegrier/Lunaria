@@ -19,5 +19,6 @@ void UAbilitySlot::Begin()
 void UAbilitySlot::SetAbility(AAbility* InAbility)
 {
 	Ability = InAbility;
+	InAbility->SetAgent(Parent->GetOwner());
 	InAbility->Attach(this);
 }

@@ -12,6 +12,7 @@
 #include "AbilitiesComponent.h"
 #include "Action.h"
 #include "CombatComponent.h"
+#include "ActionCreateProjectile.h"
 
 AAbility::AAbility()
 {
@@ -35,9 +36,6 @@ void AAbility::BeginPlay()
 {
 	Super::BeginPlay();
 	UpdateStrategy(ExecutionType);
-
-	CurrentCharges = GetCooldownCharges();
-	LastUsed = -9999.f;
 }
 
 void AAbility::UpdateStrategy(EAbilityExecution Type)
@@ -107,6 +105,13 @@ void AAbility::Attach(class UAbilitySlot* InSlot)
 	MyOwner = InSlot->GetParent()->GetOwner();
 	AbilityTag = FGameplayTag::RequestGameplayTag("Attack");
 	Key = EAbilityKey::X;
+
+	CurrentCharges = GetCooldownCharges();
+	LastUsed = -9999.f;
+
+	GeneralAction = NewObject<UAction>();
+	GeneralAction->Agent = Agent;
+	GeneralAction->Tool = this;
 }
 
 UAttributesComponent* AAbility::GetAttributes() const
@@ -116,38 +121,18 @@ UAttributesComponent* AAbility::GetAttributes() const
 
 float AAbility::GetCooldown()
 {
-	return GetAttributeValue("Attribute.Cooldown.Ability", CooldownSeed);
+	GetAttributes()->Cooldown->Set(CooldownSeed);
+	return GetAttributes()->Cooldown->Render(GeneralAction);
 }
 
 int32 AAbility::GetCooldownCharges()
 {
-	return GetAttributeValue("Attribute.Charges.Ability", CooldownChargesSeed);
-}
-
-float AAbility::GetAttributeValue(const FString& Attribute, float Seed) const
-{
-	return GetAttributeValueFromTag(FGameplayTag::RequestGameplayTag(*Attribute), Seed);
-}
-
-float AAbility::GetAttributeValueFromTag(const FGameplayTag& Attribute, float Seed) const
-{
-	if (MyOwner)
-	{
-		return GetAttributes()->GetForAbilityType(AbilityTag, Attribute, Seed);
-	}
-
-	return 0.f;
+	GetAttributes()->Charges->Set(CooldownChargesSeed);
+	return GetAttributes()->Charges->Render(GeneralAction);
 }
 
 FLinearColor AAbility::GetAbilityColor() const
 {
-	/*if (MyOwner)
-	{
-		return GetAttributes()->GetColor(AbilityTag);
-	}
-
-	return FLinearColor();*/
-
 	return Slot->Color->Render(nullptr);
 }
 
@@ -224,12 +209,12 @@ void AAbility::StopSound(UAudioComponent* Player)
 	Player->Stop();
 }
 
-ASpaceProjectile* AAbility::CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float InDamage, float Distance)
+ASpaceProjectile* AAbility::CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float InDamage, float Distance, float Speed)
 {
-	return CreateAbilityProjectileWithTransform(SpawnClass, GetTransform(), InDamage, Distance);
+	return CreateAbilityProjectileWithTransform(SpawnClass, GetTransform(), InDamage, Distance, Speed);
 }
 
-ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float InDamage, float Distance)
+ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float InDamage, float Distance, float Speed)
 {
 	//auto Params = FActorSpawnParameters();
 	//Params.Owner = MyOwner;
@@ -244,7 +229,7 @@ ASpaceProjectile* AAbility::CreateAbilityProjectileWithTransform(TSubclassOf<ASp
 
 	//return Projectile;
 
-	Print("ability proj create is deprecated: " + GetMyOwner()->GetName());
+	UActionCreateProjectile::PerformCreateProjectile(Agent, this, SpawnClass, Transform, InDamage, Distance, Speed);
 
 	return nullptr;
 }

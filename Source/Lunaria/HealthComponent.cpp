@@ -19,6 +19,11 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Attributes = Helpers::GetSister<UAttributesComponent>(this);
+
+	MaxHealth = NewObject<ULunariaStat>();
+	MaxHealth->Set(500.f);
+
+	Attributes->RegisterAttribute("MaxHealth", MaxHealth);
 }
 
 float UHealthComponent::GetCurrentHealth() const
@@ -60,5 +65,5 @@ void UHealthComponent::Reset()
 
 float UHealthComponent::GetMaxHealth() const
 {
-	return Attributes->Get("Health.Total", MaxHealthSeed);
+	return MaxHealth->Render(nullptr);
 }

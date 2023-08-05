@@ -21,9 +21,12 @@ void UActionCreateProjectile::PerformCreateProjectile(AActor* InAgent, ATool* In
 	Action->Distance = InDistance;
 	Action->Speed = InSpeed;
 
-	if (auto CombatComponent = InAgent->FindComponentByClass<UCombatComponent>())
+	if (Action->Agent)
 	{
-		CombatComponent->AddAction(Action);
+		if (auto CombatComponent = InAgent->FindComponentByClass<UCombatComponent>())
+		{
+			CombatComponent->AddAction(Action);
+		}
 	}
 }
 

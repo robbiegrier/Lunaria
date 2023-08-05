@@ -12,57 +12,6 @@
 #include "Ability.h"
 #include "AttributesComponent.generated.h"
 
-USTRUCT(BlueprintType)
-struct FCharacterStats
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-
-	// Movement
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Movement)
-	//	FStat MovementSpeed = { 300.f };
-
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Movement)
-	//	float TurnSpeed = 500.f;
-
-	// Offense
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Offense)
-		float ProjectileSpeed = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Offense)
-		float Damage = 0.f;
-
-	// Defense
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
-		float MaxHealth = 1000.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
-		float DamageReduction = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
-		float DamageAmplification = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
-		float HealingReduction = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Defense)
-		float HealingAmplification = 0.f;
-
-	// Luck
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Luck)
-		float NumberOfChoices = 3.f;
-};
-
-USTRUCT(BlueprintType)
-struct FBoonStats
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Boon)
-		float Damage = 100.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Boon)
-		float StatusEffectReceivedDuration = 3.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Boon)
-		float StatusEffectAppliedDuration = 3.f;
-};
-
 /*
 * This component contains the "stats" of an actor that influence how strong it is. Other components will draw on these
 * stats to update health, damage, and speed behaviors of the actor.
@@ -76,32 +25,9 @@ public:
 	UAttributesComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	// Gameplay event observer interface to trigger events on Boons
 	virtual void NativeWhenAgentOf(class UAction* Action) override;
 	virtual void NativeWhenSubjectOf(class UAction* Action) override;
-
-	UFUNCTION(BlueprintCallable)
-		float Get(const FString& Attribute, float Seed);
-
-	UFUNCTION(BlueprintCallable)
-		float GetTagged(const FGameplayTag& Attribute, float Seed);
-
-	UFUNCTION(BlueprintCallable)
-		float GetFromTagContainer(const FGameplayTagContainer& Attribute, float Seed);
-
-	UFUNCTION(BlueprintCallable)
-		float ClassGet(UClass* Class, const FString& Attribute, float Seed);
-
-	UFUNCTION(BlueprintCallable)
-		float ClassGetTagged(UClass* Class, const FGameplayTag& Attribute, float Seed);
-
-	UFUNCTION(BlueprintCallable)
-		float ClassGetFromTagContainer(UClass* Class, const FGameplayTagContainer& Attribute, float Seed);
-
-	UFUNCTION(BlueprintCallable)
-		FAttributeModifier GetModifierFromTagContainer(const FGameplayTagContainer& Attribute, float Seed, UClass* Class = nullptr);
-
-	UFUNCTION(BlueprintCallable)
-		float GetForAbilityType(const FGameplayTag& Ability, const FGameplayTag& Attribute, float Seed);
 
 	UFUNCTION(BlueprintCallable)
 		void AddBoon(ABoon* NewBoon);
@@ -110,7 +36,7 @@ public:
 		void AddBoonFromClass(TSubclassOf<ABoon> NewBoonClass);
 
 	UFUNCTION(BlueprintCallable)
-		ABoon* AddStatusEffectFromClass(TSubclassOf<ABoon> NewEffectClass, AActor* Creator = nullptr);
+		ABoon* AddStatusEffectFromClass(TSubclassOf<ABoon> NewEffectClass, AActor* Creator, float Duration);
 
 	UFUNCTION(BlueprintCallable)
 		void RemoveAndDestroyBoon(ABoon* TheBoon);
@@ -128,16 +54,11 @@ public:
 		const TArray<ABoon*>& GetCurrentBoons() const { return Boons; }
 
 	UFUNCTION(BlueprintCallable)
-		FLinearColor GetColor(const FGameplayTag& Attribute);
-
-	UFUNCTION(BlueprintCallable)
-		FLinearColor GetColorFromTagContainer(const FGameplayTagContainer& Attribute);
-
-	UFUNCTION(BlueprintCallable)
 		void Reset();
 
 	bool IsNodeViable(const FUpgradeNode& Node);
 
+	// Register an Attribute object with a tag name
 	void RegisterAttribute(const FString& AttributeName, class UAttribute* Attribute);
 
 protected:
@@ -159,6 +80,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		class ULunariaStat* DamageReceived;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class ULunariaStat* StatusEffectAppliedDuration;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class ULunariaStat* Cooldown;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class ULunariaStat* Charges;
 
 	UPROPERTY()
 		TMap<FGameplayTag, UAttribute*> StatMap;

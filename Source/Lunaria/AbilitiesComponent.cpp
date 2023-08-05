@@ -79,6 +79,8 @@ void UAbilitiesComponent::SetAbility(EAbilityKey Key, AAbility* Ability)
 	{
 		EnsureSlotExists(Key);
 
+		Ability->SetAgent(GetOwner());
+
 		if (auto Find = Abilities.Find(Key))
 		{
 			auto& Slot = *Find;

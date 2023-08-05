@@ -73,12 +73,6 @@ public:
 		int32 GetCooldownCharges();
 
 	UFUNCTION(BlueprintCallable)
-		float GetAttributeValue(const FString& Attribute, float Seed) const;
-
-	UFUNCTION(BlueprintCallable)
-		float GetAttributeValueFromTag(const FGameplayTag& Attribute, float Seed) const;
-
-	UFUNCTION(BlueprintCallable)
 		FLinearColor GetAbilityColor() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -103,10 +97,10 @@ protected:
 	void StopSound(class UAudioComponent* Player);
 
 	UFUNCTION(BlueprintCallable)
-		class ASpaceProjectile* CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float Damage = 50.f, float Distance = 3000.f);
+		class ASpaceProjectile* CreateAbilityProjectile(TSubclassOf<ASpaceProjectile> SpawnClass, float Damage = 50.f, float Distance = 3000.f, float Speed = 1000.f);
 
 	UFUNCTION(BlueprintCallable)
-		class ASpaceProjectile* CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage = 50.f, float Distance = 3000.f);
+		class ASpaceProjectile* CreateAbilityProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float Damage = 50.f, float Distance = 3000.f, float Speed = 1000.f);
 
 private:
 	void UpdateStrategy(EAbilityExecution Type);
@@ -166,6 +160,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Projectiles, meta = (AllowPrivateAccess = "true"))
 		TArray<class ASpaceProjectile*> ProjectilesInFlight;
+
+	UPROPERTY()
+		class UAction* GeneralAction;
 
 	EAbilityKey Key;
 

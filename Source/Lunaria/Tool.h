@@ -20,9 +20,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 		AActor* GetAgent() const { return Agent; }
 
+	UFUNCTION(BlueprintCallable)
+		void SetBaseDamage(float InBaseDamage) { BaseDamage = InBaseDamage; }
+
+	UFUNCTION(BlueprintCallable)
+		float GetBaseDamage() const { return BaseDamage; }
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		AActor* Agent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		float BaseDamage = 0.f;
 };

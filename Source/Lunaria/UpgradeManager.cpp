@@ -21,7 +21,7 @@ TArray<UClass*> AUpgradeManager::GetChoiceClassesFromPickup(APickup* Pickup, int
 
 	auto ViableNodes = UpgradeNodes.FilterByPredicate([Pickup, Attributes](const auto& Node) {
 		return Node.Archetype == Pickup->GetArchetype() && Attributes->IsNodeViable(Node);
-	});
+		});
 
 	for (auto i = 0; i < Num; i++)
 	{
@@ -54,7 +54,7 @@ TArray<AActor*> AUpgradeManager::GetChoicesFromPickup(APickup* Pickup)
 	auto Attributes = Player->FindComponentByClass<UAttributesComponent>();
 
 	auto NumberOfChoices = 3;
-	NumberOfChoices = Attributes->Get("NumberOfChoices.PickupSelection", NumberOfChoices);
+	//NumberOfChoices = Attributes->Get("NumberOfChoices.PickupSelection", NumberOfChoices);
 
 	auto ChoiceClasses = GetChoiceClassesFromPickup(Pickup, NumberOfChoices - 1, Attributes);
 
@@ -68,7 +68,7 @@ TArray<AActor*> AUpgradeManager::GetChoicesFromPickup(APickup* Pickup)
 	{
 		auto PotentialLevelUps = Attributes->GetCurrentBoons().FilterByPredicate([](auto Element) {
 			return !Element->GetLevelUpDescription().IsEmpty();
-		});
+			});
 
 		if (PotentialLevelUps.Num() > 0)
 		{

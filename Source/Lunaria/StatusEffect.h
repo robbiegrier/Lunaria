@@ -23,7 +23,7 @@ public:
 	TArray<class ABoon*>& GetStatuses() { return Statuses; }
 
 	void SetBoonClass(UClass* InClass) { BoonClass = InClass; }
-	void SetDuration(float InDuration) { DurationSeed = InDuration; }
+	void SetDuration(float InDuration) { Duration = InDuration; }
 	void SetMaxStacks(float InMax) { MaxStacksSeed = InMax; }
 
 	UFUNCTION(BlueprintCallable)
@@ -43,6 +43,6 @@ private:
 	TArray<class ABoon*> Statuses;
 	class UAttributesComponent* MyOwnerAttributes;
 	float LastStackTime = 0.f;
-	float DurationSeed = 3.f;
+	float Duration = 3.f;
 	int32 MaxStacksSeed = 3;
 };

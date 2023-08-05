@@ -11,8 +11,6 @@
 #include "LunariaGameModeBase.h"
 #include "Modification.h"
 
-FAttributeModifier ABoon::NullModifier = FAttributeModifier();
-
 ABoon::ABoon()
 {
 	BoonName = "Spaceship Upgrade";
@@ -28,16 +26,6 @@ void ABoon::NativeOnAdded(UAttributesComponent* Attributes, AActor* InCreator)
 	Creator = InCreator ? InCreator : MyOwner;
 	SetAgent(Creator);
 
-	if (auto CreatorAttributes = Creator->FindComponentByClass<UAttributesComponent>())
-	{
-		DurationAsStatusEffect = CreatorAttributes->ClassGet(GetClass(), "Duration.StatusEffectsCreated", DurationAsStatusEffect);
-	}
-
-	if (auto OwnerAttributes = MyOwner->FindComponentByClass<UAttributesComponent>())
-	{
-		DurationAsStatusEffect = OwnerAttributes->ClassGet(GetClass(), "Duration.StatusEffectsOwned", DurationAsStatusEffect);
-	}
-
 	OnAdded();
 }
 
@@ -50,13 +38,6 @@ void ABoon::NativeOnRemoved()
 void ABoon::NativeLevelUp()
 {
 	BoonLevel++;
-
-	for (auto& Modifier : AttributeModifierList)
-	{
-		Modifier.Additive += Modifier.AdditiveGainPerLevel;
-		Modifier.Multiplier += Modifier.MultiplierGainPerLevel;
-	}
-
 	OnLeveledUp();
 }
 
@@ -78,52 +59,12 @@ void ABoon::Choose(AActor* Chooser)
 	}
 }
 
-FAttributeModifier ABoon::GetModifierForTagContainer(UClass* InClass, const FGameplayTagContainer& Attribute) const
-{
-	return CalculateModifier(InClass, Attribute);
-}
-
-void ABoon::SetAttributeModifier(const FGameplayTagContainer& Attribute, const FAttributeModifier& Modifier)
-{
-	if (auto Find = FindModifier(Attribute))
-	{
-		*Find = Modifier;
-	}
-	else
-	{
-		AttributeModifierList.Add(Modifier);
-	}
-}
-
 void ABoon::Remove()
 {
 	if (MyOwnerAttributes)
 	{
 		MyOwnerAttributes->RemoveAndDestroyBoon(this);
 	}
-}
-
-float ABoon::GetDurationAsStatusEffect() const
-{
-	auto Output = DurationAsStatusEffect;
-
-	if (Creator)
-	{
-		if (auto Attributes = Creator->FindComponentByClass<UAttributesComponent>())
-		{
-			Output = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsCreated", Output);
-		}
-	}
-
-	if (MyOwner)
-	{
-		if (auto Attributes = MyOwner->FindComponentByClass<UAttributesComponent>())
-		{
-			Output = Attributes->ClassGet(GetClass(), "Duration.StatusEffectsOwned", Output);
-		}
-	}
-
-	return Output;
 }
 
 ASpaceProjectile* ABoon::CreateBoonProjectileWithTransform(TSubclassOf<ASpaceProjectile> SpawnClass, const FTransform& Transform, float InDamage, float Distance, const FGameplayTagContainer& InTags, const TArray<AActor*>& ActorsToIgnore, int32 Bounces)
@@ -170,31 +111,4 @@ void ABoon::Close()
 	{
 		Mod->Close();
 	}
-}
-
-FAttributeModifier* ABoon::FindModifier(const FGameplayTagContainer& Attribute) const
-{
-	return const_cast<FAttributeModifier*>(AttributeModifierList.FindByPredicate([&Attribute](const auto& Element) {
-		return Attribute == Element.Attribute;
-		}));
-}
-
-FAttributeModifier ABoon::CalculateModifier(UClass* InClass, const FGameplayTagContainer& Attribute) const
-{
-	auto Output = NullModifier;
-
-	for (const auto& Element : AttributeModifierList)
-	{
-		auto IsMatchingClass = InClass == nullptr || Element.Class->IsChildOf(InClass);
-
-		if (IsMatchingClass && Attribute.HasAll(Element.Attribute))
-		{
-			Output.Additive += Element.Additive;
-			Output.Multiplier += Element.Multiplier;
-			Output.Color = Element.Color;
-			Output.Attribute.AppendTags(Element.Attribute);
-		}
-	}
-
-	return Output;
 }
